@@ -1,8 +1,11 @@
 package com.example.taizhongoldtownguideapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -26,6 +29,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final int REQUEST_CODE = 101;
     private GestureDetector GD;
     private ImageView imView;
     private ImageView imView2;
@@ -65,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //請求獲取位置permission
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
+            return;
+        }
 
         //預設為晴天
         weather = 1;
@@ -175,10 +184,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goLocate(View view) {
-        /*
-        Intent intent = new Intent(this,whereMyFriend.class);
+
+        Intent intent = new Intent(this,whereIsMyFriend.class);
         startActivity(intent);
-        */
+
 
     }
 

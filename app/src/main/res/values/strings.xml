@@ -14,4 +14,5 @@
     <string name="meibianzhiyuan">地圖後續將請美術設計團隊重繪</string>
     <string name="laoshi_meibianzhiyuan">地圖目前借用徐逸鴻老師經典文化地圖，後續將請美術設計團隊重繪</string>
     <string name="title_activity_where_my_friend">Map</string>
+    <string name="title_activity_where_is_my_friend">Map</string>
 </resources>
