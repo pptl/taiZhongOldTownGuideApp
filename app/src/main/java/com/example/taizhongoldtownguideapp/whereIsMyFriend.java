@@ -6,6 +6,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,6 +64,17 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast.makeText(whereIsMyFriend.this, "marker clicked", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+
+
+
         getDeviceLocation();
     }
 
@@ -75,7 +89,12 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
             @Override
             public void onSuccess(Location location) {
                 //Toast.makeText(whereIsMyFriend.this, "nonoononon", Toast.LENGTH_SHORT).show();
+                //fake sarah and manda location
+                Bitmap sarahBitmap = new BitmapFactory().decodeResource(getResources(),R.drawable.sarah);
+                Bitmap mandaBitmap = new BitmapFactory().decodeResource(getResources(),R.drawable.manda);
                 mCurrentLocation = (Location) location;
+                mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude()+0.001,location.getLongitude()+0.001)).title("Sarah").icon(BitmapDescriptorFactory.fromBitmap(sarahBitmap)));
+                mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude()+0.001,location.getLongitude())).title("Manda").icon(BitmapDescriptorFactory.fromBitmap(mandaBitmap)));
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
             }
         });
