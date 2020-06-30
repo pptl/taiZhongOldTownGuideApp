@@ -16,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -57,13 +58,17 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);
         //moveCamera(new LatLng(-34, 151), 15f);
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
         getDeviceLocation();
     }
 
     private void getDeviceLocation(){
         //這裡會有先載入地圖了再拋出permittion的bug
 
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient = LocationServices.
+        getFusedLocationProviderClient(this);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
 
         location.addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -75,9 +80,12 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-
     }
 
+    //用來標記你朋友的位置
+    private void getMyFriendLocation() {
+
+    }
     private void moveCamera(LatLng latLng, float zoom){
         mMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
