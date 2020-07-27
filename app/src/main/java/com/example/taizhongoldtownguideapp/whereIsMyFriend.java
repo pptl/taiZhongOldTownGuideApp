@@ -10,8 +10,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -36,6 +41,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     FusedLocationProviderClient mFusedLocationProviderClient;
     private Button locateBtn;
     private Button personBtn;
+    private WindowManager.LayoutParams params;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,4 +120,59 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         mMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
+
+    public void popLocationInfo(View view) {
+        popWindow("locationInfo");
+        Log.d("btn","popLocation On click");
+    }
+
+    public void popPersonInfo(View view) {
+        popWindow("personInfo");
+        Log.d("btn","popPerson On click");
+    }
+
+    public void popWindow(String popWinName) {
+        if(popWinName.equals("locationInfo")){
+            locationInfoPopWin locationInfoPopWin = new locationInfoPopWin(this,this);
+
+            //设置Popupwindow显示位置（从底部弹出）
+            locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+            params = getWindow().getAttributes();
+            //当弹出Popupwindow时，背景变半透明
+            params.alpha=0.7f;
+            getWindow().setAttributes(params);
+            //设置Popupwindow关闭监听，当Popupwindow关闭，背景恢复1f
+            locationInfoPopWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    params = getWindow().getAttributes();
+                    params.alpha=1f;
+                    getWindow().setAttributes(params);
+                }
+            });
+        }
+        else{
+            personInfoPopWin personInfoPopWin = new personInfoPopWin(this, this);
+
+            //设置Popupwindow显示位置（从底部弹出）
+            personInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+            params = getWindow().getAttributes();
+            //当弹出Popupwindow时，背景变半透明
+            params.alpha=0.7f;
+            getWindow().setAttributes(params);
+            //设置Popupwindow关闭监听，当Popupwindow关闭，背景恢复1f
+           personInfoPopWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    params = getWindow().getAttributes();
+                    params.alpha=1f;
+                    getWindow().setAttributes(params);
+                }
+            });
+
+        }
+
+
+    }
+
 }
