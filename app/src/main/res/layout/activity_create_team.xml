@@ -7,30 +7,33 @@
     tools:context=".createTeam">
 
 
-
     <EditText
         android:id="@+id/createTeam_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="236dp"
+        android:layout_width="184dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="280dp"
+        android:background="@drawable/rec_box"
         android:ems="10"
+        android:gravity="center"
         android:inputType="textPersonName"
         android:text="@string/createTeam_editText_text"
-        android:textSize="36sp"
+        android:textColor="#97717171"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/createTeam_quickCreateButton"
-        android:layout_width="132dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="76dp"
+        android:layout_width="154dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/btn_bg"
+        android:onClick="quickCreate"
         android:text="@string/createTeam_quickCreateButton_text"
-        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        android:onClick="quickCreate"
         app:layout_constraintTop_toBottomOf="@+id/createTeam_editText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

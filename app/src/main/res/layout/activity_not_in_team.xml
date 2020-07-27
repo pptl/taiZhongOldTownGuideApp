@@ -19,11 +19,12 @@
 
     <Button
         android:id="@+id/createTeamButton"
-        android:layout_width="148dp"
+        android:layout_width="154dp"
         android:layout_height="69dp"
         android:layout_marginTop="72dp"
         android:text="@string/notInTeam_createTeamButton_text"
         android:textSize="20sp"
+        android:background="@drawable/btn_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:onClick="goCreateTeam"
@@ -31,11 +32,12 @@
 
     <Button
         android:id="@+id/joinTeamButton"
-        android:layout_width="148dp"
+        android:layout_width="154dp"
         android:layout_height="69dp"
         android:layout_marginTop="56dp"
         android:text="@string/notInTeam_joinTeamButton_text"
         android:textSize="20sp"
+        android:background="@drawable/btn_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"

@@ -6,40 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".joinTeam">
 
-    <Button
-        android:id="@+id/joinTeam_quickJoinButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text="@string/joinTeam_quickJoinButton_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.455"
-        app:layout_constraintStart_toStartOf="parent"
-        android:onClick="quickJoin"
-        app:layout_constraintTop_toBottomOf="@+id/joinTeam_editText" />
-
     <EditText
         android:id="@+id/joinTeam_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
-        android:ems="10"
+        android:layout_width="184dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="116dp"
+        android:background="@drawable/rec_box"
+        android:ems="8"
+        android:gravity="center"
         android:inputType="textPersonName"
         android:text="@string/joinTeam_editText_text"
+        android:textColor="#97717171"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.439"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logoView" />
+
+    <Button
+        android:id="@+id/joinTeam_quickJoinButton"
+        android:layout_width="154dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="72dp"
+        android:background="@drawable/btn_bg"
+        android:onClick="quickJoin"
+        android:text="@string/joinTeam_quickJoinButton_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/joinTeam_editText" />
 
     <TextView
         android:id="@+id/logoView"
         android:layout_width="136dp"
         android:layout_height="135dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="152dp"
+        android:gravity="center"
         android:text="Logo"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

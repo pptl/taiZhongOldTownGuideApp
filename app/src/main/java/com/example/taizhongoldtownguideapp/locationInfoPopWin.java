@@ -11,6 +11,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.LinkedList;
+
 public class locationInfoPopWin extends PopupWindow {
 
     private View view;
@@ -18,17 +20,17 @@ public class locationInfoPopWin extends PopupWindow {
 
 
 
+
+
     public locationInfoPopWin(Activity activity, Context mContext) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.location_info_pop_win, null);
-
-
         // 设置外部可点击
         this.setOutsideTouchable(true);
         // mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
         this.view.setOnTouchListener(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
-                int height = view.findViewById(R.id.popwindow_layout).getTop();
+                int height = view.findViewById(R.id.locationinfo_popwindow_layout).getTop();
                 int y = (int) event.getY();
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (y < height) {

@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -160,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     }
     //彈出介紹視窗
     public void popWindow(int i) {
-        titleTV = (TextView)findViewById(R.id.titleTextView);
+        titleTV = (TextView)findViewById(R.id.personInfo_inviteCode_TextView);
         contentTV = (TextView)findViewById(R.id.contentTextView);
         TakePhotoPopWin takePhotoPopWin = new TakePhotoPopWin(this,this,i);
         //设置Popupwindow显示位置（从底部弹出）

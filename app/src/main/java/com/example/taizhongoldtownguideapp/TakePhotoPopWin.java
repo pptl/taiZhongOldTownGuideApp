@@ -1,6 +1,5 @@
 package com.example.taizhongoldtownguideapp;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -23,7 +22,7 @@ public class TakePhotoPopWin extends PopupWindow {
 
     public TakePhotoPopWin(Activity activity, Context mContext, int i) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.take_photo_pop, null);
-        titleTV = (TextView) this.view.findViewById(R.id.titleTextView);
+        titleTV = (TextView) this.view.findViewById(R.id.personInfo_inviteCode_TextView);
         contentTV = (TextView) this.view.findViewById(R.id.contentTextView);
         contentIV = (ImageView)this.view.findViewById(R.id.contentImageView);
 

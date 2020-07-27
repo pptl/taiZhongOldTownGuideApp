@@ -11,15 +11,36 @@ package com.example.taizhongoldtownguideapp;
         import android.widget.RelativeLayout;
         import android.widget.TextView;
 
+        import androidx.recyclerview.widget.LinearLayoutManager;
+        import androidx.recyclerview.widget.RecyclerView;
+
+        import java.util.ArrayList;
+        import java.util.List;
+
 public class personInfoPopWin extends PopupWindow {
 
     private View view;
     private PopupWindow popUpWin;
-
-
+    private List<String> friendList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private friendListRecycleViewAdapter mAdapter;
 
     public personInfoPopWin(Activity activity, Context mContext) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.person_info_pop_win, null);
+
+
+        friendList.add("Mr Lim");
+        friendList.add("Mr Huang");
+        friendList.add("Mr Chua");
+
+        mRecyclerView = this.view.findViewById(R.id.showFriend_recycleView);
+        mAdapter = new friendListRecycleViewAdapter(mContext,friendList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
+
+
+
 
 
         // 设置外部可点击
@@ -28,7 +49,7 @@ public class personInfoPopWin extends PopupWindow {
         this.view.setOnTouchListener(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
-                int height = view.findViewById(R.id.popwindow_layout).getTop();
+                int height = view.findViewById(R.id.personinfo_popwindow_layout).getTop();
                 int y = (int) event.getY();
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (y < height) {
