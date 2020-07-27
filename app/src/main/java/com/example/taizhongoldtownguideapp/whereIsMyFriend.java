@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -31,8 +33,9 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     private GoogleMap mMap;
     Location mCurrentLocation;
-
     FusedLocationProviderClient mFusedLocationProviderClient;
+    private Button locateBtn;
+    private Button personBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
 

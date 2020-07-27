@@ -185,7 +185,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void goLocate(View view) {
 
-        Intent intent = new Intent(this,whereIsMyFriend.class);
+        //Intent intent = new Intent(this,whereIsMyFriend.class);
+        //startActivity(intent);
+        Intent intent = new Intent(this,notInTeam.class);
         startActivity(intent);
 
 
