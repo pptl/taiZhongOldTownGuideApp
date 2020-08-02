@@ -12,44 +12,44 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendListRecycleViewAdapter.friendListRecycleViewHolder> {
+public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locationListRecycleViewAdapter.locationListRecycleViewHolder> {
 
-    private List<String> friendList = new ArrayList<>();
+    private List<String> locationList = new ArrayList<>();
     private final LayoutInflater mInflater;
 
-    class friendListRecycleViewHolder extends RecyclerView.ViewHolder{
+    class locationListRecycleViewHolder extends RecyclerView.ViewHolder{
         public final TextView wordItemView;
-        final friendListRecycleViewAdapter mAdapter;
+        final locationListRecycleViewAdapter mAdapter;
 
-        public friendListRecycleViewHolder(View itemView, friendListRecycleViewAdapter adapter) {
+        public locationListRecycleViewHolder(View itemView, locationListRecycleViewAdapter adapter) {
             super(itemView);
             wordItemView = itemView.findViewById(R.id.location_context);
             this.mAdapter = adapter;
         }
     }
 
-    public friendListRecycleViewAdapter(Context context, List<String> friendList) {
+    public locationListRecycleViewAdapter(Context context, List<String> locationList) {
         mInflater = LayoutInflater.from(context);
-        this.friendList = friendList;
+        this.locationList = locationList;
     }
 
     @NonNull
     @Override
-    public friendListRecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public locationListRecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.person_info_recycle_view_item,
                 parent, false);
-        return new friendListRecycleViewHolder(mItemView, this);
+        return new locationListRecycleViewHolder(mItemView, this);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull friendListRecycleViewHolder holder, int position) {
-        String mCurrent = friendList.get(position);
+    public void onBindViewHolder(@NonNull locationListRecycleViewHolder holder, int position) {
+        String mCurrent = locationList.get(position);
         // Add the data to the view holder.
         holder.wordItemView.setText(mCurrent);
     }
 
     @Override
     public int getItemCount() {
-        return friendList.size();
+        return locationList.size();
     }
 }

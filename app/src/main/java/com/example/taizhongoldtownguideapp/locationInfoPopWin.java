@@ -11,19 +11,34 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class locationInfoPopWin extends PopupWindow {
 
     private View view;
     private PopupWindow popUpWin;
-
-
-
+    private List<String> locationList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private friendListRecycleViewAdapter mAdapter;
 
 
     public locationInfoPopWin(Activity activity, Context mContext) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.location_info_pop_win, null);
+
+        locationList.add("超好吃的臭豆腐");
+        locationList.add("超好打卡的地方");
+        locationList.add("今天的旅館");
+
+        mRecyclerView = this.view.findViewById(R.id.showLocation_recyclerView);
+        mAdapter = new friendListRecycleViewAdapter(mContext,locationList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
         // 设置外部可点击
         this.setOutsideTouchable(true);
         // mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框

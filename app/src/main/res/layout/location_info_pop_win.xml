@@ -16,34 +16,69 @@
         android:layout_marginTop="32dp"
         android:text="提醒"
         android:textSize="25dp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="50dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="52dp"
+        android:onClick="addLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/add_location_icon" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="408dp"
-        android:layout_height="132dp"
-        android:layout_marginTop="4dp"
+        android:id="@+id/showLocation_recyclerView"
+        android:layout_width="411dp"
+        android:layout_height="211dp"
+        android:layout_marginTop="36dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <ImageView
         android:layout_width="350dp"
         android:layout_height="0.5dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="20dp"
         android:background="#000"
+        app:layout_constraintBottom_toTopOf="@+id/showLocation_recyclerView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.75" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="318dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="不要遲到啊各位，要吃飯了"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="52dp"
+        android:id="@+id/imageView3"
+        android:layout_width="69dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:src="@drawable/location_icon" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="223dp"
+        android:layout_height="19dp"
+        android:layout_marginEnd="108dp"
+        android:text="16:00在西門丁集合"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/add_location_icon" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

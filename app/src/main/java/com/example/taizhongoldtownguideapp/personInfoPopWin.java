@@ -1,27 +1,28 @@
 package com.example.taizhongoldtownguideapp;
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-        import android.app.Activity;
-        import android.content.Context;
-        import android.graphics.drawable.ColorDrawable;
-        import android.view.LayoutInflater;
-        import android.view.MotionEvent;
-        import android.view.View;
-        import android.widget.ImageView;
-        import android.widget.PopupWindow;
-        import android.widget.RelativeLayout;
-        import android.widget.TextView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-        import androidx.recyclerview.widget.LinearLayoutManager;
-        import androidx.recyclerview.widget.RecyclerView;
-
-        import java.util.ArrayList;
-        import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 public class personInfoPopWin extends PopupWindow {
 
     private View view;
     private PopupWindow popUpWin;
     private List<String> friendList = new ArrayList<>();
+
     private RecyclerView mRecyclerView;
     private friendListRecycleViewAdapter mAdapter;
 
@@ -80,5 +81,6 @@ public class personInfoPopWin extends PopupWindow {
         this.setAnimationStyle(R.style.take_photo_anim);
 
     }
+
 
 }

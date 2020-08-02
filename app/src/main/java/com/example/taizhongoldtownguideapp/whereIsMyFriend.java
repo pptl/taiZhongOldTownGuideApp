@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -133,8 +134,9 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     public void popWindow(String popWinName) {
         if(popWinName.equals("locationInfo")){
-            locationInfoPopWin locationInfoPopWin = new locationInfoPopWin(this,this);
 
+
+            locationInfoPopWin locationInfoPopWin = new locationInfoPopWin(this,this);
             //设置Popupwindow显示位置（从底部弹出）
             locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
@@ -153,7 +155,6 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         }
         else{
             personInfoPopWin personInfoPopWin = new personInfoPopWin(this, this);
-
             //设置Popupwindow显示位置（从底部弹出）
             personInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
@@ -175,4 +176,14 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     }
 
+    public void exitTeam(View view) {
+        Log.d("rightBtn","ExitTeam!");
+    }
+
+    public void addLocation(View view) {
+
+        Log.d("rightBtn","addLocation!");
+        Intent intent = new Intent(this,addLocation.class);
+        startActivity(intent);
+    }
 }

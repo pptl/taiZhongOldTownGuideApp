@@ -89,13 +89,12 @@ public class MainActivity extends AppCompatActivity {
         //用以記錄現在的點
         curPointX = 0;
         curPointY = 0;
-        //lastPointX = 0;
-        //lastPointY = 0;
+
 
         //宣告病初始化地圖
         BitmapFactory.Options options = new BitmapFactory.Options();
         BitmapFactory.decodeResource(getResources(),R.drawable.map_now,options);
-        //Log.d("imgkuan",options.outWidth+" , "+options.outHeight);
+
 
         //宣告手勢
         AndroidGestureDectector androidGestureDectector = new AndroidGestureDectector();
