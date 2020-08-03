@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".addLocation"></activity>
+        <activity android:name=".newUser"></activity>
+        <activity android:name=".addLocation" />
         <activity android:name=".notInTeam" />
         <activity android:name=".joinTeam" />
         <activity android:name=".createTeam" />

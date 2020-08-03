@@ -4,37 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".joinTeam">
-
-    <EditText
-        android:id="@+id/joinTeam_editText"
-        android:layout_width="184dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="88dp"
-        android:background="@drawable/rec_box"
-        android:ems="8"
-        android:gravity="center"
-        android:inputType="textPersonName"
-        android:hint="輸入房號"
-        android:textColor="#97717171"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logoView" />
+    tools:context=".newUser">
 
     <Button
         android:id="@+id/newUser_btn"
         android:layout_width="154dp"
         android:layout_height="59dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/btn_bg"
-        android:onClick="quickJoin"
-        android:text="@string/joinTeam_quickJoinButton_text"
+        android:text="確定"
+        android:onClick="goSelect"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/joinTeam_editText" />
+        app:layout_constraintTop_toBottomOf="@+id/newUser_editText" />
 
     <TextView
         android:id="@+id/logoView"
@@ -48,4 +31,18 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/newUser_editText"
+        android:layout_width="221dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="124dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="請輸入名字"
+        android:textStyle="bold"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logoView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

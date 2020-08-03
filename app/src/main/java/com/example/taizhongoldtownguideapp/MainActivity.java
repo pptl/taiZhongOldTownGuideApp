@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -147,10 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 cloundController(imView5);
                 cloundController(imView6);
                 imView7.setVisibility(View.VISIBLE);
-                //uri = "@drawable/black";
-                //imageResource = getResources().getIdentifier(uri, null, getPackageName());
-                //imView6.setImageResource(imageResource);
-                //imView6.setAlpha(0.3f);
+
         }
 
 
@@ -182,29 +180,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goLocate(View view) {
+        Boolean newUser = getSharedPreferences("userData",MODE_PRIVATE).getBoolean("inTeam",false);
 
-        //Intent intent = new Intent(this,whereIsMyFriend.class);
-        //startActivity(intent);
-        Intent intent = new Intent(this,notInTeam.class);
-        startActivity(intent);
-
-
+        if(!newUser){
+            Intent intent = new Intent(this,newUser.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(this,whereIsMyFriend.class);
+            startActivity(intent);
+        }
     }
 
-    //debug用
-
-    /*
-    public void showcurpoint() {
-        Log.d("showcurpoint",curPointX+" , "+curPointY);
-    }
-    */
 
     //手勢控制，目前只做拖移
     class AndroidGestureDectector implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            //Log.d("showplaceqq",e.getX()/phoneDensity+" , "+((e.getY()/phoneDensity)-80));
+
             if(clickFlag) {
                 checkPointIf(e.getX()/phoneDensity,((e.getY()/phoneDensity)-80));
             }
@@ -223,13 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onDown(MotionEvent e) {
-            /*
-            if(preIsScroll) {
-                curPointX += lastPointX;
-                curPointY += lastPointY;
-                preIsScroll = false;
-            }
-            */
+
 
             //showcurpoint();
             //設置scrollBar的animation
@@ -267,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            //Log.d("tap","onsingletaoup");
+
             return false;
         }
 
@@ -275,13 +263,10 @@ public class MainActivity extends AppCompatActivity {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int goX = (int)distanceX;
             int goY = (int)distanceY;
-            //preIsScroll = true;
             imView.scrollBy(goX, goY);
             curPointX += goX;
             curPointY += goY;
-            //lastPointX = e2.getX() - e1.getX();
-            //lastPointY = e2.getY() - e1.getY();
-            //Log.d("agg","MotionEvente1 "+e1.getX()+","+e1.getY()+" MotionEvente2 "+e2.getX()+","+e2.getY()+" dis "+distanceX+","+distanceY);
+
 
 
             return false;

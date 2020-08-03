@@ -16,7 +16,7 @@
         android:ems="10"
         android:gravity="center"
         android:inputType="textPersonName"
-        android:text="@string/createTeam_editText_text"
+        android:hint="输入团队名称"
         android:textColor="#97717171"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +35,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.prefs.Preferences;
+
 
 public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallback {
 
@@ -43,6 +46,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     private Button locateBtn;
     private Button personBtn;
     private WindowManager.LayoutParams params;
+    private String teamID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +88,6 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
                 return false;
             }
         });
-
-
-
-
         getDeviceLocation();
     }
 
@@ -115,7 +116,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     //用來標記你朋友的位置
     private void getMyFriendLocation() {
-
+        //需要从firebase找朋友资料下来，用marker加上去
     }
     private void moveCamera(LatLng latLng, float zoom){
         mMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
@@ -134,8 +135,6 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     public void popWindow(String popWinName) {
         if(popWinName.equals("locationInfo")){
-
-
             locationInfoPopWin locationInfoPopWin = new locationInfoPopWin(this,this);
             //设置Popupwindow显示位置（从底部弹出）
             locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -177,7 +176,11 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     }
 
     public void exitTeam(View view) {
-        Log.d("rightBtn","ExitTeam!");
+        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        pref.edit().putBoolean("inTeam",false).commit();
+
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 
     public void addLocation(View view) {
@@ -186,4 +189,6 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         Intent intent = new Intent(this,addLocation.class);
         startActivity(intent);
     }
+
+
 }

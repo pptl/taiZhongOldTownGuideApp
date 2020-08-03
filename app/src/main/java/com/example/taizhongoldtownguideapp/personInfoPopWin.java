@@ -1,6 +1,7 @@
 package com.example.taizhongoldtownguideapp;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,17 +23,30 @@ public class personInfoPopWin extends PopupWindow {
     private View view;
     private PopupWindow popUpWin;
     private List<String> friendList = new ArrayList<>();
-
     private RecyclerView mRecyclerView;
     private friendListRecycleViewAdapter mAdapter;
+    private String teamID;
+    private String teamName;
+    private TextView textView;
+    private String inviteCode;
 
     public personInfoPopWin(Activity activity, Context mContext) {
+
+        SharedPreferences pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
+        teamID = pref.getString("teamID","error");
+        teamName = pref.getString("teamName","error");
+
         this.view = LayoutInflater.from(mContext).inflate(R.layout.person_info_pop_win, null);
+        textView = this.view.findViewById(R.id.personInfo_inviteCode_TextView);
+        inviteCode = "團隊號碼："+ teamID;
+        textView.setText(inviteCode);
 
-
+        //这里依靠房间名字找朋友放进矩阵
         friendList.add("Mr Lim");
         friendList.add("Mr Huang");
         friendList.add("Mr Chua");
+
+
 
         mRecyclerView = this.view.findViewById(R.id.showFriend_recycleView);
         mAdapter = new friendListRecycleViewAdapter(mContext,friendList);
