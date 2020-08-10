@@ -1,6 +1,7 @@
 package com.example.taizhongoldtownguideapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +10,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendListRecycleViewAdapter.friendListRecycleViewHolder> {
 
     private List<String> friendList = new ArrayList<>();
+    private CollectionReference teamMemberRef;
     private final LayoutInflater mInflater;
 
     class friendListRecycleViewHolder extends RecyclerView.ViewHolder{
@@ -25,12 +35,15 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
             super(itemView);
             wordItemView = itemView.findViewById(R.id.location_context);
             this.mAdapter = adapter;
+
+
         }
     }
 
-    public friendListRecycleViewAdapter(Context context, List<String> friendList) {
+    public friendListRecycleViewAdapter(Context context, List<String> friendList, CollectionReference teamMemberRef) {
         mInflater = LayoutInflater.from(context);
         this.friendList = friendList;
+        this.teamMemberRef = teamMemberRef;
     }
 
     @NonNull
@@ -42,10 +55,18 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
     }
 
     @Override
-    public void onBindViewHolder(@NonNull friendListRecycleViewHolder holder, int position) {
-        String mCurrent = friendList.get(position);
-        // Add the data to the view holder.
-        holder.wordItemView.setText(mCurrent);
+    public void onBindViewHolder(@NonNull final friendListRecycleViewHolder holder, final int position) {
+        teamMemberRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String mCurrent = task.getResult().getDocuments().get(position).get("userName").toString();
+                            holder.wordItemView.setText(mCurrent);
+                        } else {
+                            Log.d("firebaseMember", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 
     @Override

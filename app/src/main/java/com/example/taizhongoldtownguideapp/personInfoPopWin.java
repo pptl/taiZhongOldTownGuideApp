@@ -12,10 +12,19 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class personInfoPopWin extends PopupWindow {
@@ -30,27 +39,41 @@ public class personInfoPopWin extends PopupWindow {
     private TextView textView;
     private String inviteCode;
 
-    public personInfoPopWin(Activity activity, Context mContext) {
+    public personInfoPopWin(Activity activity, final Context mContext) {
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         SharedPreferences pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
         teamName = pref.getString("teamName","error");
+
+        final CollectionReference teamMemberCollectionRef = db.collection("teamID").document(teamID).collection("userData");
 
         this.view = LayoutInflater.from(mContext).inflate(R.layout.person_info_pop_win, null);
         textView = this.view.findViewById(R.id.personInfo_inviteCode_TextView);
         inviteCode = "團隊號碼："+ teamID;
         textView.setText(inviteCode);
 
+
+        teamMemberCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                friendList.add(document.getId());
+                                //Log.d("firebaseMember", String.valueOf(friendList.size()));
+                                //Log.d("firebaseMember", document.getId() + " => " + document.getData().get("userName"));
+                            }
+                            mAdapter = new friendListRecycleViewAdapter(mContext,friendList,teamMemberCollectionRef);
+                            mRecyclerView.setAdapter(mAdapter);
+                        } else {
+                            Log.d("firebaseMember", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        //Log.d("firebaseMenber",teamMemberDocumentRef.document().toString());
         //这里依靠房间名字找朋友放进矩阵
-        friendList.add("Mr Lim");
-        friendList.add("Mr Huang");
-        friendList.add("Mr Chua");
-
-
 
         mRecyclerView = this.view.findViewById(R.id.showFriend_recycleView);
-        mAdapter = new friendListRecycleViewAdapter(mContext,friendList);
-        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
 

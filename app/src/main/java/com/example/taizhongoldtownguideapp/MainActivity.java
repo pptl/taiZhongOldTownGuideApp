@@ -1,5 +1,6 @@
 package com.example.taizhongoldtownguideapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +25,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.view.GestureDetector;
 
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -69,6 +77,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+/*
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference alovelaceDocumentRef = db.collection("teamID").document("000000").collection("userData").document("uSYCKwWaxkcNcaMexK9U");
+        alovelaceDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("seedb", "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d("seedb", "No such document");
+                    }
+                } else {
+                    Log.d("seedb", "get failed with ", task.getException());
+                }
+            }
+        });
+*/
         //請求獲取位置permission
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);

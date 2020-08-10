@@ -10,23 +10,23 @@
         android:id="@+id/addIcon_iconView"
         android:layout_width="86dp"
         android:layout_height="71dp"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="32dp"
+        android:onClick="changeIcon"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:onClick="changeIcon"
         app:srcCompat="@drawable/location_icon" />
 
     <EditText
         android:id="@+id/addIcon_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="40dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="輸入文字"
         android:gravity="center"
+        android:inputType="textPersonName"
+        android:hint="輸入文字"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +36,8 @@
         android:id="@+id/addIcon_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="28dp"
         android:text="是否設為提醒"
         android:textSize="25sp"
         android:textStyle="bold"
@@ -48,9 +48,9 @@
         android:id="@+id/setNotice_switch"
         android:layout_width="45dp"
         android:layout_height="29dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.576"
+        app:layout_constraintHorizontal_bias="0.561"
         app:layout_constraintStart_toEndOf="@+id/addIcon_textView"
         app:layout_constraintTop_toBottomOf="@+id/addIcon_editText" />
 
@@ -58,23 +58,33 @@
         android:id="@+id/addIcon_textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="24dp"
         android:text="設置提醒時間"
         android:textSize="25sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addIcon_textView" />
+
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addIcon_textView2" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="116dp"
         android:background="@drawable/btn_bg"
         android:text="確認"
+        android:onClick="addMark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addIcon_textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/timePicker" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

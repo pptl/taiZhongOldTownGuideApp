@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class createTeam extends AppCompatActivity {
 
@@ -29,13 +32,20 @@ public class createTeam extends AppCompatActivity {
         //这里需要一个乱数产生器
         teamID = teamIDGenerator();
         SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
-        pref.edit().putString("teamName",teamName).putString("teamID",teamID).commit();
+        pref.edit().putString("teamName",teamName).putString("teamID",teamID).putBoolean("isLeader",true).commit();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("teamID").add(teamID);
+
         Intent intent = new Intent(this,whereIsMyFriend.class);
         startActivity(intent);
     }
     public String teamIDGenerator(){
-        String teamID = "12345678";
-        //这里要到firebase检查有没有这个房号
+
+        double rand = Math.random();
+        String teamID = Double.toString(rand);
+        teamID = teamID.substring(2,8);
+        //这里要到firebase检查有没有这个房号ifno=>
 
         return teamID;
     }

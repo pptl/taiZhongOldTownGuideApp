@@ -75,7 +75,7 @@
         android:layout_width="223dp"
         android:layout_height="19dp"
         android:layout_marginEnd="108dp"
-        android:text="16:00在西門丁集合"
+        android:text="16:00集合"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 

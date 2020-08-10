@@ -36,7 +36,7 @@ public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locatio
     @NonNull
     @Override
     public locationListRecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View mItemView = mInflater.inflate(R.layout.person_info_recycle_view_item,
+        View mItemView = mInflater.inflate(R.layout.location_info_recycle_view_item,
                 parent, false);
         return new locationListRecycleViewHolder(mItemView, this);
     }

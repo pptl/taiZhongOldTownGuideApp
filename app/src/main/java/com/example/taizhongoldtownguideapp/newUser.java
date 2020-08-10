@@ -24,7 +24,7 @@ public class newUser extends AppCompatActivity {
 
     }
 
-    public void goSelect(View view) {
+        public void goSelect(View view) {
         newUserName = editText.getText().toString();
         SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
         pref.edit().putString("userName",newUserName).putBoolean("inTeam",true).commit();

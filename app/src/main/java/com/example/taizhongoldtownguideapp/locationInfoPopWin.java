@@ -24,7 +24,7 @@ public class locationInfoPopWin extends PopupWindow {
     private PopupWindow popUpWin;
     private List<String> locationList = new ArrayList<>();
     private RecyclerView mRecyclerView;
-    private friendListRecycleViewAdapter mAdapter;
+    private locationListRecycleViewAdapter mAdapter;
 
 
     public locationInfoPopWin(Activity activity, Context mContext) {
@@ -35,7 +35,7 @@ public class locationInfoPopWin extends PopupWindow {
         locationList.add("今天的旅館");
 
         mRecyclerView = this.view.findViewById(R.id.showLocation_recyclerView);
-        mAdapter = new friendListRecycleViewAdapter(mContext,locationList);
+        mAdapter = new locationListRecycleViewAdapter(mContext,locationList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 

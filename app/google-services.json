@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "201204702572",
+    "firebase_url": "https://taizhongoldtownguideapp.firebaseio.com",
+    "project_id": "taizhongoldtownguideapp",
+    "storage_bucket": "taizhongoldtownguideapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201204702572:android:528f4fcc250eb671fbe749",
+        "android_client_info": {
+          "package_name": "com.example.taizhongoldtownguideapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201204702572-v5f8bulvvsjc94cvcg8k9lf6h6hpert5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taizhongoldtownguideapp",
+            "certificate_hash": "c1c58515eafe259e68c3f4e30be9893a8c073358"
+          }
+        },
+        {
+          "client_id": "201204702572-6h8un2e6d8qii1q0m7d8o44gld4f85t0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt2i7drET12GyoFXWWhhoWqvQXjFaKyrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201204702572-6h8un2e6d8qii1q0m7d8o44gld4f85t0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
