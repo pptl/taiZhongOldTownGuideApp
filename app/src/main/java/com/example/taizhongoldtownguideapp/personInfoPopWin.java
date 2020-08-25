@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -39,7 +40,8 @@ public class personInfoPopWin extends PopupWindow {
     private TextView textView;
     private String inviteCode;
 
-    public personInfoPopWin(Activity activity, final Context mContext) {
+
+    public personInfoPopWin(Activity activity, final Context mContext, final GoogleMap map) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         SharedPreferences pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
@@ -63,7 +65,7 @@ public class personInfoPopWin extends PopupWindow {
                                 //Log.d("firebaseMember", String.valueOf(friendList.size()));
                                 //Log.d("firebaseMember", document.getId() + " => " + document.getData().get("userName"));
                             }
-                            mAdapter = new friendListRecycleViewAdapter(mContext,friendList,teamMemberCollectionRef);
+                            mAdapter = new friendListRecycleViewAdapter(mContext,friendList,teamMemberCollectionRef, map);
                             mRecyclerView.setAdapter(mAdapter);
                         } else {
                             Log.d("firebaseMember", "Error getting documents: ", task.getException());
@@ -118,6 +120,7 @@ public class personInfoPopWin extends PopupWindow {
         this.setAnimationStyle(R.style.take_photo_anim);
 
     }
+
 
 
 }

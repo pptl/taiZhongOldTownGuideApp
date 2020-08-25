@@ -1,39 +1,138 @@
 package com.example.taizhongoldtownguideapp;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class addLocation extends AppCompatActivity {
 
     private TimePicker picker;
     private EditText editText;
     private Switch aSwitch;
+    private String teamID;
+    private Boolean setNotice;
+    private Button button;
+    private float longitude;
+    private float latitude;
+    final int PICK_IMAGE_REQUEST = 2;
+    private ImageView markerIcon;
+    private String markerPath;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
-        /*
+        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        longitude = pref.getFloat("Longitude",0);
+        latitude = pref.getFloat("Latitude",0);
+        teamID = pref.getString("teamID","error");
+        markerPath = "location_icon";
+
+
+
         picker = (TimePicker)findViewById(R.id.timePicker);
         picker.setIs24HourView(true);
 
-        editText.findViewById(R.id.addIcon_editText);
-    */
+        markerIcon = findViewById(R.id.addIcon_iconView);
+        editText = findViewById(R.id.addIcon_editText);
+        aSwitch = findViewById(R.id.setNotice_switch);
+        button = findViewById(R.id.addLocation_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> newMark = new HashMap<>();
+                //Toast.makeText(addLocation.this,"还在开发中，尽请期待",Toast.LENGTH_LONG).show();
+                Log.d("addLocationTest",editText.getText().toString());
+                Log.d("addLocationTest", String.valueOf(aSwitch.isChecked()));
+                Log.d("addLocationTest",picker.getHour()+"  "+picker.getMinute());
+                Log.d("addLocationTest",latitude+" "+longitude);
+                Log.d("addLocationTest",markerPath);
+                Intent intent = new Intent();
+                intent.putExtra("markContext", editText.getText().toString());
+                setResult(RESULT_OK, intent);
+                finish();
+
+
+                newMark.put("markContext",editText.getText().toString());
+                newMark.put("markLatitude",latitude);
+                newMark.put("markLongitude",longitude);
+                newMark.put("setRemind",true);
+                newMark.put("markSetTime",picker.getHour()+" "+picker.getMinute());
+                newMark.put("markPath",markerPath);
+
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("teamID").document(teamID).collection("mark").add(newMark).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("firebaseProgress", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("firebaseProgress", "Error adding document", e);
+                            }
+                        });
+            }
+        });
 
     }
 
     public void changeIcon(View view) {
+        Intent intent = new Intent(this,chooseMarker.class);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent,PICK_IMAGE_REQUEST);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK){
+            markerPath = data.getStringExtra("userPickedMarker");
+            int imageResource = getResources().getIdentifier("@drawable/" + markerPath, null, getPackageName());
+            markerIcon.setImageResource(imageResource);
+        }
     }
 
     public void addMark(View view) {
         //这里要把资料传到firebase
+        /*
+        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        teamID = pref.getString("teamID","error");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference markCollectionReference = db.collection("teamID").document(teamID).collection("mark");
+
+         */
 
     }
 }

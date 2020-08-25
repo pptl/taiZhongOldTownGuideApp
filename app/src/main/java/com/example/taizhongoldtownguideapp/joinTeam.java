@@ -25,6 +25,7 @@ public class joinTeam extends AppCompatActivity {
     private EditText editText;
     private String teamID;
     private String userName;
+    private String userIconPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,17 @@ public class joinTeam extends AppCompatActivity {
 
     public void quickJoin(View view) {
         Map<String, Object> user = new HashMap<>();
-        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        final SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
         teamID = editText.getText().toString();
 
         userName = pref.getString("userName","error");
+        userIconPath = pref.getString("userIconPath","error");
         user.put("userName",userName);
         user.put("isLeader",false);
+        user.put("userLatitude",0.00);
+        user.put("userLongitude",0.00);
+        user.put("userIconPath", userIconPath);
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         /*
@@ -66,6 +72,8 @@ public class joinTeam extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d("firebaseProgress", "DocumentSnapshot added with ID: " + documentReference.getId());
+                pref.edit().putString("teamID",teamID).putBoolean("isLeader",false).putString("userID",documentReference.getId()).commit();
+
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -77,7 +85,7 @@ public class joinTeam extends AppCompatActivity {
 
 
 
-        pref.edit().putString("teamID",teamID).putBoolean("isLeader",false).commit();
+
 
         Intent intent = new Intent(this,whereIsMyFriend.class);
         startActivity(intent);

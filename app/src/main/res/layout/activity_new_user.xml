@@ -19,30 +19,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newUser_editText" />
 
-    <TextView
-        android:id="@+id/logoView"
-        android:layout_width="136dp"
-        android:layout_height="135dp"
-        android:layout_marginTop="152dp"
-        android:gravity="center"
-        android:text="Logo"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <EditText
         android:id="@+id/newUser_editText"
         android:layout_width="221dp"
         android:layout_height="57dp"
-        android:layout_marginTop="124dp"
+        android:layout_marginTop="120dp"
         android:ems="10"
         android:gravity="center"
         android:hint="請輸入名字"
-        android:textStyle="bold"
         android:inputType="textPersonName"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logoView" />
+        app:layout_constraintTop_toBottomOf="@+id/userIcon" />
+
+    <ImageView
+        android:id="@+id/userIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="208dp"
+        android:onClick="changeUserIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/user_icon1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

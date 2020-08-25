@@ -2,7 +2,9 @@ package com.example.taizhongoldtownguideapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,8 +13,16 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -25,17 +35,21 @@ public class locationInfoPopWin extends PopupWindow {
     private List<String> locationList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private locationListRecycleViewAdapter mAdapter;
+    private String teamID;
 
 
-    public locationInfoPopWin(Activity activity, Context mContext) {
+    public locationInfoPopWin(Activity activity, final Context mContext) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.location_info_pop_win, null);
 
-        locationList.add("超好吃的臭豆腐");
-        locationList.add("超好打卡的地方");
-        locationList.add("今天的旅館");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        SharedPreferences pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
+        teamID = pref.getString("teamID","error");
+
+
+        final CollectionReference markCollectionRef = db.collection("teamID").document(teamID).collection("mark");
 
         mRecyclerView = this.view.findViewById(R.id.showLocation_recyclerView);
-        mAdapter = new locationListRecycleViewAdapter(mContext,locationList);
+        mAdapter = new locationListRecycleViewAdapter(mContext,locationList,markCollectionRef);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
@@ -57,6 +71,22 @@ public class locationInfoPopWin extends PopupWindow {
         });
 
 
+
+        markCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        locationList.add(document.getId());
+                    }
+                    mAdapter = new locationListRecycleViewAdapter(mContext,locationList,markCollectionRef);
+
+                    mRecyclerView.setAdapter(mAdapter);
+                } else {
+                    Log.d("firebaseMember", "Error getting documents: ", task.getException());
+                }
+            }
+        });
         /* 设置弹出窗口特征 */
         // 设置视图
         this.setContentView(this.view);

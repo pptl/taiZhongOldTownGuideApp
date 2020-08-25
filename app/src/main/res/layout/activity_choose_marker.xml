@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".chooseMarker">
+
+    <ImageView
+        android:id="@+id/markerIcon1"
+        android:layout_width="55dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="80dp"
+        android:onClick="chooseMarker1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bed_icon" />
+
+    <ImageView
+        android:id="@+id/markerIcon2"
+        android:layout_width="54dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="80dp"
+        android:onClick="chooseMarker2"
+        app:layout_constraintEnd_toStartOf="@+id/markerIcon3"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toEndOf="@+id/markerIcon1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/food_icon" />
+
+    <ImageView
+        android:id="@+id/markerIcon3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="72dp"
+        android:onClick="chooseMarker3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/location_icon" />
+</androidx.constraintlayout.widget.ConstraintLayout>

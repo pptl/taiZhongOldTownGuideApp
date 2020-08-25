@@ -12,7 +12,7 @@
 
 
         <ImageView
-            android:id="@+id/location_icon"
+            android:id="@+id/user_icon"
             android:layout_width="66dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -20,13 +20,13 @@
             android:src="@drawable/men1" />
 
         <TextView
-            android:id="@+id/location_context"
+            android:id="@+id/user_context"
             android:layout_width="271dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="7dp"
             android:layout_marginTop="5dp"
-            android:layout_toEndOf="@+id/location_icon"
+            android:layout_toEndOf="@+id/user_icon"
             android:gravity="center_vertical"
             android:text="TextView"
             android:textSize="30dp"

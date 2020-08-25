@@ -29,6 +29,7 @@ public class notInTeam extends AppCompatActivity {
     private String userName;
     private String teamID;
     private int isUnique = 0;
+    private String userIconPath;
 
 
     @Override
@@ -52,7 +53,8 @@ public class notInTeam extends AppCompatActivity {
         Map<String, Object> user = new HashMap<>();
 
         teamID = teamIDGenerator();
-        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        final SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        userIconPath = pref.getString("userIconPath","error");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference teamIDDocumentReference = db.collection("teamID").document(teamID);
         /*
@@ -83,8 +85,8 @@ public class notInTeam extends AppCompatActivity {
     */
 
 
-        pref.edit().putString("teamID",teamID).putBoolean("isLeader",true).commit();
 
+        user.put("userIconPath", userIconPath);
         user.put("userName",userName);
         user.put("isLeader",true);
         //这里要对teamID进行查看有没有重复的
@@ -92,6 +94,9 @@ public class notInTeam extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d("firebaseProgress", "DocumentSnapshot added with ID: " + documentReference.getId());
+
+                pref.edit().putString("teamID",teamID).putBoolean("isLeader",true).putString("userID",documentReference.getId()).commit();
+
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
