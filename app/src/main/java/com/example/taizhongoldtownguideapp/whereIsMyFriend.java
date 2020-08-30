@@ -62,6 +62,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     private Timer timer;
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    CollectionReference teamMemberCollectionRef;
+    CollectionReference markCollectionRef;
 
 
     @Override
@@ -113,8 +115,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         timer.schedule(checkTask, 1000, 20000);
         timer.schedule(renewTask, 1000, 20000);
 
-        CollectionReference teamMemberCollectionRef = db.collection("teamID").document(teamID).collection("userData");
-        CollectionReference markCollectionRef = db.collection("teamID").document(teamID).collection("mark");
+        teamMemberCollectionRef = db.collection("teamID").document(teamID).collection("userData");
+        markCollectionRef = db.collection("teamID").document(teamID).collection("mark");
 
 
 
@@ -190,18 +192,19 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
             public void onSuccess(Location location) {
                 Log.d("seeshunxu","getDEVLocation");
                 Map<String, Object> userLocations = new HashMap<>();
-                //Toast.makeText(whereIsMyFriend.this, "nonoononon", Toast.LENGTH_SHORT).show();
-                //fake sarah and manda location
-                //Bitmap sarahBitmap = new BitmapFactory().decodeResource(getResources(),R.drawable.sarah);
-               // Bitmap mandaBitmap = new BitmapFactory().decodeResource(getResources(),R.drawable.manda);
+
+
                 mCurrentLocation = (Location) location;
+                float userLatitude = (float)mCurrentLocation.getLatitude();
+                float userLongitude = (float)mCurrentLocation.getLongitude();
                 userLocations.put("userLatitude",mCurrentLocation.getLatitude());
                 userLocations.put("userLongitude",mCurrentLocation.getLongitude());
-                pref.edit().putFloat("userLatitude",(float)mCurrentLocation.getLatitude()).putFloat("userLongitude",(float)mCurrentLocation.getLongitude()).commit();
+                Log.d("seeLocation",mCurrentLocation.getLatitude() + " , " + mCurrentLocation.getLongitude());
+                pref.edit().putFloat("userLatitude",userLatitude).putFloat("userLongitude",userLongitude).commit();
+                //pref.edit().putFloat("userLatitude",(float)mCurrentLocation.getLatitude()).putFloat("userLongitude",(float)mCurrentLocation.getLongitude()).commit();
                 db.collection("teamID").document(teamID).collection("userData").document(userID).update(userLocations);
 
-                //mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude()+0.001,location.getLongitude()+0.001)).title("Sarah").icon(BitmapDescriptorFactory.fromBitmap(sarahBitmap)));
-                //mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude()+0.001,location.getLongitude())).title("Manda").icon(BitmapDescriptorFactory.fromBitmap(mandaBitmap)));
+
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
             }
         });
@@ -248,9 +251,33 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     private TimerTask renewTask = new TimerTask() {
         @Override
         public void run() {
+/*
+            teamMemberCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("seeshunxu","setLocationmarker");
 
-            Log.d("seeIfSameLocation","iamrenew");
 
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String userName = document.getData().get("userName").toString();
+                            String userIconPath = document.getData().get("userIconPath").toString();
+                            //Log.d("seedouble",document.getData().get("userLatitude").toString());
+                            int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
+                            Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
+                            Double userLatitude = (Double) document.getData().get("userLatitude");
+                            Double userLongitude = (Double) document.getData().get("userLongitude");
+                            Log.d("seelocation",userName + " " + userLatitude + " " + userLongitude);
+                            if(userLatitude.intValue() != 0 && userLongitude.intValue() != 0){
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                            }
+                        }
+                    } else {
+                        Log.d("firebaseMember", "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+*/
         }
     };
 
