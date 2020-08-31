@@ -59,12 +59,12 @@ public class MainActivity extends AppCompatActivity {
     private float phoneDensity;
     private int curPointX;
     private int curPointY;
-    //private int lastPointX;
-    //private int lastPointY;
     private int weather;//1：晴天，2：陰天，3：小雨天，4： 雷雨天
+    private SharedPreferences pref;
+    private AndroidGestureDectector androidGestureDectector = new AndroidGestureDectector();
 
     public boolean clickFlag = true;
-    //public boolean preIsScroll = false;
+
     //設置地圖上有效點擊範圍
     private int [][] objList={
             {654,277,764,372},//天主堂
@@ -77,25 +77,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-/*
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference alovelaceDocumentRef = db.collection("teamID").document("000000").collection("userData").document("uSYCKwWaxkcNcaMexK9U");
-        alovelaceDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("seedb", "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d("seedb", "No such document");
-                    }
-                } else {
-                    Log.d("seedb", "get failed with ", task.getException());
-                }
-            }
-        });
-*/
+
+        pref = getSharedPreferences("userData",MODE_PRIVATE);
+
         //請求獲取位置permission
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
@@ -112,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
         phoneHeightPixels = metric.heightPixels ;
         phoneWidthPixels = metric.widthPixels ;
 
-        //Log.d("phonesize",String.valueOf(phoneWidthPixels) + " , " + String.valueOf(phoneHeightPixels)+" , "+phoneDensity);
-
         //用以記錄現在的點
         curPointX = 0;
         curPointY = 0;
@@ -127,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         //宣告手勢
         AndroidGestureDectector androidGestureDectector = new AndroidGestureDectector();
         GD = new GestureDetector(MainActivity.this,androidGestureDectector);
+
 
         //設置滑軌監聽
         seekBarController();
@@ -207,8 +190,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goLocate(View view) {
-        Boolean newUser = getSharedPreferences("userData",MODE_PRIVATE).getBoolean("inTeam",false);
-
+        Boolean newUser = pref.getBoolean("inTeam",false);
         if(!newUser){
             Intent intent = new Intent(this,newUser.class);
             startActivity(intent);
@@ -244,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onDown(MotionEvent e) {
-
 
             //showcurpoint();
             //設置scrollBar的animation
@@ -294,8 +275,6 @@ public class MainActivity extends AppCompatActivity {
             curPointX += goX;
             curPointY += goY;
 
-
-
             return false;
         }
 
@@ -311,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
+        Log.d("seeEvent", String.valueOf(event));
         GD.onTouchEvent(event);
         return super.onTouchEvent(event);
     }

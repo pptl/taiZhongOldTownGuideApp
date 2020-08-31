@@ -11,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -26,12 +29,12 @@ import java.util.List;
 public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locationListRecycleViewAdapter.locationListRecycleViewHolder> {
 
     private List<String> locationList = new ArrayList<>();
-    //private CollectionReference markRef;
     private DatabaseReference teamMarkerRef;
     private final LayoutInflater mInflater;
+    private GoogleMap mMap;
     public Context context;
 
-    class locationListRecycleViewHolder extends RecyclerView.ViewHolder{
+    class locationListRecycleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final TextView wordItemView;
         public ImageView markerIcon;
         final locationListRecycleViewAdapter mAdapter;
@@ -41,11 +44,34 @@ public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locatio
             wordItemView = itemView.findViewById(R.id.location_context);
             markerIcon = itemView.findViewById(R.id.location_icon);
             this.mAdapter = adapter;
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            final int mPosition = getLayoutPosition();
+            teamMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String currMarkerID = locationList.get(mPosition);
+                    Double mCurrentMarkerLatitude = snapshot.child(currMarkerID).child("markLatitude").getValue(Double.class);
+                    Double mCurrentMarkerLongitude = snapshot.child(currMarkerID).child("markLongitude").getValue(Double.class);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentMarkerLatitude, mCurrentMarkerLongitude),20f));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
         }
     }
 
-    public locationListRecycleViewAdapter(Context context, List<String> locationList,DatabaseReference markRef) {
+    public locationListRecycleViewAdapter(Context context, List<String> locationList,DatabaseReference markRef, GoogleMap map) {
         mInflater = LayoutInflater.from(context);
+        this.mMap = map;
         this.teamMarkerRef = markRef;
         this.locationList = locationList;
         this.context = context;

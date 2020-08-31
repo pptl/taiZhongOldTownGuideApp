@@ -72,6 +72,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     private Timer timer;
     private SharedPreferences pref;
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
+    HashMap<String,Marker> hashMapMarker = new HashMap<>();
 
 
 
@@ -86,7 +87,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         pref = getSharedPreferences("userData",MODE_PRIVATE);
         teamID = pref.getString("teamID","000000");
         userID = pref.getString("userID","RYPNZsgAFXpIb6PYYHlz");
-        //timer = new Timer();
+        timer = new Timer();
 
         mDatabase = FirebaseDatabase.getInstance();
         teamRef = mDatabase.getReference("team").child(teamID);
@@ -120,6 +121,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         });
 
 
+
         getDeviceLocation();
 
 
@@ -130,6 +132,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
                 for (DataSnapshot data : snapshot.getChildren()){
                     String userName = data.child("userName").getValue(String.class);
                     String userIconPath = data.child("userIconPath").getValue(String.class);
+                    String userID = data.getKey();
 
                     int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
                     Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
@@ -137,8 +140,14 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
                     Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
                     Log.d("seelocation",userName + " " + userLatitude + " " + userLongitude);
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
 
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                    if(hashMapMarker.containsKey(userID)){
+                        Marker delMarker = hashMapMarker.get(userID);
+                        delMarker.remove();
+                        hashMapMarker.remove(userID);
+                    }
+                    hashMapMarker.put(userID,marker);
                 }
 
             }
@@ -172,56 +181,11 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
 
         //addMarker
-        //timer.schedule(checkTask, 1000, 20000);
+        timer.schedule(checkTask, 1000, 5000);
         //timer.schedule(renewTask, 1000, 20000);
 
 
-        /*這裡是設置marker的地方
-        markCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String markContext = document.getData().get("markContext").toString();
-                        Double markLatitude = (Double) document.getData().get("markLatitude");
-                        Double markLongitude = (Double) document.getData().get("markLongitude");
-                        //document.getData().get("userName");
-                        //document.getData().get("userName");
-                        //friendList.add(document.getId());
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markContext));
-                    }
-                } else {
-                    Log.d("firebaseMember", "Error getting documents: ", task.getException());
-                }
-            }
-        });
 
-        teamMemberCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.d("seeshunxu","setLocationmarker");
-
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String userName = document.getData().get("userName").toString();
-                        String userIconPath = document.getData().get("userIconPath").toString();
-                        //Log.d("seedouble",document.getData().get("userLatitude").toString());
-                        int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
-                        Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
-                        Double userLatitude = (Double) document.getData().get("userLatitude");
-                        Double userLongitude = (Double) document.getData().get("userLongitude");
-                        Log.d("seelocation",userName + " " + userLatitude + " " + userLongitude);
-                        if(userLatitude.intValue() != 0 && userLongitude.intValue() != 0){
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
-                        }
-                    }
-                } else {
-                    Log.d("firebaseMember", "Error getting documents: ", task.getException());
-                }
-            }
-        });
-        */
 
     }
     @Override
@@ -232,17 +196,14 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
                 // Get String data from Intent
                 String returnString = data.getStringExtra("markContext");
                 mMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude())).title(returnString));
-                // Set text view with string
-                //TextView textView = (TextView) findViewById(R.id.textView);
-                //textView.setText(returnString);
+
             }
         }
     }
     private void getDeviceLocation(){
         //這裡會有先載入地圖了再拋出permittion的bug
 
-        mFusedLocationProviderClient = LocationServices.
-        getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
             location.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
@@ -265,10 +226,9 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         });
 
     }
-    /*
+
     private void checkLocationChange(){
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        final SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
         final float preLatitude = pref.getFloat("userLatitude",0);
         final float preLongitude = pref.getFloat("userLongitude",0);
@@ -277,7 +237,6 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
         location.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-
                 mCurrentLocation = (Location) location;
                 if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
                     Map<String, Object> userLocations = new HashMap<>();
@@ -285,26 +244,25 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
                     Log.d("seeIfSameLocation",preLatitude + " " + preLongitude + " " + (float)mCurrentLocation.getLatitude() + " " + (float)mCurrentLocation.getLongitude());
                     userLocations.put("userLatitude",mCurrentLocation.getLatitude());
                     userLocations.put("userLongitude",mCurrentLocation.getLongitude());
-                    db.collection("teamID").document(teamID).collection("userData").document(userID).update(userLocations);
-                }
-                else{
-                    //Log.d("seeIfSameLocation","same");
-                }
+                    usersRef.child(userID).updateChildren(userLocations);
 
 
+                }
             }
         });
     }
-    */
-    /*
+
+
     private TimerTask checkTask = new TimerTask() {
         @Override
         public void run() {
-
+            //Log.d("seeTimer","ffffff");
             checkLocationChange();
 
         }
     };
+
+    /*
     private TimerTask renewTask = new TimerTask() {
         @Override
         public void run() {
@@ -331,7 +289,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     public void popWindow(String popWinName) {
         if(popWinName.equals("locationInfo")){
-            locationInfoPopWin locationInfoPopWin = new locationInfoPopWin(this,this);
+            locationInfoPopWin locationInfoPopWin = new locationInfoPopWin(this,this, mMap);
             //设置Popupwindow显示位置（从底部弹出）
             locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();

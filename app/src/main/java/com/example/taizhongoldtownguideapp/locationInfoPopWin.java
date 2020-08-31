@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -46,7 +47,7 @@ public class locationInfoPopWin extends PopupWindow {
     private DatabaseReference teamMarkerRef;
 
 
-    public locationInfoPopWin(Activity activity, final Context mContext) {
+    public locationInfoPopWin(Activity activity, final Context mContext, final GoogleMap map) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.location_info_pop_win, null);
 
         mDatabase = FirebaseDatabase.getInstance();
@@ -58,16 +59,17 @@ public class locationInfoPopWin extends PopupWindow {
         if(mDatabase.getReference().child("team").child(teamID).child("marker") != null) {
             teamMarkerRef = mDatabase.getReference().child("team").child(teamID).child("marker");
             mRecyclerView = this.view.findViewById(R.id.showLocation_recyclerView);
-            mAdapter = new locationListRecycleViewAdapter(mContext,locationList,teamMarkerRef);
-            mRecyclerView.setAdapter(mAdapter);
+            //mAdapter = new locationListRecycleViewAdapter(mContext,locationList,teamMarkerRef,map);
+            //mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
             teamMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     locationList.add(snapshot.getKey());
                 }
-                mAdapter = new locationListRecycleViewAdapter(mContext,locationList,teamMarkerRef);
+                mAdapter = new locationListRecycleViewAdapter(mContext,locationList,teamMarkerRef,map);
                 mRecyclerView.setAdapter(mAdapter);
             }
             @Override

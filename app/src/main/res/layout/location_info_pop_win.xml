@@ -35,9 +35,9 @@
         android:id="@+id/showLocation_recyclerView"
         android:layout_width="411dp"
         android:layout_height="211dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <ImageView
         android:layout_width="350dp"
@@ -46,38 +46,7 @@
         android:background="#000"
         app:layout_constraintBottom_toTopOf="@+id/showLocation_recyclerView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.75" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="318dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="不要遲到啊各位，要吃飯了"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="69dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        android:src="@drawable/location_icon" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="223dp"
-        android:layout_height="19dp"
-        android:layout_marginEnd="108dp"
-        android:text="16:00集合"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
