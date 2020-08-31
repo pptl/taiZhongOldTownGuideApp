@@ -19,6 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -36,22 +41,45 @@ public class locationInfoPopWin extends PopupWindow {
     private RecyclerView mRecyclerView;
     private locationListRecycleViewAdapter mAdapter;
     private String teamID;
+    private SharedPreferences pref;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference teamMarkerRef;
 
 
     public locationInfoPopWin(Activity activity, final Context mContext) {
         this.view = LayoutInflater.from(mContext).inflate(R.layout.location_info_pop_win, null);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        SharedPreferences pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
+        mDatabase = FirebaseDatabase.getInstance();
+
+        pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
+        mDatabase.getReference().child("team").child(teamID);
+
+        if(mDatabase.getReference().child("team").child(teamID).child("marker") != null) {
+            teamMarkerRef = mDatabase.getReference().child("team").child(teamID).child("marker");
+            mRecyclerView = this.view.findViewById(R.id.showLocation_recyclerView);
+            mAdapter = new locationListRecycleViewAdapter(mContext,locationList,teamMarkerRef);
+            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+            teamMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    locationList.add(snapshot.getKey());
+                }
+                mAdapter = new locationListRecycleViewAdapter(mContext,locationList,teamMarkerRef);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        }
 
 
-        final CollectionReference markCollectionRef = db.collection("teamID").document(teamID).collection("mark");
+        //final CollectionReference markCollectionRef = db.collection("teamID").document(teamID).collection("mark");
 
-        mRecyclerView = this.view.findViewById(R.id.showLocation_recyclerView);
-        mAdapter = new locationListRecycleViewAdapter(mContext,locationList,markCollectionRef);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
 
         // 设置外部可点击
         this.setOutsideTouchable(true);
@@ -70,23 +98,6 @@ public class locationInfoPopWin extends PopupWindow {
             }
         });
 
-
-
-        markCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        locationList.add(document.getId());
-                    }
-                    mAdapter = new locationListRecycleViewAdapter(mContext,locationList,markCollectionRef);
-
-                    mRecyclerView.setAdapter(mAdapter);
-                } else {
-                    Log.d("firebaseMember", "Error getting documents: ", task.getException());
-                }
-            }
-        });
         /* 设置弹出窗口特征 */
         // 设置视图
         this.setContentView(this.view);

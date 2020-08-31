@@ -19,10 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,16 +45,21 @@ public class personInfoPopWin extends PopupWindow {
     private String teamName;
     private TextView textView;
     private String inviteCode;
+    private SharedPreferences pref;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference teamMemberRef;
 
 
     public personInfoPopWin(Activity activity, final Context mContext, final GoogleMap map) {
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        SharedPreferences pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
+        //FirebaseFirestore db = FirebaseFirestore.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
         teamName = pref.getString("teamName","error");
 
-        final CollectionReference teamMemberCollectionRef = db.collection("teamID").document(teamID).collection("userData");
+        teamMemberRef = mDatabase.getReference().child("team").child(teamID).child("userData");
+        //final CollectionReference teamMemberCollectionRef = db.collection("teamID").document(teamID).collection("userData");
 
         this.view = LayoutInflater.from(mContext).inflate(R.layout.person_info_pop_win, null);
         textView = this.view.findViewById(R.id.personInfo_inviteCode_TextView);
@@ -56,6 +67,20 @@ public class personInfoPopWin extends PopupWindow {
         textView.setText(inviteCode);
 
 
+        teamMemberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            friendList.add(snapshot.getKey());
+                        }
+                        mAdapter = new friendListRecycleViewAdapter(mContext,friendList,teamMemberRef, map);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+        /*
         teamMemberCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -72,6 +97,7 @@ public class personInfoPopWin extends PopupWindow {
                         }
                     }
                 });
+        */
         //Log.d("firebaseMenber",teamMemberDocumentRef.document().toString());
         //这里依靠房间名字找朋友放进矩阵
 

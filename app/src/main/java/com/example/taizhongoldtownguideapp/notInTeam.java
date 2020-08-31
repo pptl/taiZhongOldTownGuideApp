@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,8 +30,12 @@ public class notInTeam extends AppCompatActivity {
     private TextView textView;
     private String userName;
     private String teamID;
+    private String userID;
     private int isUnique = 0;
     private String userIconPath;
+    private FirebaseDatabase mDatabase;
+    private SharedPreferences pref;
+
 
 
     @Override
@@ -37,11 +43,12 @@ public class notInTeam extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_not_in_team);
 
-        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+        pref = getSharedPreferences("userData",MODE_PRIVATE);
         userName = pref.getString("userName","error");
 
         textView = findViewById(R.id.notInTeam_textView);
         String wellcomeText = "歡迎你，" + userName;
+        mDatabase = FirebaseDatabase.getInstance();
 
         textView.setText(wellcomeText);
 
@@ -51,61 +58,24 @@ public class notInTeam extends AppCompatActivity {
 
     public void goCreateTeam(View view) {
         Map<String, Object> user = new HashMap<>();
+        DatabaseReference teamRef = mDatabase.getReference("team");
 
+        //這裡要check teamID有沒有相撞
         teamID = teamIDGenerator();
-        final SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
-        userIconPath = pref.getString("userIconPath","error");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference teamIDDocumentReference = db.collection("teamID").document(teamID);
-        /*
-        while(true){
-            if(isUnique == 1){
-                Log.d("firebaseProgress","brakele");
-                break;
-            }
 
-            teamIDDocumentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            teamID = teamIDGenerator();
-                            Log.d("firebaseProgress", "Document exists!");
-                        } else {
-                            isUnique = 1;
-                            Log.d("firebaseProgress", "Document does not exist!");
-                        }
-                    } else {
-                        Log.d("firebaseProgress", "Failed with: ", task.getException());
-                    }
-                }
-            });
-        }
-    */
+        userIconPath = pref.getString("userIconPath","error");
 
 
 
         user.put("userIconPath", userIconPath);
         user.put("userName",userName);
         user.put("isLeader",true);
-        //这里要对teamID进行查看有没有重复的
-        db.collection("teamID").document(teamID).collection("userData").add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Log.d("firebaseProgress", "DocumentSnapshot added with ID: " + documentReference.getId());
 
-                pref.edit().putString("teamID",teamID).putBoolean("isLeader",true).putString("userID",documentReference.getId()).commit();
 
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("firebaseProgress", "Error adding document", e);
-                    }
-                });
-        //可能要回传userID
+        userID = teamRef.child(teamID).child("userData").push().getKey();
+        teamRef.child(teamID).child("userData").child(userID).setValue(user);
+
+        pref.edit().putString("userID",userID).putString("teamID",teamID).commit();
 
         Intent intent = new Intent(this,whereIsMyFriend.class);
         startActivity(intent);

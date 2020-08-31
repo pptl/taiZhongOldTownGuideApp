@@ -17,6 +17,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -29,7 +33,7 @@ import java.util.List;
 public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendListRecycleViewAdapter.friendListRecycleViewHolder> {
 
     private List<String> friendList = new ArrayList<>();
-    private CollectionReference teamMemberRef;
+    private DatabaseReference teamMemberRef;
     private final LayoutInflater mInflater;
     private GoogleMap mMap;
     public Context context;
@@ -53,7 +57,23 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
 
         @Override
         public void onClick(View v) {
+
             final int mPosition = getLayoutPosition();
+            teamMemberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String currUserID = friendList.get(mPosition);
+                    Double mCurrentUserLatitude = snapshot.child(currUserID).child("userLatitude").getValue(Double.class);
+                    Double mCurrentUserLongitude = snapshot.child(currUserID).child("userLongitude").getValue(Double.class);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentUserLatitude, mCurrentUserLongitude),20f));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            /*
             teamMemberRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -66,14 +86,15 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
                     }
                 }
             });
-
+            */
 
 
 
         }
+
     }
 
-    public friendListRecycleViewAdapter(Context context, List<String> friendList, CollectionReference teamMemberRef, GoogleMap map) {
+    public friendListRecycleViewAdapter(Context context, List<String> friendList, DatabaseReference teamMemberRef, GoogleMap map) {
         mInflater = LayoutInflater.from(context);
         this.mMap = map;
         this.friendList = friendList;
@@ -91,20 +112,23 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
 
     @Override
     public void onBindViewHolder(@NonNull final friendListRecycleViewHolder holder, final int position) {
-        teamMemberRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            String mCurrentName = task.getResult().getDocuments().get(position).get("userName").toString();
-                            String mCurrentUserIconPath = task.getResult().getDocuments().get(position).get("userIconPath").toString();
-                            holder.wordItemView.setText(mCurrentName);
-                            int imageResource = context.getResources().getIdentifier("@drawable/" + mCurrentUserIconPath, null, context.getPackageName());
-                            holder.userIcon.setImageResource(imageResource);
-                        } else {
-                            Log.d("firebaseMember", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+        teamMemberRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currUserID = friendList.get(position);
+                String mCurrentName = snapshot.child(currUserID).child("userName").getValue(String.class);
+                String mCurrentUserIconPath = snapshot.child(currUserID).child("userIconPath").getValue(String.class);
+                holder.wordItemView.setText(mCurrentName);
+                int imageResource = context.getResources().getIdentifier("@drawable/" + mCurrentUserIconPath, null, context.getPackageName());
+                holder.userIcon.setImageResource(imageResource);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
     @Override
     public int getItemCount() {

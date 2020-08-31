@@ -13,6 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -22,7 +26,8 @@ import java.util.List;
 public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locationListRecycleViewAdapter.locationListRecycleViewHolder> {
 
     private List<String> locationList = new ArrayList<>();
-    private CollectionReference markRef;
+    //private CollectionReference markRef;
+    private DatabaseReference teamMarkerRef;
     private final LayoutInflater mInflater;
     public Context context;
 
@@ -39,9 +44,9 @@ public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locatio
         }
     }
 
-    public locationListRecycleViewAdapter(Context context, List<String> locationList,CollectionReference markRef) {
+    public locationListRecycleViewAdapter(Context context, List<String> locationList,DatabaseReference markRef) {
         mInflater = LayoutInflater.from(context);
-        this.markRef = markRef;
+        this.teamMarkerRef = markRef;
         this.locationList = locationList;
         this.context = context;
     }
@@ -56,6 +61,24 @@ public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locatio
 
     @Override
     public void onBindViewHolder(@NonNull final locationListRecycleViewHolder holder, final int position) {
+        teamMarkerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currMarkerID = locationList.get(position);
+                String mCurrentComtext = snapshot.child(currMarkerID).child("markContext").getValue(String.class);
+                String mCurrentMarkerIconPath = snapshot.child(currMarkerID).child("markPath").getValue(String.class);
+                holder.wordItemView.setText(mCurrentComtext);
+                int imageResource = context.getResources().getIdentifier("@drawable/" + mCurrentMarkerIconPath, null, context.getPackageName());
+                holder.markerIcon.setImageResource(imageResource);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        /*
         markRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -71,6 +94,7 @@ public class locationListRecycleViewAdapter extends RecyclerView.Adapter<locatio
                 }
             }
         });
+        */
     }
 
     @Override

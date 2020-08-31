@@ -18,6 +18,7 @@ public class newUser extends AppCompatActivity {
     private String newUserName;
     private String userIconPath;
     private ImageView userIcon;
+    private SharedPreferences pref;
     final int PICK_IMAGE_REQUEST = 1;
 
     @Override
@@ -25,14 +26,17 @@ public class newUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
 
+        pref = getSharedPreferences("userData",MODE_PRIVATE);
+
         editText = findViewById(R.id.newUser_editText);
         userIcon = findViewById(R.id.userIcon);
+        userIconPath = "user_icon1";
 
     }
 
-        public void goSelect(View view) {
+    public void goSelect(View view) {
         newUserName = editText.getText().toString();
-        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+
         pref.edit().putString("userName",newUserName).putBoolean("inTeam",true).commit();
 
         Intent intent = new Intent(this,notInTeam.class);
@@ -50,7 +54,6 @@ public class newUser extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK){
-            SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
             userIconPath = data.getStringExtra("userPickedIcon");
             pref.edit().putString("userIconPath",userIconPath).commit();
             int imageResource = getResources().getIdentifier("@drawable/" + userIconPath, null, getPackageName());

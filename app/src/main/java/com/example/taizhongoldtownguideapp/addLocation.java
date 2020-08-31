@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,6 +43,8 @@ public class addLocation extends AppCompatActivity {
     final int PICK_IMAGE_REQUEST = 2;
     private ImageView markerIcon;
     private String markerPath;
+    private SharedPreferences pref;
+    private FirebaseDatabase mDatabase;
 
 
 
@@ -50,7 +53,10 @@ public class addLocation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
-        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+
+        mDatabase = FirebaseDatabase.getInstance();
+
+        pref = getSharedPreferences("userData",MODE_PRIVATE);
         longitude = pref.getFloat("Longitude",0);
         latitude = pref.getFloat("Latitude",0);
         teamID = pref.getString("teamID","error");
@@ -70,11 +76,14 @@ public class addLocation extends AppCompatActivity {
             public void onClick(View v) {
                 Map<String, Object> newMark = new HashMap<>();
                 //Toast.makeText(addLocation.this,"还在开发中，尽请期待",Toast.LENGTH_LONG).show();
+                /*
                 Log.d("addLocationTest",editText.getText().toString());
                 Log.d("addLocationTest", String.valueOf(aSwitch.isChecked()));
                 Log.d("addLocationTest",picker.getHour()+"  "+picker.getMinute());
                 Log.d("addLocationTest",latitude+" "+longitude);
                 Log.d("addLocationTest",markerPath);
+                */
+
                 Intent intent = new Intent();
                 intent.putExtra("markContext", editText.getText().toString());
                 setResult(RESULT_OK, intent);
@@ -88,7 +97,8 @@ public class addLocation extends AppCompatActivity {
                 newMark.put("markSetTime",picker.getHour()+" "+picker.getMinute());
                 newMark.put("markPath",markerPath);
 
-
+                mDatabase.getReference().child("team").child(teamID).child("marker").push().setValue(newMark);
+                /*
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("teamID").document(teamID).collection("mark").add(newMark).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -102,6 +112,7 @@ public class addLocation extends AppCompatActivity {
                                 Log.w("firebaseProgress", "Error adding document", e);
                             }
                         });
+                */
             }
         });
 
