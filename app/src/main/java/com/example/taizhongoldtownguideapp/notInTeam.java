@@ -14,8 +14,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -61,21 +65,40 @@ public class notInTeam extends AppCompatActivity {
         DatabaseReference teamRef = mDatabase.getReference("team");
 
         //這裡要check teamID有沒有相撞
-        teamID = teamIDGenerator();
-
-        userIconPath = pref.getString("userIconPath","error");
-
-
-
+        userIconPath = pref.getString("userIconPath","user_icon1");
         user.put("userIconPath", userIconPath);
         user.put("userName",userName);
         user.put("isLeader",true);
 
 
+        teamID = teamIDGenerator();
+        //這裡在檢查有沒有重複的teamID
+        teamRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                while(snapshot.child(teamID).getValue() != null) {
+                    if (snapshot.child(teamID).getValue() == null){
+                        Log.d("seeIsTeamIDBang","IDnobang!");
+                    }
+                    else {
+                        Log.d("seeIsTeamIDBang","IDbang!");
+                        teamID = teamIDGenerator();
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
         userID = teamRef.child(teamID).child("userData").push().getKey();
+
         teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
-        pref.edit().putString("userID",userID).putString("teamID",teamID).commit();
+        pref.edit().putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
 
         Intent intent = new Intent(this,whereIsMyFriend.class);
         startActivity(intent);

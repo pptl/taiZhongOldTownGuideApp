@@ -9,13 +9,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +34,7 @@ public class joinTeam extends AppCompatActivity {
     private String userID;
     private String userIconPath;
     private FirebaseDatabase mDatabase;
+    private DatabaseReference teamRef;
     private SharedPreferences pref;
 
     @Override
@@ -40,32 +45,50 @@ public class joinTeam extends AppCompatActivity {
         pref = getSharedPreferences("userData",MODE_PRIVATE);
 
         userName = pref.getString("userName","error");
-        userIconPath = pref.getString("userIconPath","error");
+        userIconPath = pref.getString("userIconPath","user_icon1");
 
         mDatabase = FirebaseDatabase.getInstance();
+        teamRef = mDatabase.getReference("team");
+
 
 
     }
 
     public void quickJoin(View view) {
-        Map<String, Object> user = new HashMap<>();
+
         //這裡離要檢查輸入碼對不對
         teamID = editText.getText().toString();
 
-        DatabaseReference teamRef = mDatabase.getReference("team").child(teamID);
+        //DatabaseReference teamRef = mDatabase.getReference("team").child(teamID);
+        teamRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.child(teamID).getValue() != null){
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("userName",userName);
+                    user.put("isLeader",false);
+                    user.put("userLatitude",0.00);
+                    user.put("userLongitude",0.00);
+                    user.put("userIconPath", userIconPath);
 
-        user.put("userName",userName);
-        user.put("isLeader",false);
-        user.put("userLatitude",0.00);
-        user.put("userLongitude",0.00);
-        user.put("userIconPath", userIconPath);
+                    userID = teamRef.child("userData").push().getKey();
+                    teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
-        userID = teamRef.child("userData").push().getKey();
-        teamRef.child("userData").child(userID).setValue(user);
+                    pref.edit().putString("userName",userName).putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).putBoolean("isLeader",false).putFloat("userLatitude",0).putFloat("userLongitude",0).putString("userIconPath", userIconPath).commit();
 
-        pref.edit().putString("userName",userName).putString("userID",userID).putString("teamID",teamID).putBoolean("isLeader",false).putFloat("userLatitude",0).putFloat("userLongitude",0).putString("userIconPath", userIconPath).commit();
+                    Intent intent = new Intent(getApplicationContext(),whereIsMyFriend.class);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"房號不正確",Toast.LENGTH_LONG).show();
+                }
+            }
 
-        Intent intent = new Intent(this,whereIsMyFriend.class);
-        startActivity(intent);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 }

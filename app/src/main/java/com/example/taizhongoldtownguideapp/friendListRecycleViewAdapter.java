@@ -73,22 +73,6 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
 
                 }
             });
-            /*
-            teamMemberRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Double mCurrentUserLatitude = (Double)task.getResult().getDocuments().get(mPosition).get("userLatitude");
-                        Double mCurrentUserLongitude = (Double)task.getResult().getDocuments().get(mPosition).get("userLongitude");
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentUserLatitude, mCurrentUserLongitude),20f));
-                    } else {
-                        Log.d("getuserLocation", "Error getting documents: ", task.getException());
-                    }
-                }
-            });
-            */
-
-
 
         }
 

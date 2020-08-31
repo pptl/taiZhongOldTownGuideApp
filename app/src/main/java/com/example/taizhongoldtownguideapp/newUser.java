@@ -37,7 +37,7 @@ public class newUser extends AppCompatActivity {
     public void goSelect(View view) {
         newUserName = editText.getText().toString();
 
-        pref.edit().putString("userName",newUserName).putBoolean("inTeam",true).commit();
+        pref.edit().putString("userName",newUserName).apply();
 
         Intent intent = new Intent(this,notInTeam.class);
         startActivity(intent);
@@ -55,7 +55,7 @@ public class newUser extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK){
             userIconPath = data.getStringExtra("userPickedIcon");
-            pref.edit().putString("userIconPath",userIconPath).commit();
+            pref.edit().putString("userIconPath",userIconPath).apply();
             int imageResource = getResources().getIdentifier("@drawable/" + userIconPath, null, getPackageName());
             userIcon.setImageResource(imageResource);
         }

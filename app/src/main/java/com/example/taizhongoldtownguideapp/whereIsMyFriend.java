@@ -35,8 +35,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -63,6 +67,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
     private String userIconPath;
     private FirebaseDatabase mDatabase;
     private DatabaseReference teamRef;
+    private DatabaseReference usersRef;
+    private DatabaseReference markersRef;
     private Timer timer;
     private SharedPreferences pref;
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
@@ -84,6 +90,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
         mDatabase = FirebaseDatabase.getInstance();
         teamRef = mDatabase.getReference("team").child(teamID);
+        usersRef = teamRef.child("userData");
+        markersRef = teamRef.child("marker");
 
     }
 
@@ -113,17 +121,62 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
 
         getDeviceLocation();
+
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //Log.d("seeChildrenCount",snapshot.getChildrenCount()+" sdsdsd");
+                for (DataSnapshot data : snapshot.getChildren()){
+                    String userName = data.child("userName").getValue(String.class);
+                    String userIconPath = data.child("userIconPath").getValue(String.class);
+
+                    int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
+                    Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
+                    Double userLatitude = data.child("userLatitude").getValue(Double.class);
+                    Double userLongitude = data.child("userLongitude").getValue(Double.class);
+
+                    Log.d("seelocation",userName + " " + userLatitude + " " + userLongitude);
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        markersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    for (DataSnapshot data : snapshot.getChildren()){
+                        String markContext = data.child("markContext").getValue(String.class);
+                        String userIconPath = data.child("userIconPath").getValue(String.class);
+                        Double markLatitude = data.child("markLatitude").getValue(Double.class);
+                        Double markLongitude = data.child("markLongitude").getValue(Double.class);
+
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markContext));
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
         //addMarker
         //timer.schedule(checkTask, 1000, 20000);
         //timer.schedule(renewTask, 1000, 20000);
 
+
         /*這裡是設置marker的地方
-        teamMemberCollectionRef = db.collection("teamID").document(teamID).collection("userData");
-        markCollectionRef = db.collection("teamID").document(teamID).collection("mark");
-
-
-
-
         markCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -195,7 +248,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
             @Override
             public void onSuccess(Location location) {
                 Map<String, Object> userLocations = new HashMap<>();
-                DatabaseReference myRef = teamRef.child("userData").child(userID);
+                DatabaseReference myRef = usersRef.child(userID);
 
                 mCurrentLocation = (Location) location;
                 //這一段是為了檢查user有沒有移動
@@ -203,13 +256,8 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
                 float userLongitude = (float)mCurrentLocation.getLongitude();
                 userLocations.put("userLatitude",mCurrentLocation.getLatitude());
                 userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+
                 myRef.updateChildren(userLocations);
-                //Log.d("seeLocation",mCurrentLocation.getLatitude() + " , " + mCurrentLocation.getLongitude());
-                //pref.edit().putFloat("userLatitude",userLatitude).putFloat("userLongitude",userLongitude).commit();
-                //pref.edit().putFloat("userLatitude",(float)mCurrentLocation.getLatitude()).putFloat("userLongitude",(float)mCurrentLocation.getLongitude()).commit();
-
-
-                //db.collection("teamID").document(teamID).collection("userData").document(userID).update(userLocations);
 
 
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
@@ -325,6 +373,7 @@ public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallb
 
     public void exitTeam(View view) {
         pref.edit().putBoolean("inTeam",false).commit();
+        //這裡要去firebase刪資料
 
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);

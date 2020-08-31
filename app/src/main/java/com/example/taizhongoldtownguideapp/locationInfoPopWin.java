@@ -53,7 +53,7 @@ public class locationInfoPopWin extends PopupWindow {
 
         pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
-        mDatabase.getReference().child("team").child(teamID);
+        //mDatabase.getReference().child("team").child(teamID);
 
         if(mDatabase.getReference().child("team").child(teamID).child("marker") != null) {
             teamMarkerRef = mDatabase.getReference().child("team").child(teamID).child("marker");
