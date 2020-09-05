@@ -42,6 +42,7 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
     class friendListRecycleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final TextView wordItemView;
         public ImageView userIcon;
+        public ImageView isLeaderIcon;
         final friendListRecycleViewAdapter mAdapter;
 
 
@@ -49,6 +50,7 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
             super(itemView);
             wordItemView = itemView.findViewById(R.id.user_context);
             userIcon = itemView.findViewById(R.id.user_icon);
+            isLeaderIcon = itemView.findViewById(R.id.isLeaderIcon);
             this.mAdapter = adapter;
             itemView.setOnClickListener(this);
 
@@ -102,9 +104,19 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
                 String currUserID = friendList.get(position);
                 String mCurrentName = snapshot.child(currUserID).child("userName").getValue(String.class);
                 String mCurrentUserIconPath = snapshot.child(currUserID).child("userIconPath").getValue(String.class);
+                Boolean mCurrentUserIsLeader = snapshot.child(currUserID).child("isLeader").getValue(Boolean.class);
                 holder.wordItemView.setText(mCurrentName);
                 int imageResource = context.getResources().getIdentifier("@drawable/" + mCurrentUserIconPath, null, context.getPackageName());
                 holder.userIcon.setImageResource(imageResource);
+                if (!mCurrentUserIsLeader){
+                    holder.isLeaderIcon.setVisibility(View.GONE);
+                }
+                else{
+                    int leaderIcon = context.getResources().getIdentifier("@drawable/crown", null, context.getPackageName());
+                    holder.isLeaderIcon.setVisibility(View.VISIBLE);
+                    holder.isLeaderIcon.setImageResource(leaderIcon);
+                }
+
             }
 
             @Override

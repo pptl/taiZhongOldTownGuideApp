@@ -102,11 +102,13 @@ public class notInTeam extends AppCompatActivity {
 
         Intent intent = new Intent(this,whereIsMyFriend.class);
         startActivity(intent);
+        finish();
 
     }
     public void goJoinTeam(View view) {
         Intent intent = new Intent(this,joinTeam.class);
         startActivity(intent);
+
 
     }
     public String teamIDGenerator(){

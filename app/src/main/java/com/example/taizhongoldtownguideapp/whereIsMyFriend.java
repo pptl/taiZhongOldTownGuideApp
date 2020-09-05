@@ -1,6 +1,7 @@
 package com.example.taizhongoldtownguideapp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -54,7 +55,7 @@ import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
 
-public class whereIsMyFriend extends FragmentActivity implements OnMapReadyCallback {
+public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     Location mCurrentLocation;

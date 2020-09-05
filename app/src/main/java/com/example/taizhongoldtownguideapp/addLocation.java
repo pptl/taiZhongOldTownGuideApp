@@ -98,21 +98,7 @@ public class addLocation extends AppCompatActivity {
                 newMark.put("markPath",markerPath);
 
                 mDatabase.getReference().child("team").child(teamID).child("marker").push().setValue(newMark);
-                /*
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("teamID").document(teamID).collection("mark").add(newMark).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("firebaseProgress", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("firebaseProgress", "Error adding document", e);
-                            }
-                        });
-                */
+
             }
         });
 

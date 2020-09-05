@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -80,11 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("userData",MODE_PRIVATE);
 
-        //請求獲取位置permission
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
-            return;
-        }
+
 
         //預設為晴天
         weather = 1;
@@ -190,17 +188,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goLocate(View view) {
-        Boolean newUser = pref.getBoolean("inTeam",false);
-        if(!newUser){
-            Intent intent = new Intent(this,newUser.class);
-            startActivity(intent);
+        //請求獲取位置permission
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
+            return;
         }
         else{
-            Intent intent = new Intent(this,whereIsMyFriend.class);
-            startActivity(intent);
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                //这里其实要出现一个视窗提醒使用者开GPS
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+
+
+            Boolean newUser = pref.getBoolean("inTeam",false);
+            if(!newUser){
+                Intent intent = new Intent(this,newUser.class);
+                startActivity(intent);
+            }
+            else{
+                Intent intent = new Intent(this,whereIsMyFriend.class);
+                startActivity(intent);
+            }
         }
+
+
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d("seePermition", String.valueOf(PackageManager.PERMISSION_GRANTED));
+        if (requestCode == REQUEST_CODE){
+            Log.d("seePermition","permitionOK");
+
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                //这里其实要出现一个视窗提醒使用者开GPS
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+
+
+            Boolean newUser = pref.getBoolean("inTeam",false);
+            if(!newUser){
+                Intent intent = new Intent(this,newUser.class);
+                startActivity(intent);
+            }
+            else{
+                Intent intent = new Intent(this,whereIsMyFriend.class);
+                startActivity(intent);
+            }
+        }
+        else{
+            Log.d("seePermition","permitionNotOK");
+        }
+    }
 
     //手勢控制，目前只做拖移
     class AndroidGestureDectector implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{

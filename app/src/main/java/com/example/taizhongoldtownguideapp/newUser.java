@@ -41,6 +41,7 @@ public class newUser extends AppCompatActivity {
 
         Intent intent = new Intent(this,notInTeam.class);
         startActivity(intent);
+
     }
 
     public void changeUserIcon(View view) {

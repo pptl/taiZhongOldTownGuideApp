@@ -78,6 +78,7 @@ public class joinTeam extends AppCompatActivity {
 
                     Intent intent = new Intent(getApplicationContext(),whereIsMyFriend.class);
                     startActivity(intent);
+                    finish();
                 }
                 else{
                     Toast.makeText(getApplicationContext(),"房號不正確",Toast.LENGTH_LONG).show();
