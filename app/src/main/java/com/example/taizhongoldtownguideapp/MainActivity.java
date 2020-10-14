@@ -244,6 +244,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void goMorePost(View view) {
+        Intent intent = new Intent(this,crawlersPage.class);
+        startActivity(intent);
+    }
+
     //手勢控制，目前只做拖移
     class AndroidGestureDectector implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
 

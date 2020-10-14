@@ -7,38 +7,43 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".chooseMarker"
+        <activity android:name=".displayPost"></activity>
+        <activity android:name=".crawlersPage" />
+        <activity
+            android:name=".chooseMarker"
             android:label="选择标记"
-            android:parentActivityName=".whereIsMyFriend"
-            ></activity>
-        <activity android:name=".chooseUserIcon"
+            android:parentActivityName=".whereIsMyFriend" />
+        <activity
+            android:name=".chooseUserIcon"
             android:label="选择头框"
-            android:parentActivityName=".newUser"
-            ></activity>
-        <activity android:name=".newUser"
+            android:parentActivityName=".newUser" />
+        <activity
+            android:name=".newUser"
             android:label="新成员加入"
-            android:parentActivityName=".MainActivity"
-            ></activity>
-        <activity android:name=".addLocation"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".addLocation"
             android:label="新增标记"
-            android:parentActivityName=".whereIsMyFriend"
-            ></activity>
-        <activity android:name=".notInTeam"
+            android:parentActivityName=".whereIsMyFriend" />
+        <activity
+            android:name=".notInTeam"
             android:label="参团方式"
-            android:parentActivityName=".newUser"
-            ></activity>
-        <activity android:name=".joinTeam"
+            android:parentActivityName=".newUser" />
+        <activity
+            android:name=".joinTeam"
             android:label="快速加入团队"
-            android:parentActivityName=".notInTeam"
-            ></activity>
+            android:parentActivityName=".notInTeam" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -51,10 +56,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".whereIsMyFriend"
+        <activity
+            android:name=".whereIsMyFriend"
             android:label="我的团队"
-            android:parentActivityName=".MainActivity"
-            ></activity>
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

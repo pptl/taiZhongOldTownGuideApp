@@ -183,7 +183,6 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
 
         //addMarker
         timer.schedule(checkTask, 1000, 5000);
-        //timer.schedule(renewTask, 1000, 20000);
 
 
 
@@ -263,14 +262,6 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
         }
     };
 
-    /*
-    private TimerTask renewTask = new TimerTask() {
-        @Override
-        public void run() {
-
-        }
-    };
-    */
 
     //用來標記你朋友的位置
     private void moveCamera(LatLng latLng, float zoom){
@@ -340,6 +331,10 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
 
     public void addLocation(View view) {
         pref.edit().putFloat("Latitude",(float)mCurrentLocation.getLatitude()).putFloat("Longitude",(float)mCurrentLocation.getLongitude()).commit();
+        //closePopOutWin
+        params = getWindow().getAttributes();
+        params.alpha=1f;
+        getWindow().setAttributes(params);
         Intent intent = new Intent(this,addLocation.class);
         startActivityForResult(intent,ADD_LOCATION_ACTIVITY_REQUEST_CODE);
     }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -66,28 +67,32 @@ public class addLocation extends AppCompatActivity {
 
         picker = (TimePicker)findViewById(R.id.timePicker);
         picker.setIs24HourView(true);
-
+        picker.setEnabled(false);
         markerIcon = findViewById(R.id.addIcon_iconView);
         editText = findViewById(R.id.addIcon_editText);
         aSwitch = findViewById(R.id.setNotice_switch);
         button = findViewById(R.id.addLocation_button);
+
+        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    picker.setEnabled(true);
+                }
+                else{
+                    picker.setEnabled(false);
+                }
+
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Map<String, Object> newMark = new HashMap<>();
-                //Toast.makeText(addLocation.this,"还在开发中，尽请期待",Toast.LENGTH_LONG).show();
-                /*
-                Log.d("addLocationTest",editText.getText().toString());
-                Log.d("addLocationTest", String.valueOf(aSwitch.isChecked()));
-                Log.d("addLocationTest",picker.getHour()+"  "+picker.getMinute());
-                Log.d("addLocationTest",latitude+" "+longitude);
-                Log.d("addLocationTest",markerPath);
-                */
 
                 Intent intent = new Intent();
                 intent.putExtra("markContext", editText.getText().toString());
                 setResult(RESULT_OK, intent);
-                finish();
 
 
                 newMark.put("markContext",editText.getText().toString());
@@ -98,6 +103,7 @@ public class addLocation extends AppCompatActivity {
                 newMark.put("markPath",markerPath);
 
                 mDatabase.getReference().child("team").child(teamID).child("marker").push().setValue(newMark);
+                finish();
 
             }
         });
@@ -121,15 +127,5 @@ public class addLocation extends AppCompatActivity {
         }
     }
 
-    public void addMark(View view) {
-        //这里要把资料传到firebase
-        /*
-        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
-        teamID = pref.getString("teamID","error");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference markCollectionReference = db.collection("teamID").document(teamID).collection("mark");
 
-         */
-
-    }
 }
