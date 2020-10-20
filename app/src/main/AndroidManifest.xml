@@ -18,8 +18,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".displayPost"></activity>
-        <activity android:name=".crawlersPage" />
+        <activity
+            android:name=".displayPost"
+            android:label="新聞內容"
+            android:parentActivityName=".crawlersPage" />
+        <activity
+            android:name=".crawlersPage"
+            android:label="通識新聞"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".chooseMarker"
             android:label="选择标记"

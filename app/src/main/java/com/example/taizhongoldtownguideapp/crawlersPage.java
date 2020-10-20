@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,18 +26,35 @@ public class crawlersPage extends AppCompatActivity {
     private Handler handler;
     private RecyclerView mRecyclerView;
     private postListRecycleViewAdapter mAdapter;
+    private int currentPage = 1;
+    private int fromPage;
+    private int toPage;
+    private TextView currentPageTab;
+    private Button prePageBtn;
+    private Button nextPageBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crawlers_page);
         mRecyclerView = findViewById(R.id.showInfo);
+        currentPageTab = findViewById(R.id.currentPageTab);
+        prePageBtn = findViewById(R.id.prePageBtn);
+        if(currentPage <= 1){
+            prePageBtn.setClickable(false);
+        }
+        nextPageBtn = findViewById(R.id.nextPageBtn);
         getPosts();
         handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
-                    mAdapter = new postListRecycleViewAdapter(crawlersPage.this, title, url);
+                    currentPage = 1;
+                    currentPageTab.setText(String.valueOf(currentPage));
+                    fromPage = (currentPage - 1) * 10;
+                    toPage = currentPage * 10;
+                    Log.d("seeCurrPage",currentPage+":"+fromPage+":"+toPage);
+                    mAdapter = new postListRecycleViewAdapter(crawlersPage.this, title.subList(fromPage, toPage), url.subList(fromPage, toPage));
                     mRecyclerView.setAdapter(mAdapter);
 
                 }
@@ -48,8 +68,6 @@ public class crawlersPage extends AppCompatActivity {
             @Override
             public void run() {
                 try{
-                    //获取虎扑新闻20页的数据，网址格式为：https://voice.hupu.com/nba/第几页
-
 
                     Document doc = Jsoup.connect("http://www.genedu.fcu.edu.tw/index.php/tw/component/sppagebuilder/68-").get();
                     Elements titleLinks = doc.select("a.mod-articles-category-title ");    //解析来获取每条新闻的标题与链接地址
@@ -83,5 +101,47 @@ public class crawlersPage extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    public void prePage(View view) {
+        //Log.d("seeclick","prewasclick");
+        if(currentPage - 1 >= 1){
+            currentPage -= 1;
+            currentPageTab.setText(String.valueOf(currentPage));
+            fromPage = (currentPage - 1) * 10;
+            toPage = currentPage * 10;
+
+            if(currentPage <= 1){
+                prePageBtn.setClickable(false);
+            }
+
+        }
+        //Log.d("seeCurrPage", String.valueOf(title.size()));
+        mAdapter = new postListRecycleViewAdapter(crawlersPage.this, title.subList(fromPage, toPage), url.subList(fromPage, toPage));
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void nextPage(View view) {
+        if(title.size() - (currentPage + 1) * 10 > 0){
+            currentPage += 1;
+            currentPageTab.setText(String.valueOf(currentPage));
+            fromPage = (currentPage - 1) * 10;
+            toPage = currentPage * 10;
+            if(currentPage >= 2){
+                prePageBtn.setClickable(true);
+            }
+        } else if((title.size() - (currentPage + 1) * 10 < 0) && (title.size() - (currentPage + 1) * 10 > -9)){
+            currentPage += 1;
+            currentPageTab.setText(String.valueOf(currentPage));
+            fromPage = (currentPage - 1) * 10;
+            toPage = title.size();
+            nextPageBtn.setClickable(false);
+        }
+
+        //Log.d("seeCurrPage", String.valueOf(title.size()));
+        mAdapter = new postListRecycleViewAdapter(crawlersPage.this, title.subList(fromPage, toPage), url.subList(fromPage, toPage));
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 }

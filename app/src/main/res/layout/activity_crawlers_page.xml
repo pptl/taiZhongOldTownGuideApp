@@ -5,15 +5,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".crawlersPage">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/showInfo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="411dp"
+        android:layout_height="651dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/prePageBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:background="#ffffff"
+        android:clickable="false"
+        android:onClick="prePage"
+        android:text="上一頁"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/currentPageTab" />
+
+    <Button
+        android:id="@+id/nextPageBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:text="下一頁"
+        android:onClick="nextPage"
+        android:background="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/currentPageTab" />
+
+    <TextView
+        android:id="@+id/currentPageTab"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:background="#e6e6e6"
+        android:gravity="center"
+        android:text="1"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

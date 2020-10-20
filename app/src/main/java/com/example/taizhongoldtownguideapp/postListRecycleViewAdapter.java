@@ -2,6 +2,7 @@ package com.example.taizhongoldtownguideapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,12 @@ public class postListRecycleViewAdapter extends RecyclerView.Adapter<postListRec
         // Retrieve the data for that position.
         String mCurrent = titleList.get(position);
         // Add the data to the view holder.
+        if(position%2 == 1){
+            holder.itemView.setBackgroundColor(Color.parseColor("#A6A6A6"));
+        }else{
+            holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        }
+
         holder.wordItemView.setText(mCurrent);
     }
 

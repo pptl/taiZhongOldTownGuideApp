@@ -53,7 +53,12 @@ public class displayPost extends AppCompatActivity {
                         Document doc = Jsoup.connect(postURL).get();
                         Elements context = doc.select("div.sppb-addon-content");
 
+                        for(int i = 0; i<2 ;i++){
+                            Log.d("seePost",context.get(i).toString());
+
+                        }
                         postContext = context.text();
+                        //Log.d("seePost",context.toString());
                         /*分割的工作之后再说 **需要每个text产生一个textView
                         String posts[] = postContext.split(" ");
                         for(int i =0; i<posts.length;i++){
@@ -62,9 +67,11 @@ public class displayPost extends AppCompatActivity {
                         */
 
                         if(postContext.equals("")){
+
                             context = doc.select("div > p");
+
                             postContext = context.text();
-                            postContext.replace("<br>","/n");
+                            //postContext.replace("<br>","/n");
                             Log.d("seeIsEmpty",postContext);
                         }
                         //contextTextView.setText(postURL);
