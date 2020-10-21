@@ -2,35 +2,54 @@ package com.example.taizhongoldtownguideapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class displayPost extends AppCompatActivity {
 
     private String postTitle;
     private String postURL;
     private TextView titleTextView;
-    private TextView contextTextView;
+    //private TextView contextTextView;
     private String postContext = "";
+    private List<String> imgUrl  = new ArrayList<>();
     private Handler handler;
+    private LinearLayout postLayout;
 
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_post);
 
+
         postTitle = getIntent().getStringExtra("title");
         postURL = getIntent().getStringExtra("url");
 
         titleTextView = findViewById(R.id.info_post_title);
-        contextTextView = findViewById(R.id.info_post_contexxt);
+        postLayout = findViewById(R.id.postLayout);
+        //contextTextView = findViewById(R.id.info_post_contexxt);
 
         titleTextView.setText(postTitle);
         //contextTextView.setText(postURL);
@@ -39,10 +58,34 @@ public class displayPost extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
-                  contextTextView.setText(postContext);
+                    newTextView(postContext);
+                    Log.d("seeImgUrl", String.valueOf(imgUrl.size()));
+                    if(imgUrl.size() > 0){
+                        for(int i = 0; i< imgUrl.size(); i++){
+                            newImageView(imgUrl.get(i));
+                            //Log.d("seeImgUrl",imgUrl.get(i));
+                        }
+                    }
+
                 }
             }
         };
+    }
+    private void newTextView(String text){
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setTextSize(20);
+        postLayout.addView(tv);
+    }
+    private void newImageView(String url){
+        ImageView iv = new ImageView(this);
+        //iv.setImageBitmap(bitmap);
+        //tv.setText(text);
+        //tv.setTextSize(20);
+        Picasso.with(this).load(url).into(iv);
+
+        postLayout.addView(iv);
+
     }
     private void getPostContext(){
         new Thread(new Runnable() {
@@ -52,27 +95,28 @@ public class displayPost extends AppCompatActivity {
 
                         Document doc = Jsoup.connect(postURL).get();
                         Elements context = doc.select("div.sppb-addon-content");
-
-                        for(int i = 0; i<2 ;i++){
-                            Log.d("seePost",context.get(i).toString());
-
-                        }
+                        String imgLink = "";
                         postContext = context.text();
-                        //Log.d("seePost",context.toString());
-                        /*分割的工作之后再说 **需要每个text产生一个textView
-                        String posts[] = postContext.split(" ");
-                        for(int i =0; i<posts.length;i++){
-                            Log.d("seePost",posts[i]);
+                        if(!postContext.equals("")){
+                            imgLink = context.select("img").attr("src");
+                            if(!imgLink.equals("")){
+                                Log.d("seeImgUrl", String.valueOf(imgLink));
+                                imgUrl.add("http://www.genedu.fcu.edu.tw" + imgLink);
+                            } else{
+                                Log.d("seeImgUrl","noPic");
+                            }
                         }
-                        */
-
-                        if(postContext.equals("")){
-
-                            context = doc.select("div > p");
-
+                        else{
+                            context = doc.select("article > div > p");
                             postContext = context.text();
-                            //postContext.replace("<br>","/n");
-                            Log.d("seeIsEmpty",postContext);
+                            Log.d("seePostContext",postContext);
+                            imgLink = context.select("img").attr("src");
+                            if(!imgLink.equals("")){
+                                Log.d("seeImgUrl", String.valueOf(imgLink));
+                                imgUrl.add("http://www.genedu.fcu.edu.tw" + imgLink);
+                            } else {
+                                Log.d("seeImgUrl","noPic");
+                            }
                         }
                         //contextTextView.setText(postURL);
                         //Log.d("seeContext",context.text().toString());

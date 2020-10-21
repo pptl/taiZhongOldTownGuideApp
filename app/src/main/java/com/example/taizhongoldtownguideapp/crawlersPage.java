@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,8 +22,8 @@ import java.util.List;
 
 public class crawlersPage extends AppCompatActivity {
 
-    List<String> title = new ArrayList<>();
-    List<String> url = new ArrayList<>();
+    private List<String> title = new ArrayList<>();
+    private List<String> url = new ArrayList<>();
     private Handler handler;
     private RecyclerView mRecyclerView;
     private postListRecycleViewAdapter mAdapter;
@@ -40,8 +41,11 @@ public class crawlersPage extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.showInfo);
         currentPageTab = findViewById(R.id.currentPageTab);
         prePageBtn = findViewById(R.id.prePageBtn);
+
+
         if(currentPage <= 1){
             prePageBtn.setClickable(false);
+            prePageBtn.setAlpha((float)0.5);
         }
         nextPageBtn = findViewById(R.id.nextPageBtn);
         getPosts();
@@ -111,8 +115,13 @@ public class crawlersPage extends AppCompatActivity {
             fromPage = (currentPage - 1) * 10;
             toPage = currentPage * 10;
 
+            if(!nextPageBtn.isClickable()){
+                nextPageBtn.setClickable(true);
+                nextPageBtn.setAlpha((float)1);
+            }
             if(currentPage <= 1){
                 prePageBtn.setClickable(false);
+                prePageBtn.setAlpha((float)0.5);
             }
 
         }
@@ -130,6 +139,7 @@ public class crawlersPage extends AppCompatActivity {
             toPage = currentPage * 10;
             if(currentPage >= 2){
                 prePageBtn.setClickable(true);
+                prePageBtn.setAlpha((float)1);
             }
         } else if((title.size() - (currentPage + 1) * 10 < 0) && (title.size() - (currentPage + 1) * 10 > -9)){
             currentPage += 1;
@@ -137,6 +147,7 @@ public class crawlersPage extends AppCompatActivity {
             fromPage = (currentPage - 1) * 10;
             toPage = title.size();
             nextPageBtn.setClickable(false);
+            nextPageBtn.setAlpha((float)0.5);
         }
 
         //Log.d("seeCurrPage", String.valueOf(title.size()));
