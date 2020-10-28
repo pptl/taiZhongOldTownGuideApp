@@ -249,6 +249,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goSurroundView(View view) {
+        Intent intent = new Intent(this, surroundView.class);
+        startActivity(intent);
+    }
+
     //手勢控制，目前只做拖移
     class AndroidGestureDectector implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
 

@@ -119,17 +119,17 @@
         android:alpha="0.2"
         android:scaleType="center"
         app:srcCompat="@drawable/black_bg"
-        tools:layout_editor_absoluteX="71dp"
-        tools:layout_editor_absoluteY="173dp" />
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="26dp" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="168dp"
+        android:layout_marginBottom="20dp"
         android:onClick="goLocate"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/more_post"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/locate_button" />
 
@@ -150,11 +150,22 @@
         android:id="@+id/more_post"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
         android:onClick="goMorePost"
+        app:layout_constraintBottom_toTopOf="@+id/surround_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:srcCompat="@drawable/more" />
+
+    <ImageView
+        android:id="@+id/surround_view"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="88dp"
+        android:onClick="goSurroundView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/surround_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
