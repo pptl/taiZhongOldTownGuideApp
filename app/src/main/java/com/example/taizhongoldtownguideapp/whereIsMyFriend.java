@@ -87,7 +87,7 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
         mapFragment.getMapAsync(this);
         pref = getSharedPreferences("userData",MODE_PRIVATE);
         teamID = pref.getString("teamID","000000");
-        userID = pref.getString("userID","RYPNZsgAFXpIb6PYYHlz");
+        userID = pref.getString("userID","null");
         timer = new Timer();
 
         mDatabase = FirebaseDatabase.getInstance();
@@ -97,16 +97,6 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
 
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -120,8 +110,6 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
                 return false;
             }
         });
-
-
 
         getDeviceLocation();
 
@@ -140,7 +128,7 @@ public class whereIsMyFriend extends AppCompatActivity implements OnMapReadyCall
                     Double userLatitude = data.child("userLatitude").getValue(Double.class);
                     Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
-                    Log.d("seelocation",userName + " " + userLatitude + " " + userLongitude);
+                    //Log.d("seelocation",userName + " " + userLatitude + " " + userLongitude);
 
                     Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
                     if(hashMapMarker.containsKey(userID)){

@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -33,7 +36,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonObject;
+import com.plattysoft.leonids.ParticleSystem;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView TV;
     private TextView titleTV;
     private TextView contentTV;
-    private TextView meibianzhiyuan;
+    //private TextView meibianzhiyuan;
     private ArrayList<String> imgList = null;
 
     private WindowManager.LayoutParams params;
@@ -61,20 +76,23 @@ public class MainActivity extends AppCompatActivity {
     private float phoneDensity;
     private int curPointX;
     private int curPointY;
-    private int weather;//1：晴天，2：陰天，3：小雨天，4： 雷雨天
+    private String weather;//1：晴天，2：陰天，3：小雨天，4： 雷雨天
     private SharedPreferences pref;
     private AndroidGestureDectector androidGestureDectector = new AndroidGestureDectector();
+    private Handler handler;
 
     public boolean clickFlag = true;
 
     //設置地圖上有效點擊範圍
     private int [][] objList={
-            {654,277,764,372},//天主堂
-            {327,209,453,337},//小學校
-            {435,460,554,555},//武德館
-            {560,115,645,233},//萬春宮
+            //{654,277,764,372},//天主堂
+            //{327,209,453,337},//小學校
+            //{435,460,554,555},//武德館
+            //{560,115,645,233},//萬春宮
+            {860,1016,916,1058},//彰化銀行繼光街宿舍
     };
 
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,8 +102,50 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        //預設為晴天
-        weather = 1;
+        getWeather();
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == 1){
+                    imView2 = (ImageView)findViewById(R.id.cloundView1);
+                    imView3 = (ImageView)findViewById(R.id.cloundView2);
+                    imView4 = (ImageView)findViewById(R.id.cloundView3);
+                    imView5 = (ImageView)findViewById(R.id.cloundView4);
+                    imView6 = (ImageView)findViewById(R.id.cloundView5);
+                    imView7 = (ImageView)findViewById(R.id.bgView);
+                    weather = "晴";
+                    if(weather.equals("陰")){
+                        String uri = "@drawable/black_clound";
+                        int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                        imView2.setImageResource(imageResource);
+                        imView3.setImageResource(imageResource);
+                        imView4.setImageResource(imageResource);
+                        imView5.setImageResource(imageResource);
+                        imView6.setImageResource(imageResource);
+                        cloundController(imView2);
+                        cloundController(imView3);
+                        cloundController(imView4);
+                        cloundController(imView5);
+                        cloundController(imView6);
+                        imView7.setVisibility(View.VISIBLE);
+                    } else if(weather.equals(weather.equals("陰带雨")) || weather.equals("雨")){
+                        String uri = "@drawable/rain_effect";
+                        int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                        imView7.setVisibility(View.VISIBLE);
+                        imView7.setImageResource(imageResource);
+                    }
+                    else{
+                        cloundController(imView2);
+                        cloundController(imView3);
+                        cloundController(imView4);
+                        cloundController(imView5);
+                        cloundController(imView6);
+                        imView7.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        };
+
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
 
@@ -122,44 +182,8 @@ public class MainActivity extends AppCompatActivity {
         imgList.add("map_now");
 
         imView = (ImageView)this.findViewById(R.id.mapView);
-        imView2 = (ImageView)findViewById(R.id.cloundView1);
-        imView3 = (ImageView)findViewById(R.id.cloundView2);
-        imView4 = (ImageView)findViewById(R.id.cloundView3);
-        imView5 = (ImageView)findViewById(R.id.cloundView4);
-        imView6 = (ImageView)findViewById(R.id.cloundView5);
-        imView7 = (ImageView)findViewById(R.id.bgView);
 
-        meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
-
-        //對地圖進行氣候管控
-        //https://opendata.cwb.gov.tw/dist/opendata-swagger.html 中央氣象局開放opendata
-        switch(weather){
-            case 1:
-                cloundController(imView2);
-                cloundController(imView3);
-                cloundController(imView4);
-                cloundController(imView5);
-                cloundController(imView6);
-                imView7.setVisibility(View.INVISIBLE);
-                break;
-            case 2:
-                String uri = "@drawable/black_clound";
-                int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-                imView2.setImageResource(imageResource);
-                imView3.setImageResource(imageResource);
-                imView4.setImageResource(imageResource);
-                imView5.setImageResource(imageResource);
-                imView6.setImageResource(imageResource);
-                cloundController(imView2);
-                cloundController(imView3);
-                cloundController(imView4);
-                cloundController(imView5);
-                cloundController(imView6);
-                imView7.setVisibility(View.VISIBLE);
-
-        }
-
-
+        //meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
 
     }
     //彈出介紹視窗
@@ -390,6 +414,7 @@ public class MainActivity extends AppCompatActivity {
         double finalPointX = xPoint + curPointX/phoneDensity;
         double finalPointY = yPoint + curPointY/phoneDensity;
         //Log.d("showPop",finalPointX+" , " +finalPointY);
+
         for(int i=0; i<objList.length; i++){
             //Log.d("showPop","true");
             if(finalPointX > objList[i][0] && finalPointY > objList[i][1]){
@@ -399,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
     }
 
     //拖移bar控制
@@ -415,28 +441,28 @@ public class MainActivity extends AppCompatActivity {
                     SB.setProgress(0);
                     TV.setText("乾隆40~51年");
                     changeImage(0);
-                    meibianzhiyuan.setText(R.string.meibianzhiyuan);
+                    //meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 25 && progress <= 50){
                     SB.setProgress(38);
                     TV.setText("1911年");
                     changeImage(1);
-                    meibianzhiyuan.setText(R.string.meibianzhiyuan);
+                    //meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 50 && progress <= 75 ){
                     SB.setProgress(63);
                     TV.setText("1937年");
                     changeImage(2);
-                    meibianzhiyuan.setText(R.string.meibianzhiyuan);
+                    //meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 75 ){
                     SB.setProgress(100);
                     TV.setText("2020年");
                     changeImage(3);
-                    meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
+                    //meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
                     clickFlag = true;
 
                 }
@@ -462,6 +488,127 @@ public class MainActivity extends AppCompatActivity {
         String uri = "@drawable/" + imgList.get(i);
         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
         imView.setImageResource(imageResource);
+        /*
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), imageResource, options);
+        int imageHeight = options.outHeight;
+        int imageWidth = options.outWidth;
+        String imageType = options.outMimeType;
+        Log.d("seeImgRes", String.valueOf(imageHeight));
+        Log.d("seeImgRes", String.valueOf(imageWidth));
+        Log.d("seeImgRes", String.valueOf(imageType));
+        */
+    }
+    private void getWeather(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    String data = getJSON("https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A&elementName=Weather&parameterName=CITY",9000);
+                    //Log.d("seeData",data);
+                    JSONObject jsonObject = new JSONObject(data);
+                    JSONArray jsonArr = jsonObject.getJSONObject("records").getJSONArray("location");
+
+                    //過濾只獲取台中的資料
+                    JSONObject taizhongData = new JSONObject();
+                    for(int i=0;i< jsonArr.length(); i++){
+                        JSONObject oneObject = null;
+                        try {
+                            oneObject = jsonArr.getJSONObject(i);
+                            if(oneObject.getString("locationName").equals("臺中"))
+                            {
+                                taizhongData = oneObject;
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    weather = taizhongData.getJSONArray("weatherElement").getJSONObject(0).getString("elementValue");
+
+                    Message msg = new Message();
+                    msg.what = 1;
+                    handler.sendMessage(msg);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    //https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-073?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A
+    /*
+    private Runnable multiThread = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                String data = getJSON("https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A&elementName=Weather&parameterName=CITY",9000);
+                //Log.d("seeData",data);
+                JSONObject jsonObject = new JSONObject(data);
+                JSONArray jsonArr = jsonObject.getJSONObject("records").getJSONArray("location");
+
+                //過濾只獲取台中的資料
+                JSONObject taizhongData = new JSONObject();
+                for(int i=0;i< jsonArr.length(); i++){
+                    JSONObject oneObject = null;
+                    try {
+                        oneObject = jsonArr.getJSONObject(i);
+                        if(oneObject.getString("locationName").equals("臺中"))
+                        {
+                            taizhongData = oneObject;
+                            break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                String weather = taizhongData.getJSONArray("weatherElement").getJSONObject(0).getString("elementValue");
+                Log.d("seeData",weather);
+
+                Message msg = new Message();
+                msg.what = 1;
+                handler.sendMessage(msg);
+
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    */
+
+    public static String getJSON(String url, int timeout) throws IOException {
+
+        URL u = new URL(url);
+        HttpURLConnection c = (HttpURLConnection) u.openConnection();
+        c.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        c.setRequestProperty("Accept", "application/json");
+
+        c.setRequestMethod("GET");
+
+        //c.setUseCaches(false);
+        //c.setAllowUserInteraction(false);
+        c.setConnectTimeout(timeout);   //设置连接主机超时（单位：毫秒）
+        c.setReadTimeout(timeout);      //设置从主机读取数据超时（单位：毫秒）
+        //c.setRequestProperty("User-Agent","Mozilla/5.0");
+        c.connect();
+        int status = c.getResponseCode();
+
+        switch (status) {
+            case 200:
+            case 201:
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream(),"utf-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                return sb.toString();
+        }
+
+        return null;
     }
 
 }

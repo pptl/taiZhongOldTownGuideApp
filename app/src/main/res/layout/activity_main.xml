@@ -132,7 +132,7 @@
         app:layout_constraintBottom_toTopOf="@+id/more_post"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/locate_button" />
-
+    <!--
     <TextView
         android:id="@+id/meibianzhiyuan_textView"
         android:layout_width="match_parent"
@@ -145,7 +145,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
+    -->
     <ImageView
         android:id="@+id/more_post"
         android:layout_width="64dp"

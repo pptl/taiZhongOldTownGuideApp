@@ -29,24 +29,9 @@ public class TakePhotoPopWin extends PopupWindow {
 
         switch(i){
             case 0:
-                titleTV.setText(R.string.tianzhutang_title);
-                contentTV.setText(R.string.tianzhutang_content);
-                contentIV.setImageResource(R.drawable.chuanting);
-                break;
-            case 1:
-                titleTV.setText(R.string.xiaoxuexiao_title);
-                contentTV.setText(R.string.xiaoxuexiao_content);
-                contentIV.setImageResource(R.drawable.huochezhan);
-                break;
-            case 2:
-                titleTV.setText(R.string.wudeguan_title);
-                contentTV.setText(R.string.wudeguan_content);
-                contentIV.setImageResource(R.drawable.shiyisuo);
-                break;
-            case 3:
-                titleTV.setText(R.string.wancungong_title);
-                contentTV.setText(R.string.wancungong_content);
-                contentIV.setImageResource(R.drawable.wancungong);
+                titleTV.setText(R.string.fivezeroone_title);
+                contentTV.setText(R.string.fivezeroone_content);
+                contentIV.setImageResource(R.drawable.fivezeroone);
                 break;
         }
         // 设置外部可点击
