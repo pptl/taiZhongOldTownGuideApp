@@ -26,12 +26,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class displayPost extends AppCompatActivity {
+public class NewsInfo extends AppCompatActivity {
 
     private String postTitle;
     private String postURL;
     private TextView titleTextView;
-    //private TextView contextTextView;
     private String postContext = "";
     private List<String> imgUrl  = new ArrayList<>();
     private Handler handler;
@@ -43,17 +42,16 @@ public class displayPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_post);
 
-
         postTitle = getIntent().getStringExtra("title");
         postURL = getIntent().getStringExtra("url");
 
         titleTextView = findViewById(R.id.info_post_title);
         postLayout = findViewById(R.id.postLayout);
-        //contextTextView = findViewById(R.id.info_post_contexxt);
 
         titleTextView.setText(postTitle);
-        //contextTextView.setText(postURL);
+
         getPostContext();
+
         handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -66,7 +64,6 @@ public class displayPost extends AppCompatActivity {
                             //Log.d("seeImgUrl",imgUrl.get(i));
                         }
                     }
-
                 }
             }
         };
@@ -79,20 +76,14 @@ public class displayPost extends AppCompatActivity {
     }
     private void newImageView(String url){
         ImageView iv = new ImageView(this);
-        //iv.setImageBitmap(bitmap);
-        //tv.setText(text);
-        //tv.setTextSize(20);
         Picasso.with(this).load(url).into(iv);
-
         postLayout.addView(iv);
-
     }
     private void getPostContext(){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
-
                         Document doc = Jsoup.connect(postURL).get();
                         Elements context = doc.select("div.sppb-addon-content");
                         String imgLink = "";
@@ -130,8 +121,6 @@ public class displayPost extends AppCompatActivity {
                             newsList.add(news);
 
                      */
-
-
                     Message msg = new Message();
                     msg.what = 1;
                     handler.sendMessage(msg);

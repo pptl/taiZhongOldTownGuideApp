@@ -10,37 +10,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class notInTeam extends AppCompatActivity {
+public class TeamEntry extends AppCompatActivity {
 
-    private TextView textView;
+    private TextView welcomeSpeechTextView;
     private String userName;
     private String teamID;
     private String userID;
-    private int isUnique = 0;
     private String userIconPath;
     private FirebaseDatabase mDatabase;
     private SharedPreferences pref;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +37,14 @@ public class notInTeam extends AppCompatActivity {
         pref = getSharedPreferences("userData",MODE_PRIVATE);
         userName = pref.getString("userName","error");
 
-        textView = findViewById(R.id.notInTeam_textView);
-        String wellcomeText = "歡迎你，" + userName;
         mDatabase = FirebaseDatabase.getInstance();
 
-        textView.setText(wellcomeText);
-
+        welcomeSpeechTextView = findViewById(R.id.notInTeam_textView);
+        String wellcomeText = "歡迎你，" + userName;
+        welcomeSpeechTextView.setText(wellcomeText);
     }
 
-
-
+    //如果使用者選擇創建團隊
     public void goCreateTeam(View view) {
         Map<String, Object> user = new HashMap<>();
         DatabaseReference teamRef = mDatabase.getReference("team");
@@ -69,7 +54,6 @@ public class notInTeam extends AppCompatActivity {
         user.put("userIconPath", userIconPath);
         user.put("userName",userName);
         user.put("isLeader",true);
-
 
         teamID = teamIDGenerator();
         //這裡在檢查有沒有重複的teamID
@@ -85,7 +69,6 @@ public class notInTeam extends AppCompatActivity {
                         teamID = teamIDGenerator();
                     }
                 }
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -93,30 +76,29 @@ public class notInTeam extends AppCompatActivity {
             }
         });
 
-
         userID = teamRef.child(teamID).child("userData").push().getKey();
 
         teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
         pref.edit().putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
 
-        Intent intent = new Intent(this,whereIsMyFriend.class);
+        Intent intent = new Intent(this, TeamTracker.class);
         startActivity(intent);
         finish();
-
     }
+
+    //如果使用者選擇參加團隊
     public void goJoinTeam(View view) {
-        Intent intent = new Intent(this,joinTeam.class);
+        Intent intent = new Intent(this, JoinTeam.class);
         startActivity(intent);
-
-
     }
+
     public String teamIDGenerator(){
 
         double rand = Math.random();
         String teamID = Double.toString(rand);
         teamID = teamID.substring(2,8);
-        //这里要到firebase检查有没有这个房号ifno=>
+        //这里要到firebase检查有没有重複的房號
 
         return teamID;
     }

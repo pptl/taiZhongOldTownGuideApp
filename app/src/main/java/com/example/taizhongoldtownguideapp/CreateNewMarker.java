@@ -1,14 +1,11 @@
 package com.example.taizhongoldtownguideapp;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -16,22 +13,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TimePicker;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class addLocation extends AppCompatActivity {
+public class CreateNewMarker extends AppCompatActivity {
 
     private TimePicker picker;
     private EditText editText;
@@ -47,9 +34,6 @@ public class addLocation extends AppCompatActivity {
     private SharedPreferences pref;
     private FirebaseDatabase mDatabase;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,15 +47,13 @@ public class addLocation extends AppCompatActivity {
         teamID = pref.getString("teamID","error");
         markerPath = "location_icon";
 
-
-
-        picker = (TimePicker)findViewById(R.id.timePicker);
-        picker.setIs24HourView(true);
-        picker.setEnabled(false);
         markerIcon = findViewById(R.id.addIcon_iconView);
         editText = findViewById(R.id.addIcon_editText);
         aSwitch = findViewById(R.id.setNotice_switch);
         button = findViewById(R.id.addLocation_button);
+        picker = (TimePicker)findViewById(R.id.timePicker);
+        picker.setIs24HourView(true);
+        picker.setEnabled(false);
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -85,6 +67,7 @@ public class addLocation extends AppCompatActivity {
 
             }
         });
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +76,6 @@ public class addLocation extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra("markContext", editText.getText().toString());
                 setResult(RESULT_OK, intent);
-
 
                 newMark.put("markContext",editText.getText().toString());
                 newMark.put("markLatitude",latitude);
@@ -104,14 +86,12 @@ public class addLocation extends AppCompatActivity {
 
                 mDatabase.getReference().child("team").child(teamID).child("marker").push().setValue(newMark);
                 finish();
-
             }
         });
-
     }
 
     public void changeIcon(View view) {
-        Intent intent = new Intent(this,chooseMarker.class);
+        Intent intent = new Intent(this, ChangeMarkerIcon.class);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent,PICK_IMAGE_REQUEST);
     }

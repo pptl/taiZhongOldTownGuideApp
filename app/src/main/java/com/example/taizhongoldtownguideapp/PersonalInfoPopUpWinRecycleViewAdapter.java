@@ -1,13 +1,11 @@
 package com.example.taizhongoldtownguideapp;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,46 +13,35 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-
 import java.util.List;
 
 
-public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendListRecycleViewAdapter.friendListRecycleViewHolder> {
+public class PersonalInfoPopUpWinRecycleViewAdapter extends RecyclerView.Adapter<PersonalInfoPopUpWinRecycleViewAdapter.friendListRecycleViewHolder> {
 
-    private List<String> friendList = new ArrayList<>();
+    private List<String> friendList;
     private DatabaseReference teamMemberRef;
     private final LayoutInflater mInflater;
     private GoogleMap mMap;
     public Context context;
 
-
     class friendListRecycleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final TextView wordItemView;
         public ImageView userIcon;
         public ImageView isLeaderIcon;
-        final friendListRecycleViewAdapter mAdapter;
+        final PersonalInfoPopUpWinRecycleViewAdapter mAdapter;
 
-
-        public friendListRecycleViewHolder(View itemView, friendListRecycleViewAdapter adapter) {
+        public friendListRecycleViewHolder(View itemView, PersonalInfoPopUpWinRecycleViewAdapter adapter) {
             super(itemView);
+
             wordItemView = itemView.findViewById(R.id.user_context);
             userIcon = itemView.findViewById(R.id.user_icon);
             isLeaderIcon = itemView.findViewById(R.id.isLeaderIcon);
             this.mAdapter = adapter;
             itemView.setOnClickListener(this);
-
-
         }
 
         @Override
@@ -75,12 +62,10 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
 
                 }
             });
-
         }
-
     }
 
-    public friendListRecycleViewAdapter(Context context, List<String> friendList, DatabaseReference teamMemberRef, GoogleMap map) {
+    public PersonalInfoPopUpWinRecycleViewAdapter(Context context, List<String> friendList, DatabaseReference teamMemberRef, GoogleMap map) {
         mInflater = LayoutInflater.from(context);
         this.mMap = map;
         this.friendList = friendList;
@@ -91,8 +76,7 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
     @NonNull
     @Override
     public friendListRecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View mItemView = mInflater.inflate(R.layout.person_info_recycle_view_item,
-                parent, false);
+        View mItemView = mInflater.inflate(R.layout.person_info_recycle_view_item, parent, false);
         return new friendListRecycleViewHolder(mItemView, this);
     }
 
@@ -110,13 +94,11 @@ public class friendListRecycleViewAdapter extends RecyclerView.Adapter<friendLis
                 holder.userIcon.setImageResource(imageResource);
                 if (!mCurrentUserIsLeader){
                     holder.isLeaderIcon.setVisibility(View.GONE);
-                }
-                else{
+                } else {
                     int leaderIcon = context.getResources().getIdentifier("@drawable/crown", null, context.getPackageName());
                     holder.isLeaderIcon.setVisibility(View.VISIBLE);
                     holder.isLeaderIcon.setImageResource(leaderIcon);
                 }
-
             }
 
             @Override

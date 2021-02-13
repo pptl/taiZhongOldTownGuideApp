@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-public class surroundView extends AppCompatActivity {
+public class SurroundingView extends AppCompatActivity {
     private CardView cardView1;
     private CardView cardView2;
     private CardView cardView3;
@@ -22,7 +22,6 @@ public class surroundView extends AppCompatActivity {
         cardView1 = findViewById(R.id.cardView1);
         cardView2 = findViewById(R.id.cardView2);
         cardView3 = findViewById(R.id.cardView3);
-
 
         cardView1.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class postListRecycleViewAdapter extends RecyclerView.Adapter<postListRecycleViewAdapter.postHolder> {
+public class NewsRecycleViewAdapter extends RecyclerView.Adapter<NewsRecycleViewAdapter.postHolder> {
 
     private final List<String> titleList;
     private final List<String> urlList;
@@ -21,10 +21,10 @@ public class postListRecycleViewAdapter extends RecyclerView.Adapter<postListRec
 
     class postHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView wordItemView;
-        final postListRecycleViewAdapter mAdapter;
+        final NewsRecycleViewAdapter mAdapter;
 
 
-        public postHolder(View itemView, postListRecycleViewAdapter adapter) {
+        public postHolder(View itemView, NewsRecycleViewAdapter adapter) {
             super(itemView);
             wordItemView = itemView.findViewById(R.id.post_title);
             this.mAdapter = adapter;
@@ -34,7 +34,7 @@ public class postListRecycleViewAdapter extends RecyclerView.Adapter<postListRec
         @Override
         public void onClick(View view) {
             int mPosition = getLayoutPosition();
-            Intent intent = new Intent(context,displayPost.class);
+            Intent intent = new Intent(context, NewsInfo.class);
             intent.putExtra("title",titleList.get(mPosition));
             intent.putExtra("url",urlList.get(mPosition));
             context.startActivity(intent);
@@ -45,7 +45,7 @@ public class postListRecycleViewAdapter extends RecyclerView.Adapter<postListRec
         }
     }
 
-    public postListRecycleViewAdapter(Context context, List<String> titleList, List<String> urlList) {
+    public NewsRecycleViewAdapter(Context context, List<String> titleList, List<String> urlList) {
         mInflater = LayoutInflater.from(context);
         this.titleList = titleList;
         this.urlList = urlList;
@@ -53,14 +53,14 @@ public class postListRecycleViewAdapter extends RecyclerView.Adapter<postListRec
     }
 
     @Override
-    public postListRecycleViewAdapter.postHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NewsRecycleViewAdapter.postHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Inflate an item view.
         View mItemView = mInflater.inflate(R.layout.post_recycle_view_item, parent, false);
         return new postHolder(mItemView, this);
     }
 
     @Override
-    public void onBindViewHolder(postListRecycleViewAdapter.postHolder holder, int position) {
+    public void onBindViewHolder(NewsRecycleViewAdapter.postHolder holder, int position) {
         // Retrieve the data for that position.
         String mCurrent = titleList.get(position);
         // Add the data to the view holder.

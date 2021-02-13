@@ -6,28 +6,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class joinTeam extends AppCompatActivity {
+public class JoinTeam extends AppCompatActivity {
     private EditText editText;
     private String teamID;
     private String userName;
@@ -49,9 +41,6 @@ public class joinTeam extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance();
         teamRef = mDatabase.getReference("team");
-
-
-
     }
 
     public void quickJoin(View view) {
@@ -59,7 +48,6 @@ public class joinTeam extends AppCompatActivity {
         //這裡離要檢查輸入碼對不對
         teamID = editText.getText().toString();
 
-        //DatabaseReference teamRef = mDatabase.getReference("team").child(teamID);
         teamRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -76,7 +64,7 @@ public class joinTeam extends AppCompatActivity {
 
                     pref.edit().putString("userName",userName).putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).putBoolean("isLeader",false).putFloat("userLatitude",0).putFloat("userLongitude",0).putString("userIconPath", userIconPath).commit();
 
-                    Intent intent = new Intent(getApplicationContext(),whereIsMyFriend.class);
+                    Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
                     startActivity(intent);
                     finish();
                 }
