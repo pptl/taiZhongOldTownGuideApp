@@ -139,7 +139,7 @@ public class personInfoPopWin extends PopupWindow {
         this.setBackgroundDrawable(dw);
 
         // 设置弹出窗体显示时的动画，从底部向上弹出
-        this.setAnimationStyle(R.style.take_photo_anim);
+        this.setAnimationStyle(R.style.pop_up_win_anim);
 
     }
 

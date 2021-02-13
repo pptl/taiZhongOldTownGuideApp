@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         curPointY = 0;
 
 
-        //宣告病初始化地圖
+        //宣告並初始化地圖
         BitmapFactory.Options options = new BitmapFactory.Options();
         BitmapFactory.decodeResource(getResources(),R.drawable.map_now,options);
 
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     public void popWindow(int i) {
         titleTV = (TextView)findViewById(R.id.personInfo_inviteCode_TextView);
         contentTV = (TextView)findViewById(R.id.contentTextView);
-        TakePhotoPopWin takePhotoPopWin = new TakePhotoPopWin(this,this,i);
+        IntroductionCustomPopUpWin takePhotoPopWin = new IntroductionCustomPopUpWin(this, R.layout.take_photo_pop, i);
         //设置Popupwindow显示位置（从底部弹出）
         takePhotoPopWin.showAtLocation(findViewById(R.id.mapView), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
         params = getWindow().getAttributes();
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
         double finalPointX = xPoint + curPointX/phoneDensity;
         double finalPointY = yPoint + curPointY/phoneDensity;
         //Log.d("showPop",finalPointX+" , " +finalPointY);
-
+        popWindow(0);
         for(int i=0; i<objList.length; i++){
             //Log.d("showPop","true");
             if(finalPointX > objList[i][0] && finalPointY > objList[i][1]){
