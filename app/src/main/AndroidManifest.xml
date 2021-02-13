@@ -19,41 +19,41 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".surroundView"
+            android:name=".SurroundingView"
             android:label="3D環景"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".displayPost"
+            android:name=".NewsInfo"
             android:label="新聞內容"
-            android:parentActivityName=".crawlersPage" />
+            android:parentActivityName=".NewsList" />
         <activity
-            android:name=".crawlersPage"
+            android:name=".NewsList"
             android:label="通識新聞"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".chooseMarker"
+            android:name=".ChangeMarkerIcon"
             android:label="选择标记"
-            android:parentActivityName=".whereIsMyFriend" />
+            android:parentActivityName=".TeamTracker" />
         <activity
-            android:name=".chooseUserIcon"
+            android:name=".ChangeUserIcon"
             android:label="选择头框"
-            android:parentActivityName=".newUser" />
+            android:parentActivityName=".CreateNewUser" />
         <activity
-            android:name=".newUser"
+            android:name=".CreateNewUser"
             android:label="新成员加入"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".addLocation"
+            android:name=".CreateNewMarker"
             android:label="新增标记"
-            android:parentActivityName=".whereIsMyFriend" />
+            android:parentActivityName=".TeamTracker" />
         <activity
-            android:name=".notInTeam"
+            android:name=".TeamEntry"
             android:label="参团方式"
-            android:parentActivityName=".newUser" />
+            android:parentActivityName=".CreateNewUser" />
         <activity
-            android:name=".joinTeam"
+            android:name=".JoinTeam"
             android:label="快速加入团队"
-            android:parentActivityName=".notInTeam" />
+            android:parentActivityName=".TeamEntry" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -67,7 +67,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".whereIsMyFriend"
+            android:name=".TeamTracker"
             android:label="我的团队"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity">

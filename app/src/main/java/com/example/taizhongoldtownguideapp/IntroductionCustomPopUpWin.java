@@ -17,6 +17,7 @@ public class IntroductionCustomPopUpWin extends CustomPopUpWin {
         contentTextView =  getView().findViewById(R.id.contentTextView);
         contentImageView = getView().findViewById(R.id.contentImageView);
 
+        //這裡可能要寫成看資料有多少再去找
         switch(i){
             case 0:
                 titleTV.setText("hahha");

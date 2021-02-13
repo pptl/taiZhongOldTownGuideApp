@@ -31,14 +31,6 @@ import android.widget.TextView;
 import android.view.GestureDetector;
 
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.JsonObject;
-import com.plattysoft.leonids.ParticleSystem;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +39,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -190,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
     public void popWindow(int i) {
         titleTV = (TextView)findViewById(R.id.personInfo_inviteCode_TextView);
         contentTV = (TextView)findViewById(R.id.contentTextView);
-        IntroductionCustomPopUpWin takePhotoPopWin = new IntroductionCustomPopUpWin(this, R.layout.take_photo_pop, i);
+        IntroductionCustomPopUpWin popUpWin = new IntroductionCustomPopUpWin(this, R.layout.introdution_custom_pop_up_win, i);
         //设置Popupwindow显示位置（从底部弹出）
-        takePhotoPopWin.showAtLocation(findViewById(R.id.mapView), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+        popUpWin.showAtLocation(findViewById(R.id.mapView), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
         params = getWindow().getAttributes();
         //当弹出Popupwindow时，背景变半透明
         params.alpha=0.7f;
@@ -200,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //设置Popupwindow关闭监听，当Popupwindow关闭，背景恢复1f
-        takePhotoPopWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
+        popUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 params = getWindow().getAttributes();
@@ -227,11 +218,11 @@ public class MainActivity extends AppCompatActivity {
 
             Boolean newUser = pref.getBoolean("inTeam",false);
             if(!newUser){
-                Intent intent = new Intent(this,newUser.class);
+                Intent intent = new Intent(this, CreateNewUser.class);
                 startActivity(intent);
             }
             else{
-                Intent intent = new Intent(this,whereIsMyFriend.class);
+                Intent intent = new Intent(this, TeamTracker.class);
                 startActivity(intent);
             }
         }
@@ -255,11 +246,11 @@ public class MainActivity extends AppCompatActivity {
 
             Boolean newUser = pref.getBoolean("inTeam",false);
             if(!newUser){
-                Intent intent = new Intent(this,newUser.class);
+                Intent intent = new Intent(this, CreateNewUser.class);
                 startActivity(intent);
             }
             else{
-                Intent intent = new Intent(this,whereIsMyFriend.class);
+                Intent intent = new Intent(this, TeamTracker.class);
                 startActivity(intent);
             }
         }
@@ -269,12 +260,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goMorePost(View view) {
-        Intent intent = new Intent(this,crawlersPage.class);
+        Intent intent = new Intent(this, NewsList.class);
         startActivity(intent);
     }
 
     public void goSurroundView(View view) {
-        Intent intent = new Intent(this, surroundView.class);
+        Intent intent = new Intent(this, SurroundingView.class);
         startActivity(intent);
     }
 

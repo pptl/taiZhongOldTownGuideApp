@@ -5,15 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-public class newUser extends AppCompatActivity {
+public class CreateNewUser extends AppCompatActivity {
     private EditText editText;
     private String newUserName;
     private String userIconPath;
@@ -39,16 +36,16 @@ public class newUser extends AppCompatActivity {
 
         pref.edit().putString("userName",newUserName).apply();
 
-        Intent intent = new Intent(this,notInTeam.class);
+        Intent intent = new Intent(this, TeamEntry.class);
         startActivity(intent);
-
     }
 
     public void changeUserIcon(View view) {
-        Intent intent = new Intent(this,chooseUserIcon.class);
+        Intent intent = new Intent(this, ChangeUserIcon.class);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent,PICK_IMAGE_REQUEST);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

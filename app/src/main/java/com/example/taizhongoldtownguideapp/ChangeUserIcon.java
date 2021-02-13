@@ -6,31 +6,32 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-public class chooseMarker extends AppCompatActivity {
+public class ChangeUserIcon extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_marker);
+        setContentView(R.layout.activity_choose_user_icon);
     }
 
-    public void chooseMarker1(View view) {
+    public void returnIcon1(View view) {
         Intent intent = new Intent();
-        intent.putExtra("userPickedMarker", "bed_icon");
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-    public void chooseMarker2(View view) {
-        Intent intent = new Intent();
-        intent.putExtra("userPickedMarker", "food_icon");
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-    public void chooseMarker3(View view) {
-        Intent intent = new Intent();
-        intent.putExtra("userPickedMarker", "location_icon");
+        intent.putExtra("userPickedIcon", "user_icon1");
         setResult(RESULT_OK, intent);
         finish();
     }
 
+    public void returnIcon2(View view) {
+        Intent intent = new Intent();
+        intent.putExtra("userPickedIcon","user_icon2");
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    public void returnIcon3(View view) {
+        Intent intent = new Intent();
+        intent.putExtra("userPickedIcon", "user_icon3");
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
