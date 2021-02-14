@@ -32,7 +32,7 @@ public class TeamEntry extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_not_in_team);
+        setContentView(R.layout.activity_team_entry);
 
         pref = getSharedPreferences("userData",MODE_PRIVATE);
         userName = pref.getString("userName","error");

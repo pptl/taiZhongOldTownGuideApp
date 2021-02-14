@@ -11,7 +11,7 @@ public class ChangeUserIcon extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_user_icon);
+        setContentView(R.layout.activity_change_user_icon);
     }
 
     public void returnIcon1(View view) {

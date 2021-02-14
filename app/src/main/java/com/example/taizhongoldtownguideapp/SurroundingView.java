@@ -17,7 +17,7 @@ public class SurroundingView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_surround_view);
+        setContentView(R.layout.activity_surrounding_view);
 
         cardView1 = findViewById(R.id.cardView1);
         cardView2 = findViewById(R.id.cardView2);

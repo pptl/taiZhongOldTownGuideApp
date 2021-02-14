@@ -36,7 +36,7 @@ public class NewsList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crawlers_page);
+        setContentView(R.layout.activity_news_list);
         mRecyclerView = findViewById(R.id.showInfo);
         currentPageTab = findViewById(R.id.currentPageTab);
         prePageBtn = findViewById(R.id.prePageBtn);

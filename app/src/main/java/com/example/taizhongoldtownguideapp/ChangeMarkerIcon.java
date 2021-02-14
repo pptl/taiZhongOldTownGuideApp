@@ -11,7 +11,7 @@ public class ChangeMarkerIcon extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_marker);
+        setContentView(R.layout.activity_change_marker_icon);
     }
 
     public void chooseMarker1(View view) {
