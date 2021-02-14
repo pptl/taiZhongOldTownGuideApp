@@ -224,7 +224,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     public void popWindow(String popWinName) {
         if(popWinName.equals("locationInfo")){
-            LocationInfoPopWin locationInfoPopWin = new LocationInfoPopWin(this, R.layout.location_info_pop_win, mMap);
+            LocationInfoPopUpWin locationInfoPopWin = new LocationInfoPopUpWin(this, R.layout.location_info_pop_win, mMap);
             locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
             params.alpha = 0.7f;
@@ -238,7 +238,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         } else if (popWinName.equals("personInfo")){
-            PersonInfoPopWin personInfoPopWin = new PersonInfoPopWin(this, R.layout.person_info_pop_win, mMap);
+            PersonInfoPopUpWin personInfoPopWin = new PersonInfoPopUpWin(this, R.layout.person_info_pop_win, mMap);
             personInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
             params.alpha = 0.7f;

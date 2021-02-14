@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
@@ -46,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final int REQUEST_CODE = 101;
+    private Button goTeamTrackerBtn;
+    private Button goNewsBtn;
+    private Button goSurroundingViewBtn;
+    private Button navBtn;
     private GestureDetector GD;
     private ImageView imView;
     private ImageView imView2;
@@ -54,11 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imView5;
     private ImageView imView6;
     private ImageView imView7;
-    private SeekBar SB;
-    private TextView TV;
-    private TextView titleTV;
-    private TextView contentTV;
-    //private TextView meibianzhiyuan;
+    private SeekBar seekBar;
+    private TextView seekBarTextView;
+    private TextView meibianzhiyuan;
     private ArrayList<String> imgList = null;
 
     private WindowManager.LayoutParams params;
@@ -69,18 +72,18 @@ public class MainActivity extends AppCompatActivity {
     private int curPointY;
     private String weather;//1：晴天，2：陰天，3：小雨天，4： 雷雨天
     private SharedPreferences pref;
-    private AndroidGestureDectector androidGestureDectector = new AndroidGestureDectector();
     private Handler handler;
 
     public boolean clickFlag = true;
 
     //設置地圖上有效點擊範圍
     private int [][] objList={
-            //{654,277,764,372},//天主堂
-            //{327,209,453,337},//小學校
-            //{435,460,554,555},//武德館
-            //{560,115,645,233},//萬春宮
-            {860,1016,916,1058},//彰化銀行繼光街宿舍
+            {303, 1045, 387, 1960},//四維街日式招待所
+            {856, 1015, 916, 1062},//彰化銀行繼光街宿舍
+            {906, 912, 976, 964},//合作金庫銀行
+            {1172, 734, 1234, 778},//彰化銀行舊總行
+            {1294, 918, 1357, 972},//中山綠橋
+            {1560, 1086, 1631, 1137},//台中車站後站
     };
 
     @SuppressLint("HandlerLeak")
@@ -90,8 +93,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pref = getSharedPreferences("userData",MODE_PRIVATE);
-
-
 
         getWeather();
         handler = new Handler(){
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     imView5 = (ImageView)findViewById(R.id.cloundView4);
                     imView6 = (ImageView)findViewById(R.id.cloundView5);
                     imView7 = (ImageView)findViewById(R.id.bgView);
-                    weather = "晴";
+                    //weather = "晴";
                     if(weather.equals("陰")){
                         String uri = "@drawable/black_clound";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
@@ -124,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
                         imView7.setVisibility(View.VISIBLE);
                         imView7.setImageResource(imageResource);
-                    }
-                    else{
+                    } else {
                         cloundController(imView2);
                         cloundController(imView3);
                         cloundController(imView4);
@@ -149,16 +149,13 @@ public class MainActivity extends AppCompatActivity {
         curPointX = 0;
         curPointY = 0;
 
-
-        //宣告並初始化地圖
+        //宣告並初始化地圖底圖
         BitmapFactory.Options options = new BitmapFactory.Options();
         BitmapFactory.decodeResource(getResources(),R.drawable.map_now,options);
-
 
         //宣告手勢
         AndroidGestureDectector androidGestureDectector = new AndroidGestureDectector();
         GD = new GestureDetector(MainActivity.this,androidGestureDectector);
-
 
         //設置滑軌監聽
         seekBarController();
@@ -174,13 +171,84 @@ public class MainActivity extends AppCompatActivity {
 
         imView = (ImageView)this.findViewById(R.id.mapView);
 
-        //meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
+        meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
+
+        goTeamTrackerBtn = findViewById(R.id.team_tracker_btn);
+        goNewsBtn = findViewById(R.id.news_btn);
+        goSurroundingViewBtn = findViewById(R.id.surrounding_view_btn);
+        navBtn = findViewById(R.id.nav_btn);
+
+        goTeamTrackerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //請求獲取位置permission
+                if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getParent(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
+                    return;
+                }
+                else{
+                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                        //这里其实要出现一个视窗提醒使用者开GPS
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+
+                    Boolean newUser = pref.getBoolean("inTeam",false);
+                    if(!newUser){
+                        Intent intent = new Intent(getApplicationContext(), CreateNewUser.class);
+                        startActivity(intent);
+                    }
+                    else{
+                        Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+
+        goNewsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), NewsList.class);
+                startActivity(intent);
+            }
+        });
+
+        goSurroundingViewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), NewsList.class);
+                startActivity(intent);
+            }
+        });
+
+        navBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(navBtn.isSelected()){
+                    navBtn.setSelected(false);
+                    goTeamTrackerBtn.setEnabled(false);
+                    goTeamTrackerBtn.setVisibility(View.INVISIBLE);
+                    goNewsBtn.setEnabled(false);
+                    goNewsBtn.setVisibility(View.INVISIBLE);
+                    goSurroundingViewBtn.setEnabled(false);
+                    goSurroundingViewBtn.setVisibility(View.INVISIBLE);
+                } else {
+                    navBtn.setSelected(true);
+                    goTeamTrackerBtn.setEnabled(true);
+                    goTeamTrackerBtn.setVisibility(View.VISIBLE);
+                    goNewsBtn.setEnabled(true);
+                    goNewsBtn.setVisibility(View.VISIBLE);
+                    goSurroundingViewBtn.setEnabled(true);
+                    goSurroundingViewBtn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
     }
     //彈出介紹視窗
     public void popWindow(int i) {
-        titleTV = (TextView)findViewById(R.id.personInfo_inviteCode_TextView);
-        contentTV = (TextView)findViewById(R.id.contentTextView);
         IntroductionCustomPopUpWin popUpWin = new IntroductionCustomPopUpWin(this, R.layout.introdution_custom_pop_up_win, i);
         //设置Popupwindow显示位置（从底部弹出）
         popUpWin.showAtLocation(findViewById(R.id.mapView), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -188,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
         //当弹出Popupwindow时，背景变半透明
         params.alpha=0.7f;
         getWindow().setAttributes(params);
-
 
         //设置Popupwindow关闭监听，当Popupwindow关闭，背景恢复1f
         popUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -199,43 +266,13 @@ public class MainActivity extends AppCompatActivity {
                 getWindow().setAttributes(params);
             }
         });
-
-    }
-
-    public void goLocate(View view) {
-        //請求獲取位置permission
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
-            return;
-        }
-        else{
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                //这里其实要出现一个视窗提醒使用者开GPS
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-
-
-            Boolean newUser = pref.getBoolean("inTeam",false);
-            if(!newUser){
-                Intent intent = new Intent(this, CreateNewUser.class);
-                startActivity(intent);
-            }
-            else{
-                Intent intent = new Intent(this, TeamTracker.class);
-                startActivity(intent);
-            }
-        }
-
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d("seePermition", String.valueOf(PackageManager.PERMISSION_GRANTED));
+        //Log.d("seePermition", String.valueOf(PackageManager.PERMISSION_GRANTED));
         if (requestCode == REQUEST_CODE){
-            Log.d("seePermition","permitionOK");
 
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -243,38 +280,25 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             }
 
-
             Boolean newUser = pref.getBoolean("inTeam",false);
             if(!newUser){
                 Intent intent = new Intent(this, CreateNewUser.class);
                 startActivity(intent);
-            }
-            else{
+            } else {
                 Intent intent = new Intent(this, TeamTracker.class);
                 startActivity(intent);
             }
-        }
-        else{
+        } else {
             Log.d("seePermition","permitionNotOK");
         }
     }
 
-    public void goMorePost(View view) {
-        Intent intent = new Intent(this, NewsList.class);
-        startActivity(intent);
-    }
 
-    public void goSurroundView(View view) {
-        Intent intent = new Intent(this, SurroundingView.class);
-        startActivity(intent);
-    }
-
-    //手勢控制，目前只做拖移
+    //手勢控制，目前只做拖移，後續還有縮放要做
     class AndroidGestureDectector implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-
             if(clickFlag) {
                 checkPointIf(e.getX()/phoneDensity,((e.getY()/phoneDensity)-80));
             }
@@ -293,8 +317,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onDown(MotionEvent e) {
-
-            //showcurpoint();
             //設置scrollBar的animation
             Animation inAnim = new AlphaAnimation(0f,1.0f);
             Animation outAnim = new AlphaAnimation(1.0f,0f);
@@ -303,21 +325,20 @@ public class MainActivity extends AppCompatActivity {
             inAnim.setFillAfter(true);
             outAnim.setFillAfter(true);
 
-            //Log.d("showpoint",e.getX()+" , "+e.getY());
             if(e.getY() <= phoneHeightPixels * 0.7){
-                if (SB.getVisibility() != View.INVISIBLE){
-                    SB.startAnimation(outAnim);
-                    TV.startAnimation(outAnim);
-                    SB.setVisibility(View.INVISIBLE);
-                    TV.setVisibility(View.INVISIBLE);
+                if (seekBar.getVisibility() != View.INVISIBLE){
+                    seekBar.startAnimation(outAnim);
+                    seekBarTextView.startAnimation(outAnim);
+                    seekBar.setVisibility(View.INVISIBLE);
+                    seekBarTextView.setVisibility(View.INVISIBLE);
                 }
             }
             if(e.getY() > phoneHeightPixels * 0.7){
-                if(SB.getVisibility() != View.VISIBLE){
-                    SB.startAnimation(inAnim);
-                    TV.startAnimation(inAnim);
-                    SB.setVisibility(View.VISIBLE);
-                    TV.setVisibility(View.VISIBLE);
+                if(seekBar.getVisibility() != View.VISIBLE){
+                    seekBar.startAnimation(inAnim);
+                    seekBarTextView.startAnimation(inAnim);
+                    seekBar.setVisibility(View.VISIBLE);
+                    seekBarTextView.setVisibility(View.VISIBLE);
                 }
             }
             return false;
@@ -357,7 +378,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        Log.d("seeEvent", String.valueOf(event));
         GD.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
@@ -400,14 +420,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
     //監控地圖上制定地點有效區用
     private void checkPointIf(float xPoint, float yPoint){
         double finalPointX = xPoint + curPointX/phoneDensity;
         double finalPointY = yPoint + curPointY/phoneDensity;
-        //Log.d("showPop",finalPointX+" , " +finalPointY);
-        popWindow(0);
         for(int i=0; i<objList.length; i++){
-            //Log.d("showPop","true");
             if(finalPointX > objList[i][0] && finalPointY > objList[i][1]){
                 if(finalPointX < objList[i][2] && finalPointY < objList[i][3]){
                     popWindow(i);
@@ -415,59 +433,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
 
     //拖移bar控制
     private void seekBarController(){
-
-        SB = (SeekBar)findViewById(R.id.seekBar);
-        TV = (TextView)findViewById(R.id.yearTextView);
-        SB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar = (SeekBar)findViewById(R.id.seekBar);
+        seekBarTextView = (TextView)findViewById(R.id.yearTextView);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-
                 if(progress<=25){
-                    SB.setProgress(0);
-                    TV.setText("乾隆40~51年");
+                    seekBar.setProgress(0);
+                    seekBarTextView.setText("乾隆40~51年");
                     changeImage(0);
-                    //meibianzhiyuan.setText(R.string.meibianzhiyuan);
+                    meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 25 && progress <= 50){
-                    SB.setProgress(38);
-                    TV.setText("1911年");
+                    seekBar.setProgress(38);
+                    seekBarTextView.setText("1911年");
                     changeImage(1);
-                    //meibianzhiyuan.setText(R.string.meibianzhiyuan);
+                    meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 50 && progress <= 75 ){
-                    SB.setProgress(63);
-                    TV.setText("1937年");
+                    seekBar.setProgress(63);
+                    seekBarTextView.setText("1937年");
                     changeImage(2);
-                    //meibianzhiyuan.setText(R.string.meibianzhiyuan);
+                    meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 75 ){
-                    SB.setProgress(100);
-                    TV.setText("2020年");
+                    seekBar.setProgress(100);
+                    seekBarTextView.setText("2020年");
                     changeImage(3);
-                    //meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
+                    meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
                     clickFlag = true;
-
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                //Log.d("onTouch","ontouch");
 
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                //Log.d("onTouch","onstop");
+
             }
         });
 
@@ -479,25 +491,15 @@ public class MainActivity extends AppCompatActivity {
         String uri = "@drawable/" + imgList.get(i);
         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
         imView.setImageResource(imageResource);
-        /*
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), imageResource, options);
-        int imageHeight = options.outHeight;
-        int imageWidth = options.outWidth;
-        String imageType = options.outMimeType;
-        Log.d("seeImgRes", String.valueOf(imageHeight));
-        Log.d("seeImgRes", String.valueOf(imageWidth));
-        Log.d("seeImgRes", String.valueOf(imageType));
-        */
     }
+
+    //到氣象資料開放平台拿取資料
     private void getWeather(){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
                     String data = getJSON("https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A&elementName=Weather&parameterName=CITY",9000);
-                    //Log.d("seeData",data);
                     JSONObject jsonObject = new JSONObject(data);
                     JSONArray jsonArr = jsonObject.getJSONObject("records").getJSONArray("location");
 
@@ -528,57 +530,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-    //https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-073?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A
-    /*
-    private Runnable multiThread = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                String data = getJSON("https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A&elementName=Weather&parameterName=CITY",9000);
-                //Log.d("seeData",data);
-                JSONObject jsonObject = new JSONObject(data);
-                JSONArray jsonArr = jsonObject.getJSONObject("records").getJSONArray("location");
-
-                //過濾只獲取台中的資料
-                JSONObject taizhongData = new JSONObject();
-                for(int i=0;i< jsonArr.length(); i++){
-                    JSONObject oneObject = null;
-                    try {
-                        oneObject = jsonArr.getJSONObject(i);
-                        if(oneObject.getString("locationName").equals("臺中"))
-                        {
-                            taizhongData = oneObject;
-                            break;
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                String weather = taizhongData.getJSONArray("weatherElement").getJSONObject(0).getString("elementValue");
-                Log.d("seeData",weather);
-
-                Message msg = new Message();
-                msg.what = 1;
-                handler.sendMessage(msg);
-
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-    */
 
     public static String getJSON(String url, int timeout) throws IOException {
-
         URL u = new URL(url);
         HttpURLConnection c = (HttpURLConnection) u.openConnection();
         c.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         c.setRequestProperty("Accept", "application/json");
-
         c.setRequestMethod("GET");
-
-        //c.setUseCaches(false);
-        //c.setAllowUserInteraction(false);
         c.setConnectTimeout(timeout);   //设置连接主机超时（单位：毫秒）
         c.setReadTimeout(timeout);      //设置从主机读取数据超时（单位：毫秒）
         //c.setRequestProperty("User-Agent","Mozilla/5.0");
@@ -588,7 +546,6 @@ public class MainActivity extends AppCompatActivity {
         switch (status) {
             case 200:
             case 201:
-
                 BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream(),"utf-8"));
                 StringBuilder sb = new StringBuilder();
                 String line;
@@ -598,7 +555,6 @@ public class MainActivity extends AppCompatActivity {
                 br.close();
                 return sb.toString();
         }
-
         return null;
     }
 

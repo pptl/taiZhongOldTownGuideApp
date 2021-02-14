@@ -1,20 +1,21 @@
 <resources>
     <string name="app_name">臺中城中城導覽</string>
     <string name="map_key">AIzaSyBoqr4k4TgxiIn0eK-kBgD-Habo7AarCSI</string>
+    <string name="fivetwotwo_title">四維街日式招待所</string>
+    <string name="fivetwotwo_content">建築格局為ㄇ字型，形制保存完整，材質、形式大抵為日治時期興建之原貌，同時為本市極少數尚存之兩層樓木造雨淋板建築。</string>
     <string name="fivezeroone_title">彰化銀行繼光街宿舍</string>
     <string name="fivezeroone_content">由彰化銀行株式會社於日治時期昭和10年(1935年)興建，建築為日式木造複層仿西式大型獨棟官舍宅院。由彰化銀行株式會社於日治時期昭和10年(1935年)興建，建築為日式木造複層仿西式大型獨棟官舍宅院。由彰化銀行株式會社於日治時期昭和10年(1935年)興建，建築為日式木造複層仿西式大型獨棟官舍宅院。</string>
-    <!--
-    <string name="tianzhutang_title">彰化銀行舊總行</string>
-    <string name="xiaoxuexiao_title">大屯郡守官舍</string>
-    <string name="wudeguan_title">西區四維街日式招待所</string>
-    <string name="wancungong_title">萬春宮</string>
-    <string name="tianzhutang_content">彰化銀行舊總行，為彰化銀行株式會社委請白倉好夫與畠山喜三郎設計，於日治時期昭和13年(1938)興建完工，建築形式及細部作法為日治時期仿西方風格之銀行建築典範，建築工藝及型制精美、皆俱特色，表現地方營造技術，具稀少性且不易再現，極具文化保存及日治時期建築研究價值。</string>
-    <string name="xiaoxuexiao_content">「大屯郡守官舍」為日據時期木造宿舍（住宅）形式，並具洋式雨淋板建築特色，格局完整含洋式書齋、和式臥室、戶外日式庭園等空間，並有寬闊的外廊，足具活化再利用之潛力。</string>
-    <string name="wudeguan_content">歷史建築「西區四維街日式招待所」建築格局為ㄇ字型，一樓入口有外玄關，以中庭入口為中心分左右兩側對稱，內部左右空間亦對稱配置，由ㄇ形迴廊串聯內部房間，形制保存完整，材質、形式大抵為日治時期興建之原貌，同時為本市極少數尚存之兩層樓木造雨淋板建築，具稀少性及再利用潛力。</string>
-    <string name="wancungong_content">萬春宮舊名「藍興宮」，主祀媽祖。傳說康熙60年（1721）南澳總兵藍廷珍來臺平朱一貴前，曾赴湄州朝天閣恭請聖母三媽隨船保護來臺。登臺後先暫時供奉於臺南，其後於雍正初年於此建廟，號曰「藍興宮」。日治大正2年（1913），萬春宮被拆毀化為廢墟。國民政府遷台以後，民國36年（1947）由地方望族倡發起萬春宮重建委員會，至民國47年（1958）竣工。</string>
-    -->
-    <string name="meibianzhiyuan">地圖後續將請美術設計團隊重繪</string>
-    <string name="laoshi_meibianzhiyuan">地圖目前借用徐逸鴻老師經典文化地圖，後續將請美術設計團隊重繪</string>
+    <string name="fivezerosix_title">合作金庫銀行</string>
+    <string name="fivezerosix_content">原為台中州立圖書館，落成於昭和4年（1929年），為早期中部地區文教機構代表。民國61年（1972年）省立圖書館遷館，原圖書館舍售予合作金庫商業銀行改為金融機構使用迄今。</string>
+    <string name="fiveninenine_title">彰化銀行舊總行</string>
+    <string name="fiveninenine_content">為台灣大型商業銀行之一，創設於1905年，因總行初設於彰化而得名。</string>
+    <string name="fivetwofour_title">中山綠橋</string>
+    <string name="fivetwofour_content">興建於日治明治41年(西元1908年)，拱形橋樑，寬十公尺，跨二十二公尺，附有燈柱及欄干，欄干開口有新藝風格鑄鐵間隔。為台中市日治初期市政建設之代表，即鐵路開通、公園建設及市區計畫之具體象徵，具高度歷史意義，和保存及建築研究價值。</string>
+    <string name="fivethreesix_title">臺中市後火車站</string>
+    <string name="fivethreesix_content">於民國53(1964)年完成興建，後火車站的興建不僅開啟了自50年代後，東區復興路周邊商業發展動能，亦銜接當時的帝國糖廠、20號倉庫等產業脈絡，是戰後重要的鐵道文化資產。</string>
+
+    <string name="meibianzhiyuan">此地圖為示意圖，後續將請美術設計團隊重繪</string>
+    <string name="laoshi_meibianzhiyuan">地圖目前尚未完成，美術設計團隊後續將持續更新</string>
     <string name="title_activity_where_my_friend">Map</string>
     <string name="title_activity_where_is_my_friend">Map</string>
     <string name="notInTeam_textView_text">還沒在團隊里嗎？</string>

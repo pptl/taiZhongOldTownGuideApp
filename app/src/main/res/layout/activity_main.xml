@@ -122,17 +122,6 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="26dp" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:onClick="goLocate"
-        app:layout_constraintBottom_toTopOf="@+id/more_post"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/locate_button" />
-    <!--
     <TextView
         android:id="@+id/meibianzhiyuan_textView"
         android:layout_width="match_parent"
@@ -145,27 +134,83 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    -->
+
+<!--
     <ImageView
-        android:id="@+id/more_post"
+        android:id="@+id/team_tracker_btn1"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:onClick="goMorePost"
-        app:layout_constraintBottom_toTopOf="@+id/surround_view"
+        android:layout_marginBottom="12dp"
+        android:onClick="goLocate"
+        app:layout_constraintBottom_toTopOf="@+id/news_btn1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/locate_button" />
+
+    <ImageView
+        android:id="@+id/news_btn1"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:onClick="goNews"
+        app:layout_constraintBottom_toTopOf="@+id/surrounding_view_btn1"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/more" />
 
     <ImageView
-        android:id="@+id/surround_view"
+        android:id="@+id/surrounding_view_btn1"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="88dp"
-        android:onClick="goSurroundView"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="428dp"
+        android:onClick="goSurroundingView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/surround_view" />
+-->
+    <Button
+        android:id="@+id/team_tracker_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="150dp"
+        android:enabled="false"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/nav_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/team_tracker_btn_icon"/>
+
+    <Button
+        android:id="@+id/news_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="90dp"
+        android:enabled="false"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/nav_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/news_btn_icon"/>
+
+    <Button
+        android:id="@+id/surrounding_view_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="30dp"
+        android:enabled="false"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/nav_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/surrounding_view_icon"/>
+
+    <Button
+        android:id="@+id/nav_btn"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="110dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/navbtn_layout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

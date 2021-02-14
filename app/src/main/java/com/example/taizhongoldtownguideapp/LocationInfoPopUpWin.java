@@ -17,7 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationInfoPopWin extends CustomPopUpWin {
+public class LocationInfoPopUpWin extends CustomPopUpWin {
 
     private List<String> locationList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -27,7 +27,7 @@ public class LocationInfoPopWin extends CustomPopUpWin {
     private FirebaseDatabase mDatabase;
     private DatabaseReference teamMarkerRef;
 
-    public LocationInfoPopWin(final Context mContext, int xmlLayout, final GoogleMap map) {
+    public LocationInfoPopUpWin(final Context mContext, int xmlLayout, final GoogleMap map) {
         super(mContext, xmlLayout);
 
         mDatabase = FirebaseDatabase.getInstance();
