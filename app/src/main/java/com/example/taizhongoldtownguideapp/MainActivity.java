@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     imView5 = (ImageView)findViewById(R.id.cloundView4);
                     imView6 = (ImageView)findViewById(R.id.cloundView5);
                     imView7 = (ImageView)findViewById(R.id.bgView);
-                    //weather = "晴";
+                    //weather = "雨";
                     if(weather.equals("陰")){
                         String uri = "@drawable/black_clound";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
@@ -123,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
                     } else if(weather.equals(weather.equals("陰带雨")) || weather.equals("雨")){
                         String uri = "@drawable/rain_effect";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                        imView2.setVisibility(View.INVISIBLE);
+                        imView3.setVisibility(View.INVISIBLE);
+                        imView4.setVisibility(View.INVISIBLE);
+                        imView5.setVisibility(View.INVISIBLE);
+                        imView6.setVisibility(View.INVISIBLE);
                         imView7.setVisibility(View.VISIBLE);
                         imView7.setImageResource(imageResource);
                     } else {
@@ -218,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         goSurroundingViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), NewsList.class);
+                Intent intent = new Intent(getApplicationContext(), SurroundingView.class);
                 startActivity(intent);
             }
         });
@@ -331,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
                     seekBarTextView.startAnimation(outAnim);
                     seekBar.setVisibility(View.INVISIBLE);
                     seekBarTextView.setVisibility(View.INVISIBLE);
+                    seekBar.setEnabled(false);
                 }
             }
             if(e.getY() > phoneHeightPixels * 0.7){
@@ -339,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
                     seekBarTextView.startAnimation(inAnim);
                     seekBar.setVisibility(View.VISIBLE);
                     seekBarTextView.setVisibility(View.VISIBLE);
+                    seekBar.setEnabled(true);
                 }
             }
             return false;

@@ -26,8 +26,7 @@ public class SurroundingView extends AppCompatActivity {
         cardView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("card","cardClick");
-                Uri uri = Uri.parse("https://my.matterport.com/show/?m=8v6o1ZZd9Q6");
+                Uri uri = Uri.parse("http://140.134.48.76/USR360/WanChuen/");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }
@@ -35,20 +34,20 @@ public class SurroundingView extends AppCompatActivity {
         cardView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("card","cardClick");
-                Uri uri = Uri.parse("https://my.matterport.com/show/?m=kbSkF2BKhgR");
+                Uri uri = Uri.parse("http://140.134.48.76/USR360/Lechun/");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }
         });
+        /*
         cardView3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("card","cardClick");
                 Uri uri = Uri.parse("https://my.matterport.com/show/?m=iuVduPBfv67");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }
         });
+        */
     }
 }

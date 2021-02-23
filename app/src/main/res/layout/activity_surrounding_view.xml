@@ -58,7 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/huochezhan" />
+                    app:srcCompat="@drawable/fivezerozero" />
 
                 <TextView
                     android:id="@+id/card_textView2"
@@ -68,7 +68,7 @@
                     android:alpha="0.7"
                     android:background="#000000"
                     android:gravity="center"
-                    android:text="臺中火車站"
+                    android:text="樂成宮"
                     android:textColor="#ffffff"
                     android:textSize="30dp" />
 
