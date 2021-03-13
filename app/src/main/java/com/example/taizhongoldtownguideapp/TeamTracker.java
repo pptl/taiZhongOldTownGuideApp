@@ -9,6 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -31,7 +34,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.JsonParser;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -52,12 +65,15 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Timer timer;
     private SharedPreferences pref;
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
+    private Handler messageHandler = null;
+    private String responseJsonString = "";
     HashMap<String,Marker> hashMapMarker = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_tracker);
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -78,6 +94,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -88,7 +105,29 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        messageHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == 1){
+                    String jsonString = JsonParser.parseString(responseJsonString).getAsString();
+                    try {
+                        JSONArray jsonArray = new JSONArray(jsonString);
+                        for(int i = 0 ; i <jsonArray.length();i++ ){
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            Log.d("seeXY",jsonObject.get("PO_X").toString()+"  "+jsonObject.get("PO_Y").toString());
+                        }
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                };
+            }
+        };
+
         getDeviceLocation();
+        getPointJson(url);
 
         //每次fireBase裡朋友資料更新時，更新本地朋友資料
         usersRef.addValueEventListener(new ValueEventListener() {
@@ -142,6 +181,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -271,4 +311,44 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         Intent intent = new Intent(this, CreateNewMarker.class);
         startActivityForResult(intent,ADD_LOCATION_ACTIVITY_REQUEST_CODE);
     }
+    void getPointJson(String url){
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if(response.isSuccessful()){
+                    responseJsonString = response.body().string();
+                    Message msg = new Message();
+                    msg.what = 1;
+                    messageHandler.sendMessage(msg);
+
+
+                    //為了解析成json用
+                    /*
+                    String jsonString = JsonParser.parseString(res).getAsString();
+                    try {
+
+                        JSONArray jsonArray = new JSONArray(jsonString);
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        Log.d("seeT",jsonObject.get("PO_X").toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    */
+
+
+
+                }
+            }
+        });
+
+    }
+
 }
