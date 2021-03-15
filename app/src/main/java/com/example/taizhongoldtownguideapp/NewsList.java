@@ -12,18 +12,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.google.gson.JsonParser;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsList extends AppCompatActivity {
 
-    private List<String> title = new ArrayList<>();
+    private List<String> titleList = new ArrayList<>();
     private List<String> url = new ArrayList<>();
-    private Handler handler;
+    private Handler handler = null;
     private RecyclerView mRecyclerView;
     private NewsRecycleViewAdapter mAdapter;
     private int currentPage = 1;
@@ -32,6 +39,8 @@ public class NewsList extends AppCompatActivity {
     private TextView currentPageTab;
     private Button prePageBtn;
     private Button nextPageBtn;
+    private String responseJsonString = "";
+    private JSONArray dataList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +56,8 @@ public class NewsList extends AppCompatActivity {
         }
         nextPageBtn = findViewById(R.id.nextPageBtn);
 
-        getPosts();
+        String url = "http://140.134.48.76/USR/API/API/Default/APPGetData?name=main&token=2EV7tVz0Pv6bLgB/aXRURg==";
+        getPostJson(url);
 
         handler = new Handler(){
             @Override
@@ -57,8 +67,7 @@ public class NewsList extends AppCompatActivity {
                     currentPageTab.setText(String.valueOf(currentPage));
                     fromPage = (currentPage - 1) * 10;
                     toPage = currentPage * 10;
-                    Log.d("seeCurrPage",currentPage+":"+fromPage+":"+toPage);
-                    mAdapter = new NewsRecycleViewAdapter(NewsList.this, title.subList(fromPage, toPage), url.subList(fromPage, toPage));
+                    mAdapter = new NewsRecycleViewAdapter(NewsList.this, titleList.subList(fromPage, toPage), dataList);
                     mRecyclerView.setAdapter(mAdapter);
 
                 }
@@ -68,39 +77,40 @@ public class NewsList extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    //利用爬蟲獲取訊息
-    private void getPosts(){
-        new Thread(new Runnable() {
+    void getPostJson(String url){
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void run() {
-                try{
-                    Document doc = Jsoup.connect("http://www.genedu.fcu.edu.tw/index.php/tw/component/sppagebuilder/68-").get();
-                    Elements titleLinks = doc.select("a.mod-articles-category-title ");    //解析来获取每条新闻的标题与链接地址
-                    for(int i=0; i < titleLinks.size(); i++){
-                        title.add(titleLinks.get(i).text());
-                        url.add("http://www.genedu.fcu.edu.tw" + titleLinks.get(i).attr("href"));
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if(response.isSuccessful()){
+                    responseJsonString = response.body().string();
+                    String jsonString = JsonParser.parseString(responseJsonString).getAsString();
+                    try {
+                        dataList = new JSONArray(jsonString);
+                        for(int i =0 ;i<dataList.length();i++){
+                            JSONObject jsonObject = dataList.getJSONObject(i);
+                            String title = jsonObject.get("MA_TITLE").toString();
+                            titleList.add(title);
+                        }
+                        Message msg = new Message();
+                        msg.what = 1;
+                        handler.sendMessage(msg);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
 
-                    Log.d("seeElement", url.toString());
-                    Message msg = new Message();
-                    msg.what = 1;
-                    handler.sendMessage(msg);
-                    // Elements descLinks = doc.select("div.list-content");//解析来获取每条新闻的简介
-                    //Elements timeLinks = doc.select("div.otherInfo");   //解析来获取每条新闻的时间与来源
-                    /*
-                        Log.e("title",Integer.toString(titleLinks.size()));
-                        for(int j = 0;j < titleLinks.size();j++){
-                            String title = titleLinks.get(j).select("a").text();
-                            String uri = titleLinks.get(j).select("a").attr("href");
-                            //   String desc = descLinks.get(j).select("span").text();
-                            String time = timeLinks.get(j).select("span.other-left").select("a").text();
-                        }
-                     */
-                }catch (Exception e){
-                    e.printStackTrace();
                 }
             }
-        }).start();
+        });
+
     }
 
     public void prePage(View view) {
@@ -119,13 +129,13 @@ public class NewsList extends AppCompatActivity {
                 prePageBtn.setAlpha((float)0.5);
             }
         }
-        mAdapter = new NewsRecycleViewAdapter(NewsList.this, title.subList(fromPage, toPage), url.subList(fromPage, toPage));
+        mAdapter = new NewsRecycleViewAdapter(NewsList.this, titleList.subList(fromPage, toPage), dataList);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
 
     public void nextPage(View view) {
-        if(title.size() - (currentPage + 1) * 10 > 0){
+        if(titleList.size() - (currentPage + 1) * 10 > 0){
             currentPage += 1;
             currentPageTab.setText(String.valueOf(currentPage));
             fromPage = (currentPage - 1) * 10;
@@ -134,16 +144,16 @@ public class NewsList extends AppCompatActivity {
                 prePageBtn.setClickable(true);
                 prePageBtn.setAlpha((float)1);
             }
-        } else if ((title.size() - (currentPage + 1) * 10 < 0) && (title.size() - (currentPage + 1) * 10 > -9)){
+        } else if ((titleList.size() - (currentPage + 1) * 10 < 0) && (titleList.size() - (currentPage + 1) * 10 > -9)){
             currentPage += 1;
             currentPageTab.setText(String.valueOf(currentPage));
             fromPage = (currentPage - 1) * 10;
-            toPage = title.size();
+            toPage = titleList.size();
             nextPageBtn.setClickable(false);
             nextPageBtn.setAlpha((float)0.5);
         }
 
-        mAdapter = new NewsRecycleViewAdapter(NewsList.this, title.subList(fromPage, toPage), url.subList(fromPage, toPage));
+        mAdapter = new NewsRecycleViewAdapter(NewsList.this, titleList.subList(fromPage, toPage), dataList);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }

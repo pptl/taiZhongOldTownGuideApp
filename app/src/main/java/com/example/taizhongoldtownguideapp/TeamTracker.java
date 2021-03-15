@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -68,6 +69,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Handler messageHandler = null;
     private String responseJsonString = "";
     HashMap<String,Marker> hashMapMarker = new HashMap<>();
+    HashMap<String,Marker> pointMarkerHashMap = new HashMap<>();
+    private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +97,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
+
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -104,20 +107,66 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 return false;
             }
         });
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(TeamTracker.this));
 
         messageHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
                     String jsonString = JsonParser.parseString(responseJsonString).getAsString();
+
                     try {
                         JSONArray jsonArray = new JSONArray(jsonString);
+                        Double xPoint = 0.0;
+                        Double yPoint = 0.0;
+                        String title = "";
+                        String type = "";
+                        String content = "";
+                        String id = "";
+                        float markerColor = 0;
                         for(int i = 0 ; i <jsonArray.length();i++ ){
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            Log.d("seeXY",jsonObject.get("PO_X").toString()+"  "+jsonObject.get("PO_Y").toString());
+                            xPoint = Double.parseDouble(jsonObject.get("PO_X").toString());
+                            yPoint = Double.parseDouble(jsonObject.get("PO_Y").toString());
+                            title = jsonObject.get("PO_TITLE").toString();
+                            type = jsonObject.get("PO_TYPES").toString();
+                            content = jsonObject.get("PO_CONTENT").toString();
+                            id = jsonObject.get("PO_ID").toString();
+
+                            switch(Integer.parseInt(type)){
+                                case 0://美食
+                                    markerColor = BitmapDescriptorFactory.HUE_AZURE;
+                                    break;
+                                case 1://購物
+                                    markerColor = BitmapDescriptorFactory.HUE_BLUE;
+                                    break;
+                                case 2://住宿
+                                    markerColor = BitmapDescriptorFactory.HUE_CYAN;
+                                    break;
+                                case 3://歷史
+                                    markerColor = BitmapDescriptorFactory.HUE_GREEN;
+                                    break;
+                                case 4://遊憩
+                                    markerColor = BitmapDescriptorFactory.HUE_MAGENTA;
+                                    break;
+                                case 5://交通
+                                    markerColor = BitmapDescriptorFactory.HUE_ORANGE;
+                                    break;
+                                case 6://服務
+                                    markerColor = BitmapDescriptorFactory.HUE_RED;
+                                    break;
+                                case 7://宗教
+                                    markerColor = BitmapDescriptorFactory.HUE_ROSE;
+                                    break;
+                                default:
+                                    markerColor = BitmapDescriptorFactory.HUE_YELLOW;
+                            }
+                            //需要設定什麼大小的時候會出現哪些marker
+                            //float zoom = map.getCameraPosition().zoom;
+                            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title+type).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                            pointMarkerHashMap.put(id, marker);
+                            //marker.showInfoWindow();
                         }
-
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -144,6 +193,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
                     Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(24.13813,120.671608199999)).title("markContext"));
                     if(hashMapMarker.containsKey(userID)){
                         Marker delMarker = hashMapMarker.get(userID);
                         delMarker.remove();
@@ -327,24 +377,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     Message msg = new Message();
                     msg.what = 1;
                     messageHandler.sendMessage(msg);
-
-
-                    //為了解析成json用
-                    /*
-                    String jsonString = JsonParser.parseString(res).getAsString();
-                    try {
-
-                        JSONArray jsonArray = new JSONArray(jsonString);
-                        JSONObject jsonObject = jsonArray.getJSONObject(0);
-                        Log.d("seeT",jsonObject.get("PO_X").toString());
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    */
-
-
-
                 }
             }
         });

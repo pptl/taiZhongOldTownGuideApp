@@ -10,12 +10,15 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.List;
 
 public class NewsRecycleViewAdapter extends RecyclerView.Adapter<NewsRecycleViewAdapter.postHolder> {
 
     private final List<String> titleList;
-    private final List<String> urlList;
+    private JSONArray dataList = null;
     private final LayoutInflater mInflater;
     private final Context context;
 
@@ -35,20 +38,26 @@ public class NewsRecycleViewAdapter extends RecyclerView.Adapter<NewsRecycleView
         public void onClick(View view) {
             int mPosition = getLayoutPosition();
             Intent intent = new Intent(context, NewsInfo.class);
-            intent.putExtra("title",titleList.get(mPosition));
-            intent.putExtra("url",urlList.get(mPosition));
+            //intent.putExtra("title",titleList.get(mPosition));
+
+            try {
+                intent.putExtra("title",titleList.get(mPosition));
+                intent.putExtra("id", dataList.getJSONObject(mPosition).get("MA_ID").toString());
+                intent.putExtra("index", String.valueOf(mPosition));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
             context.startActivity(intent);
-            //mWordList.set(mPosition, "Clicked! " + element);
-            // Notify the adapter, that the data has changed so it can
-            // update the RecyclerView to display the data.
-            //mAdapter.notifyDataSetChanged();
         }
     }
 
-    public NewsRecycleViewAdapter(Context context, List<String> titleList, List<String> urlList) {
+    public NewsRecycleViewAdapter(Context context, List<String> titleList, JSONArray dataList) {
         mInflater = LayoutInflater.from(context);
         this.titleList = titleList;
-        this.urlList = urlList;
+        this.dataList = dataList;
         this.context = context;
     }
 

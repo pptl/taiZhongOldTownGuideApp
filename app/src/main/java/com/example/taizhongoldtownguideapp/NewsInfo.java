@@ -6,29 +6,45 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class NewsInfo extends AppCompatActivity {
 
     private String postTitle;
-    private String postURL;
     private TextView titleTextView;
+    private TextView contentTextView;
     private String postContext = "";
-    private List<String> imgUrl  = new ArrayList<>();
-    private Handler handler;
+    private Handler messageHandler;
     private LinearLayout postLayout;
+    private String postContent = "";
+    private String postID = "";
+    private String postIndex = "";
+    private String responseJsonString = "";
+    private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=main&token=2EV7tVz0Pv6bLgB/aXRURg==";
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -37,26 +53,37 @@ public class NewsInfo extends AppCompatActivity {
         setContentView(R.layout.activity_news_info);
 
         postTitle = getIntent().getStringExtra("title");
-        postURL = getIntent().getStringExtra("url");
+        postID = getIntent().getStringExtra("id");
+        postIndex = getIntent().getStringExtra("index");
 
         titleTextView = findViewById(R.id.info_post_title);
         postLayout = findViewById(R.id.postLayout);
-
+        contentTextView = findViewById(R.id.info_post_content);
         titleTextView.setText(postTitle);
 
-        getPostContext();
+        getPointJson(url);
 
-        handler = new Handler(){
+        messageHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
-                    newTextView(postContext);
-                    Log.d("seeImgUrl", String.valueOf(imgUrl.size()));
-                    if(imgUrl.size() > 0){
-                        for(int i = 0; i< imgUrl.size(); i++){
-                            newImageView(imgUrl.get(i));
-                            //Log.d("seeImgUrl",imgUrl.get(i));
+                    String jsonString = JsonParser.parseString(responseJsonString).getAsString();
+                    try {
+                        JSONArray jsonArray = new JSONArray(jsonString);
+                        JSONObject dataObject = jsonArray.getJSONObject(Integer.parseInt(postIndex));
+                        String rawContent = dataObject.getString("MA_CONTENT");
+                        postContent = EscapeUnescape.unescape(rawContent);
+
+                        Document doc = (Document) Jsoup.parse(postContent);
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                            contentTextView.setText(Html.fromHtml(String.valueOf(doc),Html.FROM_HTML_MODE_LEGACY));
+                        } else {
+                            contentTextView.setText(Html.fromHtml(String.valueOf(doc)));
                         }
+
+                        //newTextView(postContext);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -64,66 +91,38 @@ public class NewsInfo extends AppCompatActivity {
     }
     private void newTextView(String text){
         TextView tv = new TextView(this);
+        Document doc = (Document) Jsoup.parse(text);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            tv.setText(Html.fromHtml(String.valueOf(doc),Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            tv.setText(Html.fromHtml(String.valueOf(doc)));
+        }
+
         tv.setText(text);
         tv.setTextSize(20);
         postLayout.addView(tv);
     }
-    private void newImageView(String url){
-        ImageView iv = new ImageView(this);
-        Picasso.with(this).load(url).into(iv);
-        postLayout.addView(iv);
-    }
-    private void getPostContext(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                        Document doc = Jsoup.connect(postURL).get();
-                        Elements context = doc.select("div.sppb-addon-content");
-                        String imgLink = "";
-                        postContext = context.text();
-                        if(!postContext.equals("")){
-                            imgLink = context.select("img").attr("src");
-                            if(!imgLink.equals("")){
-                                Log.d("seeImgUrl", String.valueOf(imgLink));
-                                imgUrl.add("http://www.genedu.fcu.edu.tw" + imgLink);
-                            } else{
-                                Log.d("seeImgUrl","noPic");
-                            }
-                        }
-                        else{
-                            context = doc.select("article > div > p");
-                            postContext = context.text();
-                            Log.d("seePostContext",postContext);
-                            imgLink = context.select("img").attr("src");
-                            if(!imgLink.equals("")){
-                                Log.d("seeImgUrl", String.valueOf(imgLink));
-                                imgUrl.add("http://www.genedu.fcu.edu.tw" + imgLink);
-                            } else {
-                                Log.d("seeImgUrl","noPic");
-                            }
-                        }
-                        //contextTextView.setText(postURL);
-                        //Log.d("seeContext",context.text().toString());
-                    /*
-                        for(int j = 0;j < titleLinks.size();j++){
-                            String title = titleLinks.get(j).select("a").text();
-                            String uri = titleLinks.get(j).select("a").attr("href");
-                            String desc = descLinks.get(j).select("span").text();
-                            String time = timeLinks.get(j).select("span.other-left").select("a").text();
-                            News news = new News(title,uri,desc,time);
-                            newsList.add(news);
 
-                     */
+    void getPointJson(String url){
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if(response.isSuccessful()){
+                    responseJsonString = response.body().string();
                     Message msg = new Message();
                     msg.what = 1;
-                    handler.sendMessage(msg);
-
-                }catch (Exception e){
-                    e.printStackTrace();
+                    messageHandler.sendMessage(msg);
                 }
             }
-        }).start();
+        });
+
     }
 
 }
