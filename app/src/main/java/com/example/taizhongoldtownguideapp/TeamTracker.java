@@ -3,6 +3,7 @@ package com.example.taizhongoldtownguideapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,10 +12,14 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.PopupWindow;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -47,7 +52,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,14 +76,22 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Handler messageHandler = null;
     private String responseJsonString = "";
     HashMap<String,Marker> hashMapMarker = new HashMap<>();
-    HashMap<String,Marker> pointMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> foodMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> shoppingMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> roomMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> historyMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> playMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> trafficMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> serviceMarkerHashMap = new HashMap<>();
+    HashMap<String,Marker> religionMarkerHashMap = new HashMap<>();
     private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
+    private Button switchLayerBtn;
+    Set<String> checkedLayerSet = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_tracker);
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -84,6 +99,11 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         pref = getSharedPreferences("userData",MODE_PRIVATE);
         teamID = pref.getString("teamID","000000");
         userID = pref.getString("userID","null");
+
+        //預設popupwin裡的checkbox
+        checkedLayerSet.add("history");
+
+        pref.edit().putStringSet("checkedLayer",checkedLayerSet).apply();
 
         timer = new Timer();
         //固定檢查用戶坐標是否有移動
@@ -93,8 +113,20 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         teamRef = mDatabase.getReference("team").child(teamID);
         usersRef = teamRef.child("userData");
         markersRef = teamRef.child("marker");
+
+        switchLayerBtn = findViewById(R.id.layer_btn);
+        switchLayerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            popWindow("switchLayer");
+            }
+        });
+
+
+
     }
 
+    @SuppressLint("HandlerLeak")
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -132,39 +164,60 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             type = jsonObject.get("PO_TYPES").toString();
                             content = jsonObject.get("PO_CONTENT").toString();
                             id = jsonObject.get("PO_ID").toString();
+                            Marker marker = null;
 
                             switch(Integer.parseInt(type)){
                                 case 0://美食
                                     markerColor = BitmapDescriptorFactory.HUE_AZURE;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    foodMarkerHashMap.put(id, marker);
                                     break;
                                 case 1://購物
                                     markerColor = BitmapDescriptorFactory.HUE_BLUE;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    shoppingMarkerHashMap.put(id, marker);
                                     break;
                                 case 2://住宿
                                     markerColor = BitmapDescriptorFactory.HUE_CYAN;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    roomMarkerHashMap.put(id, marker);
                                     break;
                                 case 3://歷史
-                                    markerColor = BitmapDescriptorFactory.HUE_GREEN;
+                                    markerColor = BitmapDescriptorFactory.HUE_RED;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    historyMarkerHashMap.put(id, marker);
                                     break;
                                 case 4://遊憩
                                     markerColor = BitmapDescriptorFactory.HUE_MAGENTA;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    playMarkerHashMap.put(id, marker);
                                     break;
                                 case 5://交通
                                     markerColor = BitmapDescriptorFactory.HUE_ORANGE;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    trafficMarkerHashMap.put(id, marker);
                                     break;
                                 case 6://服務
-                                    markerColor = BitmapDescriptorFactory.HUE_RED;
+                                    markerColor = BitmapDescriptorFactory.HUE_GREEN;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    serviceMarkerHashMap.put(id, marker);
                                     break;
                                 case 7://宗教
                                     markerColor = BitmapDescriptorFactory.HUE_ROSE;
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setVisible(false);
+                                    religionMarkerHashMap.put(id, marker);
                                     break;
-                                default:
-                                    markerColor = BitmapDescriptorFactory.HUE_YELLOW;
                             }
                             //需要設定什麼大小的時候會出現哪些marker
                             //float zoom = map.getCameraPosition().zoom;
-                            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title+type).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
-                            pointMarkerHashMap.put(id, marker);
+
                             //marker.showInfoWindow();
                         }
 
@@ -193,7 +246,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
                     Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(24.13813,120.671608199999)).title("markContext"));
                     if(hashMapMarker.containsKey(userID)){
                         Marker delMarker = hashMapMarker.get(userID);
                         delMarker.remove();
@@ -215,7 +267,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 if (snapshot.exists()){
                     for (DataSnapshot data : snapshot.getChildren()){
                         String markContext = data.child("markContext").getValue(String.class);
-                        String userIconPath = data.child("userIconPath").getValue(String.class);
+                        //String userIconPath = data.child("userIconPath").getValue(String.class);
                         Double markLatitude = data.child("markLatitude").getValue(Double.class);
                         Double markLongitude = data.child("markLongitude").getValue(Double.class);
 
@@ -342,6 +394,22 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
 
+        } else if (popWinName.equals("switchLayer")){
+
+            SwitchLayerPopUpWin switchLayerPopUpWin = new SwitchLayerPopUpWin(this, R.layout.switch_layer_pop_up_win);
+            switchLayerPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+            params = getWindow().getAttributes();
+            params.alpha = 0.7f;
+            getWindow().setAttributes(params);
+            switchLayerPopUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    params = getWindow().getAttributes();
+                    params.alpha = 1f;
+                    getWindow().setAttributes(params);
+                }
+            });
+
         }
 
     }
@@ -383,4 +451,50 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    public void switchLayer(View view) {
+
+        boolean checked = ((CheckBox) view).isChecked();
+        String boxName = "";
+        switch(view.getId()) {
+            case R.id.foodCheckBox:
+                boxName = "food";
+                for(Map.Entry<String, Marker> entry : foodMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.shoppingCheckBox:
+                boxName = "shopping";
+                for(Map.Entry<String, Marker> entry : shoppingMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.roomCheckBox:
+                boxName = "room";
+                for(Map.Entry<String, Marker> entry : roomMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.historyCheckBox:
+                boxName = "history";
+                for(Map.Entry<String, Marker> entry : historyMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.playCheckBox:
+                boxName = "play";
+                for(Map.Entry<String, Marker> entry : playMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.trafficCheckBox:
+                boxName = "traffic";
+                for(Map.Entry<String, Marker> entry : trafficMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.serviceCheckBox:
+                boxName = "service";
+                for(Map.Entry<String, Marker> entry : serviceMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+            case R.id.religionCheckBox:
+                boxName = "religion";
+                for(Map.Entry<String, Marker> entry : religionMarkerHashMap.entrySet()){ entry.getValue().setVisible(checked);}
+                break;
+        }
+        if(checked){
+            checkedLayerSet.add(boxName);
+        } else {
+            checkedLayerSet.remove(boxName);
+        }
+        pref.edit().putStringSet("checkedLayer", checkedLayerSet).apply();
+
+    }
 }
