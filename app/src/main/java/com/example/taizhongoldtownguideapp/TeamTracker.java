@@ -87,6 +87,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
     private Button switchLayerBtn;
     Set<String> checkedLayerSet = new HashSet<>();
+    private View locationInfoPopUpWinView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +123,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-
+        locationInfoPopUpWinView = LayoutInflater.from(this).inflate(R.layout.custom_info_window, null);
 
     }
 
@@ -140,6 +141,15 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(TeamTracker.this));
+        mMap.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener() {
+            @Override
+            public void onInfoWindowLongClick(Marker marker) {
+                LatLng position = marker.getPosition();
+                addLocation(position.latitude, position.longitude);
+            }
+        });
+
+
 
         messageHandler = new Handler(){
             @Override
@@ -171,47 +181,55 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                                     markerColor = BitmapDescriptorFactory.HUE_AZURE;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("food");
                                     foodMarkerHashMap.put(id, marker);
                                     break;
                                 case 1://購物
                                     markerColor = BitmapDescriptorFactory.HUE_BLUE;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("shopping");
                                     shoppingMarkerHashMap.put(id, marker);
                                     break;
                                 case 2://住宿
                                     markerColor = BitmapDescriptorFactory.HUE_CYAN;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("room");
                                     roomMarkerHashMap.put(id, marker);
                                     break;
                                 case 3://歷史
                                     markerColor = BitmapDescriptorFactory.HUE_RED;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker.setTag("history");
                                     historyMarkerHashMap.put(id, marker);
                                     break;
                                 case 4://遊憩
                                     markerColor = BitmapDescriptorFactory.HUE_MAGENTA;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("play");
                                     playMarkerHashMap.put(id, marker);
                                     break;
                                 case 5://交通
                                     markerColor = BitmapDescriptorFactory.HUE_ORANGE;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("traffic");
                                     trafficMarkerHashMap.put(id, marker);
                                     break;
                                 case 6://服務
                                     markerColor = BitmapDescriptorFactory.HUE_GREEN;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("service");
                                     serviceMarkerHashMap.put(id, marker);
                                     break;
                                 case 7://宗教
                                     markerColor = BitmapDescriptorFactory.HUE_ROSE;
                                     marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
+                                    marker.setTag("religion");
                                     religionMarkerHashMap.put(id, marker);
                                     break;
                             }
@@ -230,6 +248,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
         getDeviceLocation();
         getPointJson(url);
+
+
 
         //每次fireBase裡朋友資料更新時，更新本地朋友資料
         usersRef.addValueEventListener(new ValueEventListener() {
@@ -271,7 +291,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         Double markLatitude = data.child("markLatitude").getValue(Double.class);
                         Double markLongitude = data.child("markLongitude").getValue(Double.class);
 
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markContext));
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markContext));
+                        marker.setTag("customize");
                     }
                 }
             }
@@ -289,17 +310,20 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ADD_LOCATION_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // Get String data from Intent
                 String returnString = data.getStringExtra("markContext");
-                mMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude())).title(returnString));
-
+                Double latitude = data.getDoubleExtra("latitude", 0);
+                Double longitude = data.getDoubleExtra("longitude", 0);
+                Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(returnString));
+                marker.setTag("customize");
             }
         }
     }
 
+
+
     //獲取使用者裝置現在的位置
     private void getDeviceLocation(){
-        //這裡會有先載入地圖了再拋出permittion的bug
+        //這裡有可能會有先載入地圖了再拋出permittion的bug
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
@@ -315,6 +339,9 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 userLocations.put("userLongitude",mCurrentLocation.getLongitude());
 
                 myRef.updateChildren(userLocations);
+                //地圖addMarker時可以使用到
+                pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
+                pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
 
                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
             }
@@ -334,10 +361,11 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 mCurrentLocation = (Location) location;
                 if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
                     Map<String, Object> userLocations = new HashMap<>();
-                    //Log.d("seeIfSameLocation","notSame");
-                    //Log.d("seeIfSameLocation",preLatitude + " " + preLongitude + " " + (float)mCurrentLocation.getLatitude() + " " + (float)mCurrentLocation.getLongitude());
                     userLocations.put("userLatitude",mCurrentLocation.getLatitude());
                     userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+                    //地圖addMarker時可以使用到
+                    pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
+                    pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
                     usersRef.child(userID).updateChildren(userLocations);
                 }
             }
@@ -366,7 +394,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     public void popWindow(String popWinName) {
         if(popWinName.equals("locationInfo")){
-            LocationInfoPopUpWin locationInfoPopWin = new LocationInfoPopUpWin(this, R.layout.location_info_pop_win, mMap);
+            LocationInfoPopUpWin locationInfoPopWin = new LocationInfoPopUpWin(this, R.layout.location_info_pop_win, mMap, this);
             locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
             params.alpha = 0.7f;
@@ -421,12 +449,14 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         startActivity(intent);
     }
 
-    public void addLocation(View view) {
-        pref.edit().putFloat("Latitude",(float)mCurrentLocation.getLatitude()).putFloat("Longitude",(float)mCurrentLocation.getLongitude()).commit();
+    public void addLocation(double latitude, double longitude) {
+        //pref.edit().putFloat("Latitude",(float)mCurrentLocation.getLatitude()).putFloat("Longitude",(float)mCurrentLocation.getLongitude()).commit();
         params = getWindow().getAttributes();
         params.alpha=1f;
         getWindow().setAttributes(params);
         Intent intent = new Intent(this, CreateNewMarker.class);
+        intent.putExtra("latitude", latitude);
+        intent.putExtra("longitude", longitude);
         startActivityForResult(intent,ADD_LOCATION_ACTIVITY_REQUEST_CODE);
     }
     void getPointJson(String url){

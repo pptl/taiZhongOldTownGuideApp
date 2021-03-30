@@ -25,9 +25,9 @@ public class CreateNewMarker extends AppCompatActivity {
     private Switch aSwitch;
     private String teamID;
     private Boolean setNotice;
-    private Button button;
-    private float longitude;
-    private float latitude;
+    private Button confirmButton;
+    private double longitude;
+    private double latitude;
     final int PICK_IMAGE_REQUEST = 2;
     private ImageView markerIcon;
     private String markerPath;
@@ -39,18 +39,19 @@ public class CreateNewMarker extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_marker);
 
+        Intent intent = getIntent();
+        latitude =  intent.getDoubleExtra("latitude",0);
+        longitude = intent.getDoubleExtra("longitude", 0);
         mDatabase = FirebaseDatabase.getInstance();
 
         pref = getSharedPreferences("userData",MODE_PRIVATE);
-        longitude = pref.getFloat("Longitude",0);
-        latitude = pref.getFloat("Latitude",0);
         teamID = pref.getString("teamID","error");
         markerPath = "location_icon";
 
         markerIcon = findViewById(R.id.addIcon_iconView);
         editText = findViewById(R.id.addIcon_editText);
         aSwitch = findViewById(R.id.setNotice_switch);
-        button = findViewById(R.id.addLocation_button);
+        confirmButton = findViewById(R.id.addLocation_button);
         picker = (TimePicker)findViewById(R.id.timePicker);
         picker.setIs24HourView(true);
         picker.setEnabled(false);
@@ -68,13 +69,15 @@ public class CreateNewMarker extends AppCompatActivity {
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Map<String, Object> newMark = new HashMap<>();
 
                 Intent intent = new Intent();
                 intent.putExtra("markContext", editText.getText().toString());
+                intent.putExtra("latitude", latitude);
+                intent.putExtra("longitude", longitude);
                 setResult(RESULT_OK, intent);
 
                 newMark.put("markContext",editText.getText().toString());
@@ -95,6 +98,7 @@ public class CreateNewMarker extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent,PICK_IMAGE_REQUEST);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
