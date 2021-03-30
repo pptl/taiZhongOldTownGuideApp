@@ -81,7 +81,7 @@ public class TeamEntry extends AppCompatActivity {
         teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
         pref.edit().putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
-
+        pref.edit().putString("roomType","multiUsers").commit();
         Intent intent = new Intent(this, TeamTracker.class);
         startActivity(intent);
         finish();
@@ -101,5 +101,48 @@ public class TeamEntry extends AppCompatActivity {
         //这里要到firebase检查有没有重複的房號
 
         return teamID;
+    }
+
+    public void goSelf(View view) {
+        Map<String, Object> user = new HashMap<>();
+        DatabaseReference teamRef = mDatabase.getReference("team");
+
+        //這裡要check teamID有沒有相撞
+        userIconPath = pref.getString("userIconPath","user_icon1");
+        user.put("userIconPath", userIconPath);
+        user.put("userName",userName);
+        user.put("isLeader",true);
+
+        teamID = teamIDGenerator();
+        //這裡在檢查有沒有重複的teamID
+        teamRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                while(snapshot.child(teamID).getValue() != null) {
+                    if (snapshot.child(teamID).getValue() == null){
+                        Log.d("seeIsTeamIDBang","IDnobang!");
+                    }
+                    else {
+                        Log.d("seeIsTeamIDBang","IDbang!");
+                        teamID = teamIDGenerator();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        userID = teamRef.child(teamID).child("userData").push().getKey();
+
+        teamRef.child(teamID).child("userData").child(userID).setValue(user);
+
+        pref.edit().putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
+        pref.edit().putString("roomType","singleUser").commit();
+
+        Intent intent = new Intent(this, TeamTracker.class);
+        startActivity(intent);
+        finish();
     }
 }

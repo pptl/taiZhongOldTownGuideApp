@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -87,7 +88,9 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
     private Button switchLayerBtn;
     Set<String> checkedLayerSet = new HashSet<>();
-    private View locationInfoPopUpWinView;
+    private String roomType;
+    private Button locationInfoButton;
+    private Button personInfoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,24 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         pref = getSharedPreferences("userData",MODE_PRIVATE);
         teamID = pref.getString("teamID","000000");
         userID = pref.getString("userID","null");
+
+        personInfoButton = findViewById(R.id.whereIsMyFriend_person_btn);
+        locationInfoButton = findViewById(R.id.whereIsMyFriend_location_btn);
+
+        //roomType 分"singleUser"和"multiUsers"用來區別是單人使用或者多人使用的地圖
+        roomType = pref.getString("roomType","multiUsers");
+        //如果是單人地圖的話，需要處理按鈕佈局
+
+        if(roomType!=null){
+            if(roomType.equals("singleUser")){
+                personInfoButton.setVisibility(View.GONE);
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)locationInfoButton.getLayoutParams();
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
+                locationInfoButton.setLayoutParams(params);
+            }
+        }
 
         //預設popupwin裡的checkbox
         checkedLayerSet.add("history");
@@ -122,8 +143,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             popWindow("switchLayer");
             }
         });
-
-        locationInfoPopUpWinView = LayoutInflater.from(this).inflate(R.layout.custom_info_window, null);
 
     }
 
@@ -255,6 +274,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Marker marker = null;
                 for (DataSnapshot data : snapshot.getChildren()){
                     String userName = data.child("userName").getValue(String.class);
                     String userIconPath = data.child("userIconPath").getValue(String.class);
@@ -265,13 +285,17 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     Double userLatitude = data.child("userLatitude").getValue(Double.class);
                     Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
-                    Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
-                    if(hashMapMarker.containsKey(userID)){
-                        Marker delMarker = hashMapMarker.get(userID);
-                        delMarker.remove();
-                        hashMapMarker.remove(userID);
+                    if(userLatitude != null && userLongitude != null){
+                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                        if(hashMapMarker.containsKey(userID)){
+                            Marker delMarker = hashMapMarker.get(userID);
+                            delMarker.remove();
+                            hashMapMarker.remove(userID);
+                        }
+                        hashMapMarker.put(userID,marker);
                     }
-                    hashMapMarker.put(userID,marker);
+
+
                 }
             }
             @Override
