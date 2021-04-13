@@ -38,6 +38,7 @@ public class CreateNewUser extends AppCompatActivity {
 
         Intent intent = new Intent(this, TeamEntry.class);
         startActivity(intent);
+        finish();
     }
 
     public void changeUserIcon(View view) {

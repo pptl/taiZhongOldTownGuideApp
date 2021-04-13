@@ -24,11 +24,11 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".NewsInfo"
-            android:label="新聞內容"
+            android:label="最新消息"
             android:parentActivityName=".NewsList" />
         <activity
             android:name=".NewsList"
-            android:label="通識新聞"
+            android:label="最新消息"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ChangeMarkerIcon"

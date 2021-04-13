@@ -113,14 +113,29 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
         if(roomType!=null){
             if(roomType.equals("singleUser")){
-                personInfoButton.setVisibility(View.GONE);
-
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)locationInfoButton.getLayoutParams();
-                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
-                locationInfoButton.setLayoutParams(params);
+                personInfoButton.setBackgroundResource(R.drawable.exit_icon);
             }
         }
+
+        locationInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popWindow("locationInfo");
+            }
+        });
+
+        personInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(roomType.equals("singleUser")){
+                    exitTeam();
+                }else {
+                    popWindow("personInfo");
+                }
+            }
+        });
+
+
 
         //預設popupwin裡的checkbox
         checkedLayerSet.add("history");
@@ -128,7 +143,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         pref.edit().putStringSet("checkedLayer",checkedLayerSet).apply();
 
         timer = new Timer();
-        //固定檢查用戶坐標是否有移動
+        //固定時間檢查用戶坐標是否有移動
         timer.schedule(checkTask, 1000, 5000);
 
         mDatabase = FirebaseDatabase.getInstance();
@@ -337,7 +352,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 String returnString = data.getStringExtra("markContext");
                 Double latitude = data.getDoubleExtra("latitude", 0);
                 Double longitude = data.getDoubleExtra("longitude", 0);
-                Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(returnString));
+                Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(returnString).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
                 marker.setTag("customize");
             }
         }
@@ -408,14 +423,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
 
-    public void popLocationInfo(View view) {
-        popWindow("locationInfo");
-    }
-
-    public void popPersonInfo(View view) {
-        popWindow("personInfo");
-    }
-
     public void popWindow(String popWinName) {
         if(popWinName.equals("locationInfo")){
             LocationInfoPopUpWin locationInfoPopWin = new LocationInfoPopUpWin(this, R.layout.location_info_pop_win, mMap, this);
@@ -466,11 +473,20 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    public void exitTeam() {
+        pref.edit().putBoolean("inTeam",false).commit();
+        //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     public void exitTeam(View view) {
         pref.edit().putBoolean("inTeam",false).commit();
         //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void addLocation(double latitude, double longitude) {
