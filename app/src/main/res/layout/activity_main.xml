@@ -135,38 +135,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-<!--
-    <ImageView
-        android:id="@+id/team_tracker_btn1"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="12dp"
-        android:onClick="goLocate"
-        app:layout_constraintBottom_toTopOf="@+id/news_btn1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/locate_button" />
-
-    <ImageView
-        android:id="@+id/news_btn1"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:onClick="goNews"
-        app:layout_constraintBottom_toTopOf="@+id/surrounding_view_btn1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/more" />
-
-    <ImageView
-        android:id="@+id/surrounding_view_btn1"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="428dp"
-        android:onClick="goSurroundingView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/surround_view" />
--->
     <Button
         android:id="@+id/team_tracker_btn"
         android:layout_width="50dp"

@@ -29,7 +29,6 @@
                 android:id="@+id/info_post_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:text=""
                 android:textSize="16dp"/>
         </LinearLayout>

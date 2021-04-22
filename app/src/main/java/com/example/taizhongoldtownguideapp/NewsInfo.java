@@ -68,11 +68,13 @@ public class NewsInfo extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
                     String jsonString = JsonParser.parseString(responseJsonString).getAsString();
+
                     try {
                         JSONArray jsonArray = new JSONArray(jsonString);
                         JSONObject dataObject = jsonArray.getJSONObject(Integer.parseInt(postIndex));
                         String rawContent = dataObject.getString("MA_CONTENT");
                         postContent = EscapeUnescape.unescape(rawContent);
+                        Log.d("seeJson",postContent);
 
                         Document doc = (Document) Jsoup.parse(postContent);
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -89,6 +91,7 @@ public class NewsInfo extends AppCompatActivity {
             }
         };
     }
+    /*
     private void newTextView(String text){
         TextView tv = new TextView(this);
         Document doc = (Document) Jsoup.parse(text);
@@ -102,6 +105,7 @@ public class NewsInfo extends AppCompatActivity {
         tv.setTextSize(20);
         postLayout.addView(tv);
     }
+    */
 
     void getPointJson(String url){
         OkHttpClient client = new OkHttpClient();
