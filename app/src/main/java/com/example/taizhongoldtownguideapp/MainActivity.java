@@ -201,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     Boolean newUser = pref.getBoolean("inTeam",false);
+                    //這裡可以去firebase看現在自己的房間ID是否存在，存在的話就去TeamTracker，反之去createNewUser
                     if(!newUser){
                         Intent intent = new Intent(getApplicationContext(), CreateNewUser.class);
                         startActivity(intent);

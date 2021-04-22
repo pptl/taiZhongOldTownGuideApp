@@ -92,7 +92,7 @@ public class PersonalInfoPopUpWinRecycleViewAdapter extends RecyclerView.Adapter
                 holder.wordItemView.setText(mCurrentName);
                 int imageResource = context.getResources().getIdentifier("@drawable/" + mCurrentUserIconPath, null, context.getPackageName());
                 holder.userIcon.setImageResource(imageResource);
-                if (!mCurrentUserIsLeader){
+                if (mCurrentUserIsLeader == null || !mCurrentUserIsLeader){
                     holder.isLeaderIcon.setVisibility(View.GONE);
                 } else {
                     int leaderIcon = context.getResources().getIdentifier("@drawable/crown", null, context.getPackageName());

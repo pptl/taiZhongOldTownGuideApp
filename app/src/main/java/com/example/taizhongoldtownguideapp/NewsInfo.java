@@ -74,7 +74,6 @@ public class NewsInfo extends AppCompatActivity {
                         JSONObject dataObject = jsonArray.getJSONObject(Integer.parseInt(postIndex));
                         String rawContent = dataObject.getString("MA_CONTENT");
                         postContent = EscapeUnescape.unescape(rawContent);
-                        Log.d("seeJson",postContent);
 
                         Document doc = (Document) Jsoup.parse(postContent);
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {

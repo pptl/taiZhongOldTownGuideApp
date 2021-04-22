@@ -115,29 +115,29 @@ public class TeamEntry extends AppCompatActivity {
 
         teamID = teamIDGenerator();
         //這裡在檢查有沒有重複的teamID
-        teamRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        ValueEventListener listner = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                while(snapshot.child(teamID).getValue() != null) {
-                    if (snapshot.child(teamID).getValue() == null){
-                        Log.d("seeIsTeamIDBang","IDnobang!");
-                    }
-                    else {
-                        Log.d("seeIsTeamIDBang","IDbang!");
+                while (snapshot.child(teamID).getValue() != null) {
+                    if (snapshot.child(teamID).getValue() == null) {
+                    } else {
                         teamID = teamIDGenerator();
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        teamRef.addListenerForSingleValueEvent(listner);
 
         userID = teamRef.child(teamID).child("userData").push().getKey();
 
         teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
+        teamRef.removeEventListener(listner);
         pref.edit().putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
         pref.edit().putString("roomType","singleUser").commit();
 

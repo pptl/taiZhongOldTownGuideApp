@@ -91,6 +91,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private String roomType;
     private Button locationInfoButton;
     private Button personInfoButton;
+    private Boolean isExiting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,13 +138,13 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
 
 
-        //預設popupwin裡的checkbox
+        //預設popupwin裡的checkbox history元件是已經勾選的
         checkedLayerSet.add("history");
-
+        //存起來，別的layout會用到
         pref.edit().putStringSet("checkedLayer",checkedLayerSet).apply();
 
         timer = new Timer();
-        //固定時間檢查用戶坐標是否有移動
+        //固定每5秒檢查用戶坐標是否有移動
         timer.schedule(checkTask, 1000, 5000);
 
         mDatabase = FirebaseDatabase.getInstance();
@@ -182,8 +183,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 addLocation(position.latitude, position.longitude);
             }
         });
-
-
 
         messageHandler = new Handler(){
             @Override
@@ -295,21 +294,22 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     String userIconPath = data.child("userIconPath").getValue(String.class);
                     String userID = data.getKey();
 
-                    int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
-                    Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
-                    Double userLatitude = data.child("userLatitude").getValue(Double.class);
-                    Double userLongitude = data.child("userLongitude").getValue(Double.class);
+                    if(userName != null && userIconPath != null && userID != null){
+                        int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
+                        Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
+                        Double userLatitude = data.child("userLatitude").getValue(Double.class);
+                        Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
-                    if(userLatitude != null && userLongitude != null){
-                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
-                        if(hashMapMarker.containsKey(userID)){
-                            Marker delMarker = hashMapMarker.get(userID);
-                            delMarker.remove();
-                            hashMapMarker.remove(userID);
+                        if(userLatitude != null && userLongitude != null){
+                            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                            if(hashMapMarker.containsKey(userID)){
+                                Marker delMarker = hashMapMarker.get(userID);
+                                delMarker.remove();
+                                hashMapMarker.remove(userID);
+                            }
+                            hashMapMarker.put(userID,marker);
                         }
-                        hashMapMarker.put(userID,marker);
                     }
-
 
                 }
             }
@@ -343,7 +343,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
-
+    //等待使用者在createNewMarker頁面把增加marker的資訊返回
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -358,34 +358,32 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-
-
     //獲取使用者裝置現在的位置
     private void getDeviceLocation(){
-        //這裡有可能會有先載入地圖了再拋出permittion的bug
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
-            location.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                Map<String, Object> userLocations = new HashMap<>();
-                DatabaseReference myRef = usersRef.child(userID);
+            if(!isExiting){
+                location.addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        Map<String, Object> userLocations = new HashMap<>();
+                        DatabaseReference myRef = usersRef.child(userID);
 
-                mCurrentLocation = (Location) location;
-                //檢查user有沒有移動
-                userLocations.put("userLatitude",mCurrentLocation.getLatitude());
-                userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+                        mCurrentLocation = (Location) location;
+                        //檢查user有沒有移動
+                        userLocations.put("userLatitude",mCurrentLocation.getLatitude());
+                        userLocations.put("userLongitude",mCurrentLocation.getLongitude());
 
-                myRef.updateChildren(userLocations);
-                //地圖addMarker時可以使用到
-                pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
-                pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
+                        myRef.updateChildren(userLocations);
+                        //地圖addMarker時可以使用到
+                        pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
+                        pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
 
-                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
+                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
+                    }
+                });
             }
-        });
-
     }
 
     private void checkLocationChange(){
@@ -394,21 +392,24 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         final float preLatitude = pref.getFloat("userLatitude",0);
         final float preLongitude = pref.getFloat("userLongitude",0);
 
-        location.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                mCurrentLocation = (Location) location;
-                if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
-                    Map<String, Object> userLocations = new HashMap<>();
-                    userLocations.put("userLatitude",mCurrentLocation.getLatitude());
-                    userLocations.put("userLongitude",mCurrentLocation.getLongitude());
-                    //地圖addMarker時可以使用到
-                    pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
-                    pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
-                    usersRef.child(userID).updateChildren(userLocations);
+        if(!isExiting){
+            location.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    mCurrentLocation = (Location) location;
+                    if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
+                        Map<String, Object> userLocations = new HashMap<>();
+                        userLocations.put("userLatitude",mCurrentLocation.getLatitude());
+                        userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+                        //地圖addMarker時可以使用到
+                        pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
+                        pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
+                        usersRef.child(userID).updateChildren(userLocations);
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     private TimerTask checkTask = new TimerTask() {
@@ -474,16 +475,21 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void exitTeam() {
+        //isLeader ,roomnumber
+        isExiting = true;
         pref.edit().putBoolean("inTeam",false).commit();
+        usersRef.child(userID).removeValue();
         //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();
     }
-
+    //給其他layout用的
     public void exitTeam(View view) {
+        isExiting = true;
         pref.edit().putBoolean("inTeam",false).commit();
-        //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
+        //這裡要去firebase刪掉相關用戶的資料
+        usersRef.child(userID).removeValue();
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();

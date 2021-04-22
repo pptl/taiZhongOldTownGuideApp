@@ -64,6 +64,7 @@ public class JoinTeam extends AppCompatActivity {
 
                     pref.edit().putString("userName",userName).putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).putBoolean("isLeader",false).putFloat("userLatitude",0).putFloat("userLongitude",0).putString("userIconPath", userIconPath).commit();
 
+                    teamRef.removeEventListener(this);
                     Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
                     startActivity(intent);
                     finish();

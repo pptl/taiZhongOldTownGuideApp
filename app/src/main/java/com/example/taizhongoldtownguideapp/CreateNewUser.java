@@ -33,7 +33,6 @@ public class CreateNewUser extends AppCompatActivity {
 
     public void goSelect(View view) {
         newUserName = editText.getText().toString();
-
         pref.edit().putString("userName",newUserName).apply();
 
         Intent intent = new Intent(this, TeamEntry.class);
