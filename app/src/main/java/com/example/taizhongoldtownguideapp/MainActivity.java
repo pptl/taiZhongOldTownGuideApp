@@ -7,6 +7,8 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -31,6 +33,7 @@ import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.view.GestureDetector;
+import android.widget.Toast;
 
 
 import org.json.JSONArray;
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private String weather;//1：晴天，2：陰天，3：小雨天，4： 雷雨天
     private SharedPreferences pref;
     private Handler handler;
+    private final int REQUEST_CODE_ACTION_LOCATION_SOURCE_SETTINGS = 3;
 
     public boolean clickFlag = true;
 
@@ -187,28 +191,44 @@ public class MainActivity extends AppCompatActivity {
         goTeamTrackerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //請求獲取位置permission
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION
                     }, REQUEST_CODE);
                 }
                 else{
-                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                        //这里其实要出现一个视窗提醒使用者开GPS
-                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
 
-                    Boolean newUser = pref.getBoolean("inTeam",false);
-                    //這裡可以去firebase看現在自己的房間ID是否存在，存在的話就去TeamTracker，反之去createNewUser
-                    if(!newUser){
-                        Intent intent = new Intent(getApplicationContext(), CreateNewUser.class);
-                        startActivity(intent);
-                    }
-                    else{
-                        Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
-                        startActivity(intent);
+                    final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                        final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                        alert.setTitle("使用此功能需要開啟GPS定位");
+                        alert.setMessage("是否前往開啟GPS定位？");
+                        alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //前往開啟GPS定位
+                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            }
+                        });
+                        alert.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(MainActivity.this,"請先開啟GPS定位",Toast.LENGTH_LONG).show();
+
+                            }
+                        });
+                        alert.create().show();
+                    } else{
+                        Boolean newUser = pref.getBoolean("inTeam",false);
+                        //這裡可以去firebase看現在自己的房間ID是否存在，存在的話就去TeamTracker，反之去createNewUser
+                        if(!newUser){
+                            Intent intent = new Intent(getApplicationContext(), CreateNewUser.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
+                            startActivity(intent);
+                        }
                     }
                 }
             }
@@ -278,25 +298,40 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //Log.d("seePermition", String.valueOf(PackageManager.PERMISSION_GRANTED));
-        if (requestCode == REQUEST_CODE){
 
+        if (requestCode == REQUEST_CODE){
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                //这里其实要出现一个视窗提醒使用者开GPS
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-
-            Boolean newUser = pref.getBoolean("inTeam",false);
-            if(!newUser){
-                Intent intent = new Intent(this, CreateNewUser.class);
-                startActivity(intent);
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                alert.setTitle("使用此功能需要開啟GPS定位");
+                alert.setMessage("是否前往開啟GPS定位？");
+                alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //前往開啟GPS定位
+                        //startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                });
+                alert.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this,"請先開啟GPS定位",Toast.LENGTH_LONG).show();
+                    }
+                });
+                alert.create().show();
             } else {
-                Intent intent = new Intent(this, TeamTracker.class);
-                startActivity(intent);
+                //查看使用者是否已經加入團隊
+                Boolean newUser = pref.getBoolean("inTeam",false);
+                if(!newUser){
+                    Intent intent = new Intent(this, CreateNewUser.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, TeamTracker.class);
+                    startActivity(intent);
+                }
             }
         } else {
-            Log.d("seePermition","permitionNotOK");
+            Toast.makeText(MainActivity.this,"獲取裝置GPS權限失敗", Toast.LENGTH_LONG).show();
         }
     }
 

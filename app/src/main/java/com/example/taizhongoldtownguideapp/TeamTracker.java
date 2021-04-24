@@ -1,9 +1,11 @@
 package com.example.taizhongoldtownguideapp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,28 +14,26 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -62,7 +62,7 @@ import java.util.TimerTask;
 public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    Location mCurrentLocation;
+    Location mCurrentLocation = null;
     FusedLocationProviderClient mFusedLocationProviderClient;
     private WindowManager.LayoutParams params;
     private String teamID;
@@ -91,7 +91,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private String roomType;
     private Button locationInfoButton;
     private Button personInfoButton;
-    private Boolean isExiting = false;
+    private Boolean isExiting = false;//判斷使用者是否正在退出團隊
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,8 +136,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-
-
         //預設popupwin裡的checkbox history元件是已經勾選的
         checkedLayerSet.add("history");
         //存起來，別的layout會用到
@@ -159,7 +157,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             popWindow("switchLayer");
             }
         });
-
     }
 
     @SuppressLint("HandlerLeak")
@@ -266,23 +263,17 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                                     religionMarkerHashMap.put(id, marker);
                                     break;
                             }
-                            //需要設定什麼大小的時候會出現哪些marker
-                            //float zoom = map.getCameraPosition().zoom;
-
-                            //marker.showInfoWindow();
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 };
             }
         };
-
+        //獲得自己裝置的位置
         getDeviceLocation();
+        //使用坐標資料api
         getPointJson(url);
-
-
 
         //每次fireBase裡朋友資料更新時，更新本地朋友資料
         usersRef.addValueEventListener(new ValueEventListener() {
@@ -315,7 +306,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 
@@ -338,7 +328,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 
@@ -360,7 +349,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
     //獲取使用者裝置現在的位置
     private void getDeviceLocation(){
-
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
             if(!isExiting){
@@ -369,18 +357,26 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     public void onSuccess(Location location) {
                         Map<String, Object> userLocations = new HashMap<>();
                         DatabaseReference myRef = usersRef.child(userID);
-
                         mCurrentLocation = (Location) location;
-                        //檢查user有沒有移動
-                        userLocations.put("userLatitude",mCurrentLocation.getLatitude());
-                        userLocations.put("userLongitude",mCurrentLocation.getLongitude());
 
-                        myRef.updateChildren(userLocations);
-                        //地圖addMarker時可以使用到
-                        pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
-                        pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
+                        if(mCurrentLocation != null){
 
-                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
+                            //檢查user有沒有移動
+                            userLocations.put("userLatitude",mCurrentLocation.getLatitude());
+                            userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+
+                            myRef.updateChildren(userLocations);
+                            //地圖addMarker時可以使用到
+                            pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
+                            pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
+
+                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
+                        }else{
+                            //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
+                            finish();
+                            startActivity(getIntent());
+                        }
+
                     }
                 });
             }
@@ -389,6 +385,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private void checkLocationChange(){
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         final float preLatitude = pref.getFloat("userLatitude",0);
         final float preLongitude = pref.getFloat("userLongitude",0);
 
@@ -397,19 +395,21 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 @Override
                 public void onSuccess(Location location) {
                     mCurrentLocation = (Location) location;
-                    if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
-                        Map<String, Object> userLocations = new HashMap<>();
-                        userLocations.put("userLatitude",mCurrentLocation.getLatitude());
-                        userLocations.put("userLongitude",mCurrentLocation.getLongitude());
-                        //地圖addMarker時可以使用到
-                        pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
-                        pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
-                        usersRef.child(userID).updateChildren(userLocations);
+                    if(mCurrentLocation != null){
+                        if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
+                            Map<String, Object> userLocations = new HashMap<>();
+                            userLocations.put("userLatitude",mCurrentLocation.getLatitude());
+                            userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+                            //地圖addMarker時可以使用到
+                            pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
+                            pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
+                            usersRef.child(userID).updateChildren(userLocations);
+                        }
                     }
+
                 }
             });
         }
-
     }
 
     private TimerTask checkTask = new TimerTask() {
@@ -453,9 +453,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     getWindow().setAttributes(params);
                 }
             });
-
         } else if (popWinName.equals("switchLayer")){
-
             SwitchLayerPopUpWin switchLayerPopUpWin = new SwitchLayerPopUpWin(this, R.layout.switch_layer_pop_up_win);
             switchLayerPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
@@ -469,30 +467,57 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     getWindow().setAttributes(params);
                 }
             });
-
         }
-
     }
 
     public void exitTeam() {
-        //isLeader ,roomnumber
-        isExiting = true;
-        pref.edit().putBoolean("inTeam",false).commit();
-        usersRef.child(userID).removeValue();
-        //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
-        Intent intent = new Intent(this,MainActivity.class);
-        startActivity(intent);
-        finish();
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("是否要退出團隊？");
+        alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //isLeader ,roomnumber
+                isExiting = true;
+                pref.edit().putBoolean("inTeam",false).commit();
+                usersRef.child(userID).removeValue();
+                alert.setView(null);
+                //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        alert.setNegativeButton("否", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alert.create().show();
     }
     //給其他layout用的
     public void exitTeam(View view) {
-        isExiting = true;
-        pref.edit().putBoolean("inTeam",false).commit();
-        //這裡要去firebase刪掉相關用戶的資料
-        usersRef.child(userID).removeValue();
-        Intent intent = new Intent(this,MainActivity.class);
-        startActivity(intent);
-        finish();
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("是否要退出團隊？");
+        alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                isExiting = true;
+                pref.edit().putBoolean("inTeam",false).commit();
+                //這裡要去firebase刪掉相關用戶的資料
+                usersRef.child(userID).removeValue();
+                alert.setView(null);
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        alert.setNegativeButton("否", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.create().show();
     }
 
     public void addLocation(double latitude, double longitude) {
@@ -513,7 +538,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             public void onFailure(Request request, IOException e) {
                 e.printStackTrace();
             }
-
             @Override
             public void onResponse(Response response) throws IOException {
                 if(response.isSuccessful()){
