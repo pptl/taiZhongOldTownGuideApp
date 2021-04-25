@@ -6,7 +6,6 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,6 +44,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
     private String weather;//1：晴天，2：陰天，3：小雨天，4： 雷雨天
     private SharedPreferences pref;
     private Handler handler;
-    private final int REQUEST_CODE_ACTION_LOCATION_SOURCE_SETTINGS = 3;
-
     public boolean clickFlag = true;
 
     //設置地圖上有效點擊範圍
@@ -98,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pref = getSharedPreferences("userData",MODE_PRIVATE);
+
+        seekBar = (SeekBar)findViewById(R.id.seekBar);
+        seekBarTextView = (TextView)findViewById(R.id.yearTextView);
+
+        Date d =  new Date();
+        int currentYear = d.getYear() + 1900;
+        seekBarTextView.setText(currentYear+"年");
 
         getWeather();
         handler = new Handler(){
@@ -187,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         goNewsBtn = findViewById(R.id.news_btn);
         goSurroundingViewBtn = findViewById(R.id.surrounding_view_btn);
         navBtn = findViewById(R.id.nav_btn);
+
 
         goTeamTrackerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -481,9 +486,10 @@ public class MainActivity extends AppCompatActivity {
 
     //拖移bar控制
     private void seekBarController(){
-        seekBar = (SeekBar)findViewById(R.id.seekBar);
-        seekBarTextView = (TextView)findViewById(R.id.yearTextView);
+        Date d = new Date();
+        final int currentYear = d.getYear() + 1900;
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(progress<=25){
@@ -509,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }else if(progress > 75 ){
                     seekBar.setProgress(100);
-                    seekBarTextView.setText("2020年");
+                    seekBarTextView.setText( currentYear + "年");
                     changeImage(3);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
                     clickFlag = true;

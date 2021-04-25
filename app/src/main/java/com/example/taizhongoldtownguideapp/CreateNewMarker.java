@@ -8,12 +8,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -74,7 +72,7 @@ public class CreateNewMarker extends AppCompatActivity {
             }
         });
         */
-        
+
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +103,6 @@ public class CreateNewMarker extends AppCompatActivity {
         startActivityForResult(intent,PICK_IMAGE_REQUEST);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -116,6 +113,4 @@ public class CreateNewMarker extends AppCompatActivity {
             markerIcon.setImageResource(imageResource);
         }
     }
-
-
 }
