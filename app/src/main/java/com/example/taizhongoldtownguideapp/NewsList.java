@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -40,7 +41,7 @@ public class NewsList extends AppCompatActivity {
     private Button prePageBtn;
     private Button nextPageBtn;
     private String responseJsonString = "";
-    private JSONArray dataList = null;
+    private JSONArray dataList;
     private ProgressBar newsListProgressBar;
 
     @Override
@@ -59,7 +60,9 @@ public class NewsList extends AppCompatActivity {
         nextPageBtn = findViewById(R.id.nextPageBtn);
 
         String url = "http://140.134.48.76/USR/API/API/Default/APPGetData?name=main&token=2EV7tVz0Pv6bLgB/aXRURg==";
-        getPostJson(url);
+        if(dataList == null){
+            getPostJson(url);
+        }
 
         handler = new Handler(){
             @Override

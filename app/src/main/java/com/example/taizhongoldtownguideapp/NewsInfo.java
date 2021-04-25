@@ -1,17 +1,28 @@
 package com.example.taizhongoldtownguideapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.util.Base64;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
+import android.view.View;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -29,6 +40,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +59,7 @@ public class NewsInfo extends AppCompatActivity {
     private String responseJsonString = "";
     private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=main&token=2EV7tVz0Pv6bLgB/aXRURg==";
     private WebView postWebView;
+    private ProgressBar newsInfoProgressBar;
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -58,17 +71,16 @@ public class NewsInfo extends AppCompatActivity {
         postID = getIntent().getStringExtra("id");
         postIndex = getIntent().getStringExtra("index");
 
-        //postWebView = findViewById(R.id.postWebView);
+        postWebView = findViewById(R.id.postWebView);
         titleTextView = findViewById(R.id.info_post_title);
-        postLayout = findViewById(R.id.postLayout);
-        contentTextView = findViewById(R.id.info_post_content);
         titleTextView.setText(postTitle);
+        newsInfoProgressBar = findViewById(R.id.newsInfo_progressBar);
 
         getPointJson(url);
 
         messageHandler = new Handler(){
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(final Message msg) {
                 if(msg.what == 1){
                     String jsonString = JsonParser.parseString(responseJsonString).getAsString();
 
@@ -77,16 +89,14 @@ public class NewsInfo extends AppCompatActivity {
                         JSONObject dataObject = jsonArray.getJSONObject(Integer.parseInt(postIndex));
                         String rawContent = dataObject.getString("MA_CONTENT");
                         postContent = EscapeUnescape.unescape(rawContent);
-                        //postWebView.loadDataWithBaseURL("", postContent,"text/html", "utf-8", "");
-                        //postWebView.loadData(postContent,"text/html", "utf-8");
-
                         Document doc = (Document) Jsoup.parse(postContent);
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                            contentTextView.setText(Html.fromHtml(String.valueOf(doc),Html.FROM_HTML_MODE_LEGACY));
-                        } else {
-                            contentTextView.setText(Html.fromHtml(String.valueOf(doc)));
-                        }
-
+                        postWebView.setWebViewClient(new WebViewClient() {
+                            public void onPageFinished(WebView view, String url) {
+                              newsInfoProgressBar.setVisibility(View.INVISIBLE);
+                              newsInfoProgressBar.setEnabled(false);
+                            }
+                        });
+                        postWebView.loadDataWithBaseURL(null,String.valueOf(doc) , "text/html", "base64", null);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -94,21 +104,6 @@ public class NewsInfo extends AppCompatActivity {
             }
         };
     }
-    /*
-    private void newTextView(String text){
-        TextView tv = new TextView(this);
-        Document doc = (Document) Jsoup.parse(text);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            tv.setText(Html.fromHtml(String.valueOf(doc),Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            tv.setText(Html.fromHtml(String.valueOf(doc)));
-        }
-
-        tv.setText(text);
-        tv.setTextSize(20);
-        postLayout.addView(tv);
-    }
-    */
 
     void getPointJson(String url){
         OkHttpClient client = new OkHttpClient();

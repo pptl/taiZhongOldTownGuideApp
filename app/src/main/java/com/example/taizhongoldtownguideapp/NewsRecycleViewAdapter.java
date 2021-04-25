@@ -49,7 +49,6 @@ public class NewsRecycleViewAdapter extends RecyclerView.Adapter<NewsRecycleView
                 e.printStackTrace();
             }
 
-
             context.startActivity(intent);
         }
     }
