@@ -33,7 +33,7 @@
         <activity
             android:name=".ChangeMarkerIcon"
             android:label="选择标记"
-            android:parentActivityName=".TeamTracker" />
+            android:parentActivityName=".CreateNewMarker" />
         <activity
             android:name=".ChangeUserIcon"
             android:label="选择头框"

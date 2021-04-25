@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
@@ -56,6 +58,10 @@ public class CreateNewMarker extends AppCompatActivity {
         picker.setIs24HourView(true);
         picker.setEnabled(false);
 
+        //提醒功能尚在開發中
+        aSwitch.setEnabled(false);
+        //提醒功能尚在開發中
+        /*
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -65,10 +71,10 @@ public class CreateNewMarker extends AppCompatActivity {
                 else{
                     picker.setEnabled(false);
                 }
-
             }
         });
-
+        */
+        
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -14,7 +14,7 @@
         android:layout_height="49dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="32dp"
-        android:text="提醒"
+        android:text="地圖標記"
         android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
