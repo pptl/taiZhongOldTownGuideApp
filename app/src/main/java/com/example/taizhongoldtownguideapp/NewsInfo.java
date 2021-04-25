@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ public class NewsInfo extends AppCompatActivity {
     private String postIndex = "";
     private String responseJsonString = "";
     private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=main&token=2EV7tVz0Pv6bLgB/aXRURg==";
+    private WebView postWebView;
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -56,6 +58,7 @@ public class NewsInfo extends AppCompatActivity {
         postID = getIntent().getStringExtra("id");
         postIndex = getIntent().getStringExtra("index");
 
+        //postWebView = findViewById(R.id.postWebView);
         titleTextView = findViewById(R.id.info_post_title);
         postLayout = findViewById(R.id.postLayout);
         contentTextView = findViewById(R.id.info_post_content);
@@ -74,6 +77,8 @@ public class NewsInfo extends AppCompatActivity {
                         JSONObject dataObject = jsonArray.getJSONObject(Integer.parseInt(postIndex));
                         String rawContent = dataObject.getString("MA_CONTENT");
                         postContent = EscapeUnescape.unescape(rawContent);
+                        //postWebView.loadDataWithBaseURL("", postContent,"text/html", "utf-8", "");
+                        //postWebView.loadData(postContent,"text/html", "utf-8");
 
                         Document doc = (Document) Jsoup.parse(postContent);
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -82,7 +87,6 @@ public class NewsInfo extends AppCompatActivity {
                             contentTextView.setText(Html.fromHtml(String.valueOf(doc)));
                         }
 
-                        //newTextView(postContext);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

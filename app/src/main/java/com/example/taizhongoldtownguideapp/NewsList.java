@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.JsonParser;
@@ -41,6 +41,7 @@ public class NewsList extends AppCompatActivity {
     private Button nextPageBtn;
     private String responseJsonString = "";
     private JSONArray dataList = null;
+    private ProgressBar newsListProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class NewsList extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.showInfo);
         currentPageTab = findViewById(R.id.currentPageTab);
         prePageBtn = findViewById(R.id.prePageBtn);
+        newsListProgressBar = findViewById(R.id.newsList_progressBar);
 
         if(currentPage <= 1){
             prePageBtn.setClickable(false);
@@ -63,13 +65,15 @@ public class NewsList extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
+                    //資料載入完成後就移除loading標識
+                    newsListProgressBar.setVisibility(View.INVISIBLE);
+                    newsListProgressBar.setEnabled(false);
                     currentPage = 1;
                     currentPageTab.setText(String.valueOf(currentPage));
                     fromPage = (currentPage - 1) * 10;
                     toPage = currentPage * 10;
                     mAdapter = new NewsRecycleViewAdapter(NewsList.this, titleList.subList(fromPage, toPage), dataList);
                     mRecyclerView.setAdapter(mAdapter);
-
                 }
             }
         };
@@ -101,8 +105,6 @@ public class NewsList extends AppCompatActivity {
                         Message msg = new Message();
                         msg.what = 1;
                         handler.sendMessage(msg);
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -110,7 +112,6 @@ public class NewsList extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public void prePage(View view) {
@@ -140,7 +141,7 @@ public class NewsList extends AppCompatActivity {
             currentPageTab.setText(String.valueOf(currentPage));
             fromPage = (currentPage - 1) * 10;
             toPage = currentPage * 10;
-            if(currentPage >= 2){
+            if(currentPage > 1){
                 prePageBtn.setClickable(true);
                 prePageBtn.setAlpha((float)1);
             }
@@ -149,6 +150,8 @@ public class NewsList extends AppCompatActivity {
             currentPageTab.setText(String.valueOf(currentPage));
             fromPage = (currentPage - 1) * 10;
             toPage = titleList.size();
+            prePageBtn.setClickable(true);
+            prePageBtn.setAlpha((float)1);
             nextPageBtn.setClickable(false);
             nextPageBtn.setAlpha((float)0.5);
         }
