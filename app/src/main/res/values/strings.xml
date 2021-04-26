@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">臺中城中城導覽</string>
-    <string name="map_key">AIzaSyBoqr4k4TgxiIn0eK-kBgD-Habo7AarCSI</string>
+    <!--<string name="map_key">AIzaSyBoqr4k4TgxiIn0eK-kBgD-Habo7AarCSI</string>-->
+    <string name="map_key">AIzaSyC3ThGuZ0UyZS5hgjcCJvlbZda-JbkNt4M</string>
     <string name="fivetwotwo_title">四維街日式招待所</string>
     <string name="fivetwotwo_content">建築格局為ㄇ字型，形制保存完整，材質、形式大抵為日治時期興建之原貌，同時為本市極少數尚存之兩層樓木造雨淋板建築。</string>
     <string name="fivezeroone_title">彰化銀行繼光街宿舍</string>
