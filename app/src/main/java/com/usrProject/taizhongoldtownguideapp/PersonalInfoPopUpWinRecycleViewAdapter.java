@@ -1,4 +1,4 @@
-package com.usr.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp;
 
 import android.content.Context;
 import android.view.LayoutInflater;
