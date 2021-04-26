@@ -16,13 +16,7 @@
 
     <string name="meibianzhiyuan">此地圖為示意圖，後續將請美術設計團隊重繪</string>
     <string name="laoshi_meibianzhiyuan">地圖目前尚未完成，美術設計團隊後續將持續更新</string>
-    <string name="title_activity_where_my_friend">Map</string>
-    <string name="title_activity_where_is_my_friend">Map</string>
-    <string name="notInTeam_textView_text">還沒在團隊里嗎？</string>
     <string name="notInTeam_createTeamButton_text">創建新團隊</string>
     <string name="notInTeam_joinTeamButton_text">參加團隊</string>
-    <string name="createTeam_editText_text">輸入團隊名稱</string>
-    <string name="createTeam_quickCreateButton_text">快速創建</string>
-    <string name="joinTeam_editText_text">輸入房號</string>
     <string name="joinTeam_quickJoinButton_text">快速加入</string>
 </resources>
