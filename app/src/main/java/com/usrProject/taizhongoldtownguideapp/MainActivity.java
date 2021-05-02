@@ -211,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                         alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 //前往開啟GPS定位
                                 startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             }

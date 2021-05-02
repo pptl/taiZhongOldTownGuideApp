@@ -291,6 +291,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
                         if(userLatitude != null && userLongitude != null){
                             marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                            marker.setTag("user");
                             if(hashMapMarker.containsKey(userID)){
                                 Marker delMarker = hashMapMarker.get(userID);
                                 delMarker.remove();

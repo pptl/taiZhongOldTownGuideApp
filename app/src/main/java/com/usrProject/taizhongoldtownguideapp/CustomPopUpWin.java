@@ -18,9 +18,9 @@ public class CustomPopUpWin extends PopupWindow {
 
         // 设置外部可点击
         this.setOutsideTouchable(true);
+        /*
         this.view.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-
                 int height = view.findViewById(R.id.popwindow_layout).getTop();
                 int y = (int) event.getY();
                 if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -31,6 +31,7 @@ public class CustomPopUpWin extends PopupWindow {
                 return true;
             }
         });
+        */
 
         /* 设置弹出窗口特征 */
         // 设置视图
