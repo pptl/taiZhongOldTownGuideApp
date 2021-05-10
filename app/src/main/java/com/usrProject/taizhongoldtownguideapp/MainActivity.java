@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     public boolean clickFlag = true;
 
+    private int currentMapIndex = 3;//記錄底圖index
+
     //記錄照片中心
     private int [][] mapSizeData = {
             {540,507},//map_51
@@ -164,12 +166,8 @@ public class MainActivity extends AppCompatActivity {
 
         //獲取手機高寬密度
         phoneDensity = metric.density;
-        phoneHeightPixels = metric.heightPixels ;
-        phoneWidthPixels = metric.widthPixels ;
-
-        //用以記錄現在的點
-        curPointX = 0;
-        curPointY = 0;
+        phoneHeightPixels = metric.heightPixels;
+        phoneWidthPixels = metric.widthPixels;
 
         //宣告並初始化地圖底圖
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -193,11 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
         mapImageView = (ImageView)this.findViewById(R.id.mapView);
         //預設是第四張照片
-        changeImage(3);
-        curPointX = 960;
-        curPointY = 768;
-        mapImageView.scrollTo(curPointX,curPointY);
-
+        changeImage(currentMapIndex);
         meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
 
         goTeamTrackerBtn = findViewById(R.id.team_tracker_btn);
@@ -422,9 +416,15 @@ public class MainActivity extends AppCompatActivity {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int goX = (int)distanceX;
             int goY = (int)distanceY;
-            mapImageView.scrollBy(goX, goY);
-            curPointX += goX;
-            curPointY += goY;
+
+            if((curPointX + goX)/phoneDensity >= 0 && (curPointX + goX)/phoneDensity <= (mapSizeData[currentMapIndex][0]*2 - phoneWidthPixels/phoneDensity)){
+                mapImageView.scrollBy(goX, 0);
+                curPointX += goX;
+            }
+            if((curPointY + goY)/phoneDensity >= 0 && (curPointY + goY)/phoneDensity <= (mapSizeData[currentMapIndex][1]*2 - phoneHeightPixels/phoneDensity)){
+                mapImageView.scrollBy(0, goY);
+                curPointY += goY;
+            }
 
             return false;
         }
@@ -564,8 +564,9 @@ public class MainActivity extends AppCompatActivity {
         String uri = "@drawable/" + imgList.get(i);
         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
         mapImageView.setImageResource(imageResource);
-        curPointX = mapSizeData[i][0];
-        curPointY = mapSizeData[i][1];
+
+        curPointX = Math.round(mapSizeData[currentMapIndex][0]*phoneDensity - phoneWidthPixels/2);
+        curPointY = Math.round(mapSizeData[currentMapIndex][1]*phoneDensity - phoneHeightPixels/2);
         mapImageView.scrollTo(curPointX,curPointY);
 
     }
