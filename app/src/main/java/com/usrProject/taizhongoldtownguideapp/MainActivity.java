@@ -505,28 +505,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(progress<=25){
-                    //seekBar.setProgress(0);
                     seekBarTextView.setText("乾隆40~51年");
                     changeImage(0);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 25 && progress <= 50){
-                    //seekBar.setProgress(38);
                     seekBarTextView.setText("1911年");
                     changeImage(1);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 50 && progress <= 75 ){
-                    //seekBar.setProgress(63);
                     seekBarTextView.setText("1937年");
                     changeImage(2);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 75 ){
-                    //seekBar.setProgress(100);
                     seekBarTextView.setText( currentYear + "年");
                     changeImage(3);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
@@ -562,9 +558,9 @@ public class MainActivity extends AppCompatActivity {
         String uri = "@drawable/" + imgList.get(i);
         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
         mapImageView.setImageResource(imageResource);
-
-        curPointX = Math.round(mapSizeData[currentMapIndex][0]*phoneDensity - phoneWidthPixels/2);
-        curPointY = Math.round(mapSizeData[currentMapIndex][1]*phoneDensity - phoneHeightPixels/2);
+        currentMapIndex = i;
+        curPointX = Math.round(mapSizeData[i][0]*phoneDensity - phoneWidthPixels/2);
+        curPointY = Math.round(mapSizeData[i][1]*phoneDensity - phoneHeightPixels/2);
         mapImageView.scrollTo(curPointX,curPointY);
 
     }
