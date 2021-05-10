@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -494,28 +495,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(progress<=25){
-                    seekBar.setProgress(0);
+                    //seekBar.setProgress(0);
                     seekBarTextView.setText("乾隆40~51年");
                     changeImage(0);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 25 && progress <= 50){
-                    seekBar.setProgress(38);
+                    //seekBar.setProgress(38);
                     seekBarTextView.setText("1911年");
                     changeImage(1);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 50 && progress <= 75 ){
-                    seekBar.setProgress(63);
+                    //seekBar.setProgress(63);
                     seekBarTextView.setText("1937年");
                     changeImage(2);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 }else if(progress > 75 ){
-                    seekBar.setProgress(100);
+                    //seekBar.setProgress(100);
                     seekBarTextView.setText( currentYear + "年");
                     changeImage(3);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
@@ -530,6 +531,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+
+                int progress = seekBar.getProgress();
+                if(progress<=25){
+                    seekBar.setProgress(0);
+                }else if(progress > 25 && progress <= 50){
+                    seekBar.setProgress(38);
+                }else if(progress > 50 && progress <= 75 ){
+                    seekBar.setProgress(63);
+                }else if(progress > 75 ){
+                    seekBar.setProgress(100);
+                }
+
 
             }
         });
