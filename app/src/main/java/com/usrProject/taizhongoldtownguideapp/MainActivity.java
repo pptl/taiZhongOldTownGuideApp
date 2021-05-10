@@ -78,6 +78,14 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     public boolean clickFlag = true;
 
+    //記錄照片中心
+    private int [][] mapSizeData = {
+            {540,507},//map_51
+            {540,415},//map_1911
+            {540,433},//map_1937
+            {960,768}//map_now
+    };
+
     //設置地圖上有效點擊範圍
     private int [][] objList={
             {303, 1045, 387, 1960},//四維街日式招待所
@@ -184,6 +192,11 @@ public class MainActivity extends AppCompatActivity {
         imgList.add("map_now");
 
         mapImageView = (ImageView)this.findViewById(R.id.mapView);
+        //預設是第四張照片
+        changeImage(3);
+        curPointX = 960;
+        curPointY = 768;
+        mapImageView.scrollTo(curPointX,curPointY);
 
         meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
 
@@ -551,6 +564,10 @@ public class MainActivity extends AppCompatActivity {
         String uri = "@drawable/" + imgList.get(i);
         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
         mapImageView.setImageResource(imageResource);
+        curPointX = mapSizeData[i][0];
+        curPointY = mapSizeData[i][1];
+        mapImageView.scrollTo(curPointX,curPointY);
+
     }
 
     //到氣象資料開放平台拿取資料
