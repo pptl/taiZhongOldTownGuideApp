@@ -49,14 +49,13 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private static final int REQUEST_CODE = 101;
     private Button goTeamTrackerBtn;
     private Button goNewsBtn;
     private Button goSurroundingViewBtn;
     private Button navBtn;
     private GestureDetector GD;
-    private ImageView imView;
+    private ImageView mapImageView;
     private ImageView imView2;
     private ImageView imView3;
     private ImageView imView4;
@@ -184,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         imgList.add("map_1937");
         imgList.add("map_now");
 
-        imView = (ImageView)this.findViewById(R.id.mapView);
+        mapImageView = (ImageView)this.findViewById(R.id.mapView);
 
         meibianzhiyuan = (TextView)this.findViewById(R.id.meibianzhiyuan_textView);
 
@@ -410,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int goX = (int)distanceX;
             int goY = (int)distanceY;
-            imView.scrollBy(goX, goY);
+            mapImageView.scrollBy(goX, goY);
             curPointX += goX;
             curPointY += goY;
 
@@ -531,7 +530,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
                 int progress = seekBar.getProgress();
                 if(progress<=25){
                     seekBar.setProgress(0);
@@ -542,8 +540,6 @@ public class MainActivity extends AppCompatActivity {
                 }else if(progress > 75 ){
                     seekBar.setProgress(100);
                 }
-
-
             }
         });
 
@@ -551,10 +547,10 @@ public class MainActivity extends AppCompatActivity {
 
     //更換地圖用
     private void changeImage(int i){
-        imView = (ImageView)findViewById(R.id.mapView);
+        mapImageView = (ImageView)findViewById(R.id.mapView);
         String uri = "@drawable/" + imgList.get(i);
         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-        imView.setImageResource(imageResource);
+        mapImageView.setImageResource(imageResource);
     }
 
     //到氣象資料開放平台拿取資料
