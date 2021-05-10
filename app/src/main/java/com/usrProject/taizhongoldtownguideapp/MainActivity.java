@@ -218,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
                         alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
                                 //前往開啟GPS定位
                                 startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             }
@@ -227,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(MainActivity.this,"請先開啟GPS定位",Toast.LENGTH_LONG).show();
-
                             }
                         });
                         alert.create().show();

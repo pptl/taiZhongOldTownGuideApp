@@ -373,9 +373,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         }else{
                             //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
                             finish();
-                            startActivity(getIntent());
+                            //startActivity(getIntent());
+                            Intent intent = new Intent(getApplicationContext(),Loading.class);
+                            startActivity(intent);
                         }
-
                     }
                 });
             }
@@ -405,7 +406,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             usersRef.child(userID).updateChildren(userLocations);
                         }
                     }
-
                 }
             });
         }
