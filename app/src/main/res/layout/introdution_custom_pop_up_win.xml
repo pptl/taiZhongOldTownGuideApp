@@ -30,7 +30,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="30dp"
             android:layout_height="wrap_content">
 
             <TextView
