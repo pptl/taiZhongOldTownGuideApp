@@ -14,6 +14,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -264,6 +265,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.d("seeMarkerLoad","markerLoadFail");
                     }
                 };
             }
@@ -369,7 +371,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
                             pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
 
-                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
+                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),15f);
                         }else{
                             //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
                             finish();

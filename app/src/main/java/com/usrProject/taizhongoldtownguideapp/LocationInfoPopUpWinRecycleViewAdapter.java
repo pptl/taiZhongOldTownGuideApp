@@ -50,7 +50,7 @@ public class LocationInfoPopUpWinRecycleViewAdapter extends RecyclerView.Adapter
                     String currMarkerID = locationList.get(mPosition);
                     Double mCurrentMarkerLatitude = snapshot.child(currMarkerID).child("markLatitude").getValue(Double.class);
                     Double mCurrentMarkerLongitude = snapshot.child(currMarkerID).child("markLongitude").getValue(Double.class);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentMarkerLatitude, mCurrentMarkerLongitude),20f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentMarkerLatitude, mCurrentMarkerLongitude),15f));
                 }
 
                 @Override

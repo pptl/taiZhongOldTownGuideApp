@@ -54,7 +54,7 @@ public class PersonalInfoPopUpWinRecycleViewAdapter extends RecyclerView.Adapter
                     String currUserID = friendList.get(mPosition);
                     Double mCurrentUserLatitude = snapshot.child(currUserID).child("userLatitude").getValue(Double.class);
                     Double mCurrentUserLongitude = snapshot.child(currUserID).child("userLongitude").getValue(Double.class);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentUserLatitude, mCurrentUserLongitude),20f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentUserLatitude, mCurrentUserLongitude),15f));
                 }
 
                 @Override
