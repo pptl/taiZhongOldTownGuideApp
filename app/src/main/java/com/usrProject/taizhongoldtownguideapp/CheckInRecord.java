@@ -1,6 +1,7 @@
 package com.usrProject.taizhongoldtownguideapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 
 public class CheckInRecord extends AppCompatActivity {

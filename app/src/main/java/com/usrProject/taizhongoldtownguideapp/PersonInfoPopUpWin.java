@@ -16,7 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonInfoPopUpWinFullWidth extends CustomPopUpWinFullWidth {
+public class PersonInfoPopUpWin extends CustomPopUpWin {
 
     private List<String> friendList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -29,8 +29,8 @@ public class PersonInfoPopUpWinFullWidth extends CustomPopUpWinFullWidth {
     private FirebaseDatabase mDatabase;
     private DatabaseReference teamMemberRef;
 
-    public PersonInfoPopUpWinFullWidth(final Context mContext, int xmlLayout, final GoogleMap map) {
-        super(mContext, xmlLayout);
+    public PersonInfoPopUpWin(final Context mContext, int xmlLayout, final GoogleMap map) {
+        super(mContext, xmlLayout,true);
 
         mDatabase = FirebaseDatabase.getInstance();
 
