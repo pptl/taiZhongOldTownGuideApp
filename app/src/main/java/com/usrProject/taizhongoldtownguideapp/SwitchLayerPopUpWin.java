@@ -7,7 +7,7 @@ import android.widget.CheckBox;
 import java.util.Set;
 
 
-public class SwitchLayerPopUpWin extends CustomPopUpWin {
+public class SwitchLayerPopUpWinFullWidth extends CustomPopUpWinFullWidth {
 
     private SharedPreferences pref;
     Set<String> checkedLayerSet;
@@ -20,7 +20,7 @@ public class SwitchLayerPopUpWin extends CustomPopUpWin {
     CheckBox serviceCheckBox;
     CheckBox religionCheckBox;
 
-    public SwitchLayerPopUpWin(Context mContext, int xmlLayout) {
+    public SwitchLayerPopUpWinFullWidth(Context mContext, int xmlLayout) {
         super(mContext, xmlLayout);
 
         pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);

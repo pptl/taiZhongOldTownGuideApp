@@ -5,13 +5,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-public class IntroductionCustomPopUpWin extends CustomPopUpWin {
+public class IntroductionCustomPopUpWinFullWidth extends CustomPopUpWinFullWidth {
 
     private TextView titleTV;
     private TextView contentTextView;
     private ImageView contentImageView;
 
-    public IntroductionCustomPopUpWin(Context mContext, int xmlLayout, int i) {
+    public IntroductionCustomPopUpWinFullWidth(Context mContext, int xmlLayout, int i) {
         super(mContext, xmlLayout);
         titleTV = getView().findViewById(R.id.title_TextView);
         contentTextView =  getView().findViewById(R.id.contentTextView);

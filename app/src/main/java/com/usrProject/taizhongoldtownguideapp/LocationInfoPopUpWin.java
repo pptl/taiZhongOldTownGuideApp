@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationInfoPopUpWin extends CustomPopUpWin {
+public class LocationInfoPopUpWinFullWidth extends CustomPopUpWinFullWidth {
 
     private List<String> locationList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -38,7 +38,7 @@ public class LocationInfoPopUpWin extends CustomPopUpWin {
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
 
 
-    public LocationInfoPopUpWin(final Context mContext, int xmlLayout, final GoogleMap map, Activity activity) {
+    public LocationInfoPopUpWinFullWidth(final Context mContext, int xmlLayout, final GoogleMap map, Activity activity) {
         super(mContext, xmlLayout);
         this.activity = activity;
 
