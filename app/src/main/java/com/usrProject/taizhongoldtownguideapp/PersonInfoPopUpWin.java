@@ -30,7 +30,7 @@ public class PersonInfoPopUpWin extends CustomPopUpWin {
     private DatabaseReference teamMemberRef;
 
     public PersonInfoPopUpWin(final Context mContext, int xmlLayout, final GoogleMap map) {
-        super(mContext, xmlLayout);
+        super(mContext, xmlLayout,true);
 
         mDatabase = FirebaseDatabase.getInstance();
 

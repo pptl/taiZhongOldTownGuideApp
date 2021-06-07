@@ -12,7 +12,7 @@ public class IntroductionCustomPopUpWin extends CustomPopUpWin {
     private ImageView contentImageView;
 
     public IntroductionCustomPopUpWin(Context mContext, int xmlLayout, int i) {
-        super(mContext, xmlLayout);
+        super(mContext, xmlLayout,true);
         titleTV = getView().findViewById(R.id.title_TextView);
         contentTextView =  getView().findViewById(R.id.contentTextView);
         contentImageView = getView().findViewById(R.id.contentImageView);

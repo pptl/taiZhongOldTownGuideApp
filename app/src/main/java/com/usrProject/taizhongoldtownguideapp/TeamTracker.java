@@ -14,6 +14,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Layout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -85,6 +87,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     HashMap<String,Marker> religionMarkerHashMap = new HashMap<>();
     private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
     private Button switchLayerBtn;
+    private Button checkInRecordBtn;
+    private Button demoBtn;
     Set<String> checkedLayerSet = new HashSet<>();
     private String roomType;
     private Button locationInfoButton;
@@ -105,6 +109,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
         personInfoButton = findViewById(R.id.whereIsMyFriend_person_btn);
         locationInfoButton = findViewById(R.id.whereIsMyFriend_location_btn);
+        switchLayerBtn = findViewById(R.id.layer_btn);
+        checkInRecordBtn = findViewById(R.id.checkIn_record_btn);
+        demoBtn = findViewById(R.id.demo_btn);
+
 
         //roomType 分"singleUser"和"multiUsers"用來區別是單人使用或者多人使用的地圖
         roomType = pref.getString("roomType","multiUsers");
@@ -115,6 +123,21 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 personInfoButton.setBackgroundResource(R.drawable.exit_icon);
             }
         }
+
+        checkInRecordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),CheckInRecord.class);
+                startActivity(intent);
+            }
+        });
+
+        demoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popWindow("checkInCompleted");
+            }
+        });
 
         locationInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,13 +171,13 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         usersRef = teamRef.child("userData");
         markersRef = teamRef.child("marker");
 
-        switchLayerBtn = findViewById(R.id.layer_btn);
         switchLayerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             popWindow("switchLayer");
             }
         });
+
     }
 
     @SuppressLint("HandlerLeak")
@@ -264,6 +287,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.d("seeMarkerLoad","markerLoadFail");
                     }
                 };
             }
@@ -369,7 +393,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
                             pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
 
-                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),20f);
+                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),15f);
                         }else{
                             //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
                             finish();
@@ -459,6 +483,20 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             params.alpha = 0.7f;
             getWindow().setAttributes(params);
             switchLayerPopUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    params = getWindow().getAttributes();
+                    params.alpha = 1f;
+                    getWindow().setAttributes(params);
+                }
+            });
+        }else if (popWinName.equals("checkInCompleted")){
+            CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win);
+            checkInPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+            params = getWindow().getAttributes();
+            params.alpha = 0.7f;
+            getWindow().setAttributes(params);
+            checkInPopUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
                 public void onDismiss() {
                     params = getWindow().getAttributes();

@@ -39,7 +39,7 @@ public class LocationInfoPopUpWin extends CustomPopUpWin {
 
 
     public LocationInfoPopUpWin(final Context mContext, int xmlLayout, final GoogleMap map, Activity activity) {
-        super(mContext, xmlLayout);
+        super(mContext, xmlLayout,true);
         this.activity = activity;
 
         mDatabase = FirebaseDatabase.getInstance();

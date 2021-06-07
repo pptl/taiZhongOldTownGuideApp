@@ -13,7 +13,7 @@ public class CustomPopUpWin extends PopupWindow {
 
     private View view;
 
-    public CustomPopUpWin(final Context mContext, int xmlLayout) {
+    public CustomPopUpWin(final Context mContext, int xmlLayout, boolean fullWidth) {
         this.view = LayoutInflater.from(mContext).inflate(xmlLayout, null);
 
         // 设置外部可点击
@@ -38,7 +38,12 @@ public class CustomPopUpWin extends PopupWindow {
         this.setContentView(this.view);
         // 设置弹出窗体的宽和高
         this.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
+        if(fullWidth){
+            this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
+        }else{
+            this.setWidth(RelativeLayout.LayoutParams.WRAP_CONTENT);
+        }
+
 
         // 设置弹出窗体可点击
         this.setFocusable(true);
@@ -50,9 +55,13 @@ public class CustomPopUpWin extends PopupWindow {
 
         // 设置弹出窗体显示时的动画，从底部向上弹出
         this.setAnimationStyle(R.style.pop_up_win_anim);
+
     }
 
     public View getView() {
         return view;
+    }
+    public void close(){
+        this.dismiss();
     }
 }

@@ -21,7 +21,7 @@ public class SwitchLayerPopUpWin extends CustomPopUpWin {
     CheckBox religionCheckBox;
 
     public SwitchLayerPopUpWin(Context mContext, int xmlLayout) {
-        super(mContext, xmlLayout);
+        super(mContext, xmlLayout,true);
 
         pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
         checkedLayerSet = pref.getStringSet("checkedLayer",null);
