@@ -48,7 +48,7 @@
         android:id="@+id/checkIn_record_completed_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="已完成 2/4"
+        android:text="已完成"
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -57,13 +57,37 @@
 
     <TextView
         android:id="@+id/checkIn_record_next_stop_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_width="332dp"
+        android:layout_height="32dp"
         android:layout_marginTop="52dp"
         android:text="下一站"
         android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkIn_record_completed_textView" />
+
+    <TextView
+        android:id="@+id/checkIn_record_next_stop_title"
+        android:layout_width="332dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="20dp"
+        android:text=" "
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkIn_record_next_stop_textView" />
+
+    <TextView
+        android:id="@+id/checkIn_record_next_stop_content"
+        android:layout_width="332dp"
+        android:layout_height="190dp"
+        android:layout_marginTop="24dp"
+        android:text=" "
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkIn_record_next_stop_title"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

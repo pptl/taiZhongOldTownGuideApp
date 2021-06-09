@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -71,6 +72,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private DatabaseReference teamRef;
     private DatabaseReference usersRef;
     private DatabaseReference markersRef;
+    private DatabaseReference checkInMarkerRef;
     private Timer timer;
     private SharedPreferences pref;
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
@@ -94,6 +96,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Button locationInfoButton;
     private Button personInfoButton;
     private Boolean isExiting = false;//判斷使用者是否正在退出團隊
+    private CheckInMarkerObject checkInMarkerObjectList[] = new CheckInMarkerObject[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,8 +130,16 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         checkInRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(getApplicationContext(),CheckInRecord.class);
                 startActivity(intent);
+
+                /*
+                pref.edit().putString("nextStopTitle","FengChia").apply();
+                pref.edit().putString("nextStopContent","The FengChia univercity is a univercity in TaiChung").apply();
+                pref.edit().putInt("checkInCompleted",0).apply();
+                */
+
             }
         });
 
@@ -168,6 +179,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
         mDatabase = FirebaseDatabase.getInstance();
         teamRef = mDatabase.getReference("team").child(teamID);
+        checkInMarkerRef = mDatabase.getReference("checkInMarker");
         usersRef = teamRef.child("userData");
         markersRef = teamRef.child("marker");
 
@@ -297,6 +309,34 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         //使用坐標資料api
         getPointJson(url);
 
+        //firebase上預設可打卡的地標
+        checkInMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Marker marker = null;
+                int i = 0;
+                for(DataSnapshot data :snapshot.getChildren()){
+                    String markTitle = data.child("markTitle").getValue(String.class);
+                    String markContext = data.child("markContent").getValue(String.class);
+                    Double markLatitude = data.child("markLatitude").getValue(Double.class);
+                    Double markLongitude = data.child("markLongitude").getValue(Double.class);
+
+                    if(markTitle != null && markContext != null && markLatitude != null && markLongitude != null){
+                        checkInMarkerObjectList[i] = new CheckInMarkerObject(markTitle, markContext,markLatitude,markLongitude);
+                        Bitmap markerBitmap = new BitmapFactory().decodeResource(getResources(),getResources().getIdentifier("marker_sm", "drawable", getPackageName()));
+                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markTitle).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
+                        marker.setTag("checkIn");
+                        i++;
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
         //每次fireBase裡朋友資料更新時，更新本地朋友資料
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -397,7 +437,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         }else{
                             //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
                             finish();
-                            //startActivity(getIntent());
                             Intent intent = new Intent(getApplicationContext(),Loading.class);
                             startActivity(intent);
                         }
@@ -420,6 +459,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 public void onSuccess(Location location) {
                     mCurrentLocation = (Location) location;
                     if(mCurrentLocation != null){
+                        //檢查位置
                         if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
                             Map<String, Object> userLocations = new HashMap<>();
                             userLocations.put("userLatitude",mCurrentLocation.getLatitude());
@@ -429,6 +469,32 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
                             usersRef.child(userID).updateChildren(userLocations);
                         }
+                        //計算最靠近的checkPoint
+                        if(pref.getInt("checkInCompleted",0) < 5){
+                            double minDistance = 9999;
+                            int minIndex = 0;
+                            double distance = 0;
+
+                            for(int j=0;j<5;j++){
+                                //兩點公式
+                                if(!checkInMarkerObjectList[j].isChecked()){
+                                    distance = Math.abs(Math.sqrt(Math.pow(mCurrentLocation.getLongitude() - checkInMarkerObjectList[j].getMarkLongitude(),2) + Math.pow(mCurrentLocation.getLatitude() - checkInMarkerObjectList[j].getMarkLatitude(),2)));
+                                    if(distance < minDistance){
+                                        minDistance = distance;
+                                        minIndex = j;
+                                    }
+                                }
+                            }
+                            if (minDistance < 2){
+                                checkInMarkerObjectList[minIndex].setChecked(true);
+                                pref.edit().putInt("checkInCompleted",pref.getInt("checkInCompleted", 0) + 1).apply();
+                                popWindow("checkInCompleted");
+                            }
+
+                            pref.edit().putString("nextStopTitle",checkInMarkerObjectList[minIndex].getMarkTitle()).apply();
+                            pref.edit().putString("nextStopContent",checkInMarkerObjectList[minIndex].getMarkContent()).apply();
+                        }
+
                     }
                 }
             });
@@ -491,7 +557,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         }else if (popWinName.equals("checkInCompleted")){
-            CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win);
+            CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win, pref.getInt("checkInCompleted", 0), pref.getString("nextStopTitle",""));
             checkInPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
             params.alpha = 0.7f;

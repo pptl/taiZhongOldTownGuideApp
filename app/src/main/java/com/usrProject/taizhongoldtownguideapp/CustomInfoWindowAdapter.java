@@ -35,7 +35,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             snippetTextView.setText(snippet);
         }
 
-        if(marker.getTag().toString().equals("customize")||marker.getTag().toString().equals("user")){
+        if(marker.getTag().toString().equals("customize") || marker.getTag().toString().equals("user") || marker.getTag().toString().equals("checkIn")){
             view.findViewById(R.id.info_window_tips).setVisibility(View.GONE);
         }
         else{
