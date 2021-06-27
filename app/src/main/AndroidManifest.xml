@@ -82,7 +82,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC3ThGuZ0UyZS5hgjcCJvlbZda-JbkNt4M" />
+            android:value="AIzaSyB_4soaLPxHWyxPwVxRtJBb3Di_lbw9E1A" />
 
         <activity
             android:name=".TeamTracker"

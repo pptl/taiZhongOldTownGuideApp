@@ -28,10 +28,5 @@ public class CheckInRecord extends AppCompatActivity {
         //沒完成一個代表25%的進度
         checkInCompletedProgressBar.setProgress(pref.getInt("checkInCompleted",0)*25);
 
-
-
-
-
-
     }
 }

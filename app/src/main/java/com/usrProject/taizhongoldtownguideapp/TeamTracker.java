@@ -3,18 +3,20 @@ package com.usrProject.taizhongoldtownguideapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -52,10 +54,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -78,16 +80,16 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private static final int ADD_LOCATION_ACTIVITY_REQUEST_CODE = 0;
     private Handler messageHandler = null;
     private String responseJsonString = "";
-    HashMap<String,Marker> hashMapMarker = new HashMap<>();
-    HashMap<String,Marker> foodMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> shoppingMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> roomMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> historyMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> playMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> trafficMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> serviceMarkerHashMap = new HashMap<>();
-    HashMap<String,Marker> religionMarkerHashMap = new HashMap<>();
-    private String url ="http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
+    HashMap<String, Marker> hashMapMarker = new HashMap<>();
+    HashMap<String, Marker> foodMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> shoppingMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> roomMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> historyMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> playMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> trafficMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> serviceMarkerHashMap = new HashMap<>();
+    HashMap<String, Marker> religionMarkerHashMap = new HashMap<>();
+    private String url = "http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
     private Button switchLayerBtn;
     private Button checkInRecordBtn;
     private Button demoBtn;
@@ -96,7 +98,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Button locationInfoButton;
     private Button personInfoButton;
     private Boolean isExiting = false;//判斷使用者是否正在退出團隊
-    private CheckInMarkerObject checkInMarkerObjectList[] = new CheckInMarkerObject[5];
+    private ArrayList<CheckInMarkerObject> checkInMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,9 +108,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        pref = getSharedPreferences("userData",MODE_PRIVATE);
-        teamID = pref.getString("teamID","000000");
-        userID = pref.getString("userID","null");
+        pref = getSharedPreferences("userData", MODE_PRIVATE);
+
+        teamID = pref.getString("teamID", "000000");
+        userID = pref.getString("userID", "null");
 
         personInfoButton = findViewById(R.id.whereIsMyFriend_person_btn);
         locationInfoButton = findViewById(R.id.whereIsMyFriend_location_btn);
@@ -118,20 +121,20 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
 
         //roomType 分"singleUser"和"multiUsers"用來區別是單人使用或者多人使用的地圖
-        roomType = pref.getString("roomType","multiUsers");
+        roomType = pref.getString("roomType", "multiUsers");
         //如果是單人地圖的話，需要處理按鈕佈局
 
-        if(roomType!=null){
-            if(roomType.equals("singleUser")){
+        if (roomType != null) {
+            if (roomType.equals("singleUser")) {
                 personInfoButton.setBackgroundResource(R.drawable.exit_icon);
             }
         }
-
+//      傳輸資料
         checkInRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getApplicationContext(),CheckInRecord.class);
+                Intent intent = new Intent(getApplicationContext(), CheckInRecord.class);
                 startActivity(intent);
 
                 /*
@@ -160,9 +163,9 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         personInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(roomType.equals("singleUser")){
+                if (roomType.equals("singleUser")) {
                     exitTeam();
-                }else {
+                } else {
                     popWindow("personInfo");
                 }
             }
@@ -171,7 +174,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         //預設popupwin裡的checkbox history元件是已經勾選的
         checkedLayerSet.add("history");
         //存起來，別的layout會用到
-        pref.edit().putStringSet("checkedLayer",checkedLayerSet).apply();
+        pref.edit().putStringSet("checkedLayer", checkedLayerSet).apply();
 
         timer = new Timer();
         //固定每5秒檢查用戶坐標是否有移動
@@ -179,6 +182,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
 
         mDatabase = FirebaseDatabase.getInstance();
         teamRef = mDatabase.getReference("team").child(teamID);
+//        打卡系統
         checkInMarkerRef = mDatabase.getReference("checkInMarker");
         usersRef = teamRef.child("userData");
         markersRef = teamRef.child("marker");
@@ -186,7 +190,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         switchLayerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            popWindow("switchLayer");
+                popWindow("switchLayer");
             }
         });
 
@@ -197,6 +201,16 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -214,10 +228,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        messageHandler = new Handler(){
+        messageHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if(msg.what == 1){
+                if (msg.what == 1) {
                     String jsonString = JsonParser.parseString(responseJsonString).getAsString();
 
                     try {
@@ -229,7 +243,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         String content = "";
                         String id = "";
                         float markerColor = 0;
-                        for(int i = 0 ; i <jsonArray.length();i++ ){
+                        for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                             xPoint = Double.parseDouble(jsonObject.get("PO_X").toString());
                             yPoint = Double.parseDouble(jsonObject.get("PO_Y").toString());
@@ -239,58 +253,58 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             id = jsonObject.get("PO_ID").toString();
                             Marker marker = null;
 
-                            switch(Integer.parseInt(type)){
+                            switch (Integer.parseInt(type)) {
                                 case 0://美食
                                     markerColor = BitmapDescriptorFactory.HUE_AZURE;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("food");
                                     foodMarkerHashMap.put(id, marker);
                                     break;
                                 case 1://購物
                                     markerColor = BitmapDescriptorFactory.HUE_BLUE;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("shopping");
                                     shoppingMarkerHashMap.put(id, marker);
                                     break;
                                 case 2://住宿
                                     markerColor = BitmapDescriptorFactory.HUE_CYAN;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("room");
                                     roomMarkerHashMap.put(id, marker);
                                     break;
                                 case 3://歷史
                                     markerColor = BitmapDescriptorFactory.HUE_RED;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setTag("history");
                                     historyMarkerHashMap.put(id, marker);
                                     break;
                                 case 4://遊憩
                                     markerColor = BitmapDescriptorFactory.HUE_MAGENTA;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("play");
                                     playMarkerHashMap.put(id, marker);
                                     break;
                                 case 5://交通
                                     markerColor = BitmapDescriptorFactory.HUE_ORANGE;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("traffic");
                                     trafficMarkerHashMap.put(id, marker);
                                     break;
                                 case 6://服務
                                     markerColor = BitmapDescriptorFactory.HUE_GREEN;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("service");
                                     serviceMarkerHashMap.put(id, marker);
                                     break;
                                 case 7://宗教
                                     markerColor = BitmapDescriptorFactory.HUE_ROSE;
-                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng( yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
+                                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(yPoint, xPoint)).title(title).icon(BitmapDescriptorFactory.defaultMarker(markerColor)).snippet(content));
                                     marker.setVisible(false);
                                     marker.setTag("religion");
                                     religionMarkerHashMap.put(id, marker);
@@ -299,9 +313,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Log.d("seeMarkerLoad","markerLoadFail");
+                        Log.d("seeMarkerLoad", "markerLoadFail");
                     }
-                };
+                }
+                ;
             }
         };
         //獲得自己裝置的位置
@@ -314,22 +329,25 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Marker marker = null;
-                int i = 0;
-                for(DataSnapshot data :snapshot.getChildren()){
+//              將可打卡座標顯示在map上面，並使用物件儲存
+                for (DataSnapshot data : snapshot.getChildren()) {
                     String markTitle = data.child("markTitle").getValue(String.class);
                     String markContext = data.child("markContent").getValue(String.class);
                     Double markLatitude = data.child("markLatitude").getValue(Double.class);
                     Double markLongitude = data.child("markLongitude").getValue(Double.class);
 
-                    if(markTitle != null && markContext != null && markLatitude != null && markLongitude != null){
-                        checkInMarkerObjectList[i] = new CheckInMarkerObject(markTitle, markContext,markLatitude,markLongitude);
-                        Bitmap markerBitmap = new BitmapFactory().decodeResource(getResources(),getResources().getIdentifier("marker_sm", "drawable", getPackageName()));
-                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markTitle).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
+                    if (markTitle != null && markContext != null && markLatitude != null && markLongitude != null) {
+                        if (checkInMarkers == null) {
+                            checkInMarkers = new ArrayList<>();
+                        }
+                        checkInMarkers.add(new CheckInMarkerObject(markTitle, markContext, markLatitude, markLongitude));
+                        Bitmap markerBitmap = new BitmapFactory().decodeResource(getResources(), getResources().getIdentifier("marker_sm", "drawable", getPackageName()));
+                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude, markLongitude)).title(markTitle).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
                         marker.setTag("checkIn");
-                        i++;
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -342,31 +360,32 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Marker marker = null;
-                for (DataSnapshot data : snapshot.getChildren()){
+                for (DataSnapshot data : snapshot.getChildren()) {
                     String userName = data.child("userName").getValue(String.class);
                     String userIconPath = data.child("userIconPath").getValue(String.class);
                     String userID = data.getKey();
 
-                    if(userName != null && userIconPath != null && userID != null){
+                    if (userName != null && userIconPath != null && userID != null) {
                         int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
-                        Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(),iconPathID);
+                        Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(), iconPathID);
                         Double userLatitude = data.child("userLatitude").getValue(Double.class);
                         Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
-                        if(userLatitude != null && userLongitude != null){
-                            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude,userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
+                        if (userLatitude != null && userLongitude != null) {
+                            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLatitude, userLongitude)).title(userName).icon(BitmapDescriptorFactory.fromBitmap(userBitmap)));
                             marker.setTag("user");
-                            if(hashMapMarker.containsKey(userID)){
+                            if (hashMapMarker.containsKey(userID)) {
                                 Marker delMarker = hashMapMarker.get(userID);
                                 delMarker.remove();
                                 hashMapMarker.remove(userID);
                             }
-                            hashMapMarker.put(userID,marker);
+                            hashMapMarker.put(userID, marker);
                         }
                     }
 
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
@@ -376,14 +395,14 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         markersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    for (DataSnapshot data : snapshot.getChildren()){
+                if (snapshot.exists()) {
+                    for (DataSnapshot data : snapshot.getChildren()) {
                         String markContext = data.child("markContext").getValue(String.class);
                         //String userIconPath = data.child("userIconPath").getValue(String.class);
                         Double markLatitude = data.child("markLatitude").getValue(Double.class);
                         Double markLongitude = data.child("markLongitude").getValue(Double.class);
 
-                        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude,markLongitude)).title(markContext));
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude, markLongitude)).title(markContext));
                         marker.setTag("customize");
                     }
                 }
@@ -395,6 +414,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
+
     //等待使用者在createNewMarker頁面把增加marker的資訊返回
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -411,42 +431,62 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     }
 
     //獲取使用者裝置現在的位置
-    private void getDeviceLocation(){
+    private void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
-            if(!isExiting){
-                location.addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        Map<String, Object> userLocations = new HashMap<>();
-                        DatabaseReference myRef = usersRef.child(userID);
-                        mCurrentLocation = (Location) location;
+        if (!isExiting) {
+            location.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    Map<String, Object> userLocations = new HashMap<>();
+                    DatabaseReference myRef = usersRef.child(userID);
+                    mCurrentLocation = (Location) location;
 
-                        if(mCurrentLocation != null){
+                    if (mCurrentLocation != null) {
 
-                            //檢查user有沒有移動
-                            userLocations.put("userLatitude",mCurrentLocation.getLatitude());
-                            userLocations.put("userLongitude",mCurrentLocation.getLongitude());
+                        //檢查user有沒有移動
+                        userLocations.put("userLatitude", mCurrentLocation.getLatitude());
+                        userLocations.put("userLongitude", mCurrentLocation.getLongitude());
 
-                            myRef.updateChildren(userLocations);
-                            //地圖addMarker時可以使用到
-                            pref.edit().putLong("mLatitude",Double.doubleToLongBits(location.getLatitude())).apply();
-                            pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
+                        myRef.updateChildren(userLocations);
+                        //地圖addMarker時可以使用到
+                        pref.edit().putLong("mLatitude", Double.doubleToLongBits(location.getLatitude())).apply();
+                        pref.edit().putLong("mLongitude", Double.doubleToLongBits(location.getLongitude())).apply();
 
-                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),15f);
-                        }else{
-                            //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
-                            finish();
-                            Intent intent = new Intent(getApplicationContext(),Loading.class);
-                            startActivity(intent);
-                        }
+                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), 15f);
+                    } else {
+                        //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
+                        finish();
+                        Intent intent = new Intent(getApplicationContext(), Loading.class);
+                        startActivity(intent);
                     }
-                });
-            }
+                }
+            });
+        }
     }
 
-    private void checkLocationChange(){
+    private void checkLocationChange() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         final Task<Location> location = mFusedLocationProviderClient.getLastLocation();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -470,30 +510,30 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             usersRef.child(userID).updateChildren(userLocations);
                         }
                         //計算最靠近的checkPoint
-                        if(pref.getInt("checkInCompleted",0) < 5){
-                            double minDistance = 9999;
-                            int minIndex = 0;
-                            double distance = 0;
-
-                            for(int j=0;j<5;j++){
-                                //兩點公式
-                                if(!checkInMarkerObjectList[j].isChecked()){
-                                    distance = Math.abs(Math.sqrt(Math.pow(mCurrentLocation.getLongitude() - checkInMarkerObjectList[j].getMarkLongitude(),2) + Math.pow(mCurrentLocation.getLatitude() - checkInMarkerObjectList[j].getMarkLatitude(),2)));
-                                    if(distance < minDistance){
-                                        minDistance = distance;
-                                        minIndex = j;
-                                    }
-                                }
-                            }
-                            if (minDistance < 2){
-                                checkInMarkerObjectList[minIndex].setChecked(true);
-                                pref.edit().putInt("checkInCompleted",pref.getInt("checkInCompleted", 0) + 1).apply();
-                                popWindow("checkInCompleted");
-                            }
-
-                            pref.edit().putString("nextStopTitle",checkInMarkerObjectList[minIndex].getMarkTitle()).apply();
-                            pref.edit().putString("nextStopContent",checkInMarkerObjectList[minIndex].getMarkContent()).apply();
-                        }
+//                        if(pref.getInt("checkInCompleted",0) < 5){
+//                            double minDistance = 9999;
+//                            int minIndex = 0;
+//                            double distance = 0;
+//
+//                            for(int j=0;j<5;j++){
+//                                //兩點公式
+//                                if(!checkInMarkerObjectList[j].isChecked()){
+//                                    distance = Math.abs(Math.sqrt(Math.pow(mCurrentLocation.getLongitude() - checkInMarkerObjectList[j].getMarkLongitude(),2) + Math.pow(mCurrentLocation.getLatitude() - checkInMarkerObjectList[j].getMarkLatitude(),2)));
+//                                    if(distance < minDistance){
+//                                        minDistance = distance;
+//                                        minIndex = j;
+//                                    }
+//                                }
+//                            }
+//                            if (minDistance < 2){
+//                                checkInMarkerObjectList[minIndex].setChecked(true);
+//                                pref.edit().putInt("checkInCompleted",pref.getInt("checkInCompleted", 0) + 1).apply();
+//                                popWindow("checkInCompleted");
+//                            }
+//
+//                            pref.edit().putString("nextStopTitle",checkInMarkerObjectList[minIndex].getMarkTitle()).apply();
+//                            pref.edit().putString("nextStopContent",checkInMarkerObjectList[minIndex].getMarkContent()).apply();
+//                        }
 
                     }
                 }
