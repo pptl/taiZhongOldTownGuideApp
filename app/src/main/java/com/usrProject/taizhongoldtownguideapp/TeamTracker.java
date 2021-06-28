@@ -48,6 +48,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.usrProject.taizhongoldtownguideapp.schema.PopWindowType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -149,14 +150,14 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         demoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popWindow("checkInCompleted");
+                popWindow(PopWindowType.CHECK_IN_COMPLETED);
             }
         });
 
         locationInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popWindow("locationInfo");
+                popWindow(PopWindowType.LOCATION_INFO);
             }
         });
 
@@ -166,7 +167,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 if (roomType.equals("singleUser")) {
                     exitTeam();
                 } else {
-                    popWindow("personInfo");
+                    popWindow(PopWindowType.PERSON_INFO);
                 }
             }
         });
@@ -190,7 +191,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         switchLayerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popWindow("switchLayer");
+                popWindow(PopWindowType.SWITCH_LAYER);
             }
         });
 
@@ -553,8 +554,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
 
-    public void popWindow(String popWinName) {
-        if(popWinName.equals("locationInfo")){
+    public void popWindow(PopWindowType popWindowType) {
+        if(popWindowType == PopWindowType.LOCATION_INFO){
             LocationInfoPopUpWin locationInfoPopWin = new LocationInfoPopUpWin(this, R.layout.location_info_pop_win, mMap, this);
             locationInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
@@ -568,7 +569,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     getWindow().setAttributes(params);
                 }
             });
-        } else if (popWinName.equals("personInfo")){
+        } else if (popWindowType == PopWindowType.PERSON_INFO){
             PersonInfoPopUpWin personInfoPopWin = new PersonInfoPopUpWin(this, R.layout.person_info_pop_win, mMap);
             personInfoPopWin.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
@@ -582,7 +583,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     getWindow().setAttributes(params);
                 }
             });
-        } else if (popWinName.equals("switchLayer")){
+        } else if (popWindowType == PopWindowType.SWITCH_LAYER){
             SwitchLayerPopUpWin switchLayerPopUpWin = new SwitchLayerPopUpWin(this, R.layout.switch_layer_pop_up_win);
             switchLayerPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
@@ -596,7 +597,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     getWindow().setAttributes(params);
                 }
             });
-        }else if (popWinName.equals("checkInCompleted")){
+        }else if (popWindowType==PopWindowType.CHECK_IN_COMPLETED){
             CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win, pref.getInt("checkInCompleted", 0), pref.getString("nextStopTitle",""));
             checkInPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
