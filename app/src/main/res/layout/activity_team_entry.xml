@@ -22,12 +22,12 @@
         android:layout_width="154dp"
         android:layout_height="69dp"
         android:layout_marginTop="72dp"
+        android:background="@drawable/btn_bg"
+        android:onClick="goCreateTeam"
         android:text="@string/notInTeam_createTeamButton_text"
         android:textSize="20sp"
-        android:background="@drawable/btn_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:onClick="goCreateTeam"
         app:layout_constraintTop_toBottomOf="@+id/notInTeam_textView" />
 
     <Button

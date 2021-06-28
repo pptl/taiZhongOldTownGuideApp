@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         seekBarTextView.setText(currentYear+"年");
 
         getWeather();
+//      載入圖檔
         handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {

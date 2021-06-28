@@ -1,42 +1,33 @@
 {
   "project_info": {
-    "project_number": "201204702572",
-    "firebase_url": "https://taizhongoldtownguideapp.firebaseio.com",
-    "project_id": "taizhongoldtownguideapp",
-    "storage_bucket": "taizhongoldtownguideapp.appspot.com"
+    "project_number": "934803899583",
+    "project_id": "taichungoldtown",
+    "storage_bucket": "taichungoldtown.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:201204702572:android:528f4fcc250eb671fbe749",
+        "mobilesdk_app_id": "1:934803899583:android:c8983151301f770e0af20a",
         "android_client_info": {
           "package_name": "com.usrProject.taizhongoldtownguideapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "201204702572-v5f8bulvvsjc94cvcg8k9lf6h6hpert5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.usrProject.taizhongoldtownguideapp",
-            "certificate_hash": "c1c58515eafe259e68c3f4e30be9893a8c073358"
-          }
-        },
-        {
-          "client_id": "201204702572-6h8un2e6d8qii1q0m7d8o44gld4f85t0.apps.googleusercontent.com",
+          "client_id": "934803899583-1af6sv6tc5funi6osl9r49tmedamciae.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDt2i7drET12GyoFXWWhhoWqvQXjFaKyrA"
+          "current_key": "AIzaSyB_4soaLPxHWyxPwVxRtJBb3Di_lbw9E1A"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "201204702572-6h8un2e6d8qii1q0m7d8o44gld4f85t0.apps.googleusercontent.com",
+              "client_id": "934803899583-1af6sv6tc5funi6osl9r49tmedamciae.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.model;
 
 public class CheckInMarkerObject {
     public final String markTitle;

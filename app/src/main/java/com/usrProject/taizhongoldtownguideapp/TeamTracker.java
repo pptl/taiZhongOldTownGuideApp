@@ -48,6 +48,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.usrProject.taizhongoldtownguideapp.model.CheckInMarkerObject;
 import com.usrProject.taizhongoldtownguideapp.schema.PopWindowType;
 
 import org.json.JSONArray;
@@ -135,7 +136,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getApplicationContext(), CheckInRecord.class);
+                Intent intent = new Intent(getApplicationContext(), CheckInTasksView.class);
                 startActivity(intent);
 
                 /*
@@ -598,6 +599,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         }else if (popWindowType==PopWindowType.CHECK_IN_COMPLETED){
+
             CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win, pref.getInt("checkInCompleted", 0), pref.getString("nextStopTitle",""));
             checkInPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();

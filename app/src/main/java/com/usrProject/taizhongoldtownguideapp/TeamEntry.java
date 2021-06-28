@@ -75,7 +75,7 @@ public class TeamEntry extends AppCompatActivity {
 
             }
         });
-
+//      跟database取的唯一直
         userID = teamRef.child(teamID).child("userData").push().getKey();
 
         teamRef.child(teamID).child("userData").child(userID).setValue(user);
@@ -93,15 +93,7 @@ public class TeamEntry extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public String teamIDGenerator(){
 
-        double rand = Math.random();
-        String teamID = Double.toString(rand);
-        teamID = teamID.substring(2,8);
-        //这里要到firebase检查有没有重複的房號
-
-        return teamID;
-    }
 
     public void goSelf(View view) {
         Map<String, Object> user = new HashMap<>();
@@ -144,5 +136,15 @@ public class TeamEntry extends AppCompatActivity {
         Intent intent = new Intent(this, TeamTracker.class);
         startActivity(intent);
         finish();
+    }
+
+    public String teamIDGenerator(){
+
+        double rand = Math.random();
+        String teamID = Double.toString(rand);
+        teamID = teamID.substring(2,8);
+        //这里要到firebase检查有没有重複的房號
+
+        return teamID;
     }
 }
