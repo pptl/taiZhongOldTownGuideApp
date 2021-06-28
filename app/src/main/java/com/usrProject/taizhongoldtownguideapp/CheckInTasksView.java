@@ -6,18 +6,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 import com.usrProject.taizhongoldtownguideapp.model.CheckTasks;
 
 import java.util.ArrayList;
 
 public class CheckInTasksView extends AppCompatActivity {
-    private FirebaseDatabase mDatabase;
+    private FirebaseFirestore mDatabaseFirestore;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     @Override
@@ -28,12 +36,28 @@ public class CheckInTasksView extends AppCompatActivity {
         tasksItemsList.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         tasksItemsList.setLayoutManager(layoutManager);
-        //        mDatabase = FirebaseDatabase.getInstance();
-        ArrayList<CheckTasks> testDataSet = new ArrayList<>();
-        testDataSet.add(new CheckTasks("Test1","wwwww"));
-        testDataSet.add(new CheckTasks("Tes22t1", "qqqqq"));
+
+        final ArrayList<CheckTasks> testDataSet = new ArrayList<>();
+//      初始化dataset
         adapter = new TaskAdapter(testDataSet);
         tasksItemsList.setAdapter(adapter);
+
+        mDatabaseFirestore = mDatabaseFirestore.getInstance();
+//      當成功撈上資料時將資料做更新
+        mDatabaseFirestore.collection("tasks")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String json = document.getData().toString();
+                                testDataSet.add(new Gson().fromJson(json, CheckTasks.class));
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+                });
 
     }
 

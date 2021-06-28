@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checkin_task_linear"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/cardview_shadow_end_color"
     android:orientation="horizontal">
 
     <TextView
@@ -9,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="#FFFFFF"
-        android:text="Title" />
+        android:text="Title"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/taskDesc"
@@ -18,5 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:autoText="false"
-        android:text="Desc" />
+        android:text="Desc"
+        android:textSize="20sp" />
 </LinearLayout>
