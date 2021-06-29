@@ -1,10 +1,11 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,18 +15,22 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
-import com.usrProject.taizhongoldtownguideapp.model.CheckTasks;
+import com.google.gson.GsonBuilder;
+import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.activity.TaskInfoActivity;
+import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckTasks;
+import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CheckInTasksView extends AppCompatActivity {
-    private FirebaseFirestore mDatabaseFirestore;
+    private FirebaseFirestore db;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     @Override
@@ -42,19 +47,21 @@ public class CheckInTasksView extends AppCompatActivity {
         adapter = new TaskAdapter(testDataSet);
         tasksItemsList.setAdapter(adapter);
 
-        mDatabaseFirestore = mDatabaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
 //      當成功撈上資料時將資料做更新
-        mDatabaseFirestore.collection("tasks")
+        db.collection("tasks")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String json = document.getData().toString();
-                                testDataSet.add(new Gson().fromJson(json, CheckTasks.class));
+                                CheckTasks checkTasks = document.toObject(CheckTasks.class);
+                                checkTasks.Id = document.getId();
+                                testDataSet.add(checkTasks);
                                 adapter.notifyDataSetChanged();
                             }
+
                         }
                     }
                 });
@@ -63,17 +70,18 @@ public class CheckInTasksView extends AppCompatActivity {
 
 
 
-//  建立調配氣
+//  建立調配器
     private class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         private ArrayList<CheckTasks> dataset;
+//      設定要綁定的元件
         public  class ViewHolder extends RecyclerView.ViewHolder {
             public TextView taskTitle;
-            public TextView taskDesc;
+//            public TextView taskDesc;
             public ViewHolder(View view) {
                 super(view);
                 // Define click listener for the ViewHolder's View
-                taskTitle = view.findViewById(R.id.taskTitle);
-                taskDesc = view.findViewById(R.id.taskDesc);
+                taskTitle = view.findViewById(R.id.post_title);
+//                taskDesc = view.findViewById(R.id.taskDesc);
             }
 
 
@@ -87,14 +95,23 @@ public class CheckInTasksView extends AppCompatActivity {
         @Override
         public TaskAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.checkin_task_recycle_content, parent, false);
+                    .inflate(R.layout.post_recycle_view_item, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull TaskAdapter.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull TaskAdapter.ViewHolder holder, final int position) {
             holder.taskTitle.setText(dataset.get(position).taskTitle);
-            holder.taskDesc.setText(dataset.get(position).taskDesc);
+//            holder.taskDesc.setText(dataset.get(position).taskDesc);
+            holder.taskTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("onClick", dataset.get(position).taskTitle);
+                    Intent intent = new Intent(getApplicationContext(), TaskInfoActivity.class);
+                    intent.putExtra(TaskSchema.TASK_INFO, dataset.get(position));
+                    startActivity(intent);
+                }
+            });
         }
 
         @Override

@@ -18,4 +18,7 @@
     <string name="notInTeam_createTeamButton_text">創建新團隊</string>
     <string name="notInTeam_joinTeamButton_text">參加團隊</string>
     <string name="joinTeam_quickJoinButton_text">快速加入</string>
+
+    <string name="BottonCancel">取消</string>
+    <string name="BottonAccept">接受</string>
 </resources>

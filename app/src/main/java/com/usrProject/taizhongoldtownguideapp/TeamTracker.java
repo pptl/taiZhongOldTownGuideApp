@@ -48,7 +48,8 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.usrProject.taizhongoldtownguideapp.model.CheckInMarkerObject;
+import com.usrProject.taizhongoldtownguideapp.activity.CheckInTasksView;
+import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
 import com.usrProject.taizhongoldtownguideapp.schema.PopWindowType;
 
 import org.json.JSONArray;
@@ -131,12 +132,12 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 personInfoButton.setBackgroundResource(R.drawable.exit_icon);
             }
         }
-//      傳輸資料
+//      打卡任務列表
         checkInRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(getApplicationContext(), CheckInTasksView.class);
+
                 startActivity(intent);
 
                 /*
@@ -327,34 +328,34 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         getPointJson(url);
 
         //firebase上預設可打卡的地標
-        checkInMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Marker marker = null;
-//              將可打卡座標顯示在map上面，並使用物件儲存
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    String markTitle = data.child("markTitle").getValue(String.class);
-                    String markContext = data.child("markContent").getValue(String.class);
-                    Double markLatitude = data.child("markLatitude").getValue(Double.class);
-                    Double markLongitude = data.child("markLongitude").getValue(Double.class);
-
-                    if (markTitle != null && markContext != null && markLatitude != null && markLongitude != null) {
-                        if (checkInMarkers == null) {
-                            checkInMarkers = new ArrayList<>();
-                        }
-                        checkInMarkers.add(new CheckInMarkerObject(markTitle, markContext, markLatitude, markLongitude));
-                        Bitmap markerBitmap = new BitmapFactory().decodeResource(getResources(), getResources().getIdentifier("marker_sm", "drawable", getPackageName()));
-                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude, markLongitude)).title(markTitle).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
-                        marker.setTag("checkIn");
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        checkInMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                Marker marker = null;
+////              將可打卡座標顯示在map上面，並使用物件儲存
+//                for (DataSnapshot data : snapshot.getChildren()) {
+//                    String markTitle = data.child("markTitle").getValue(String.class);
+//                    String markContext = data.child("markContent").getValue(String.class);
+//                    Double markLatitude = data.child("markLatitude").getValue(Double.class);
+//                    Double markLongitude = data.child("markLongitude").getValue(Double.class);
+//
+//                    if (markTitle != null && markContext != null && markLatitude != null && markLongitude != null) {
+//                        if (checkInMarkers == null) {
+//                            checkInMarkers = new ArrayList<>();
+//                        }
+//                        checkInMarkers.add(new CheckInMarkerObject(markTitle, markContext, markLatitude, markLongitude));
+//                        Bitmap markerBitmap = new BitmapFactory().decodeResource(getResources(), getResources().getIdentifier("marker_sm", "drawable", getPackageName()));
+//                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude, markLongitude)).title(markTitle).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
+//                        marker.setTag("checkIn");
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
 
         //每次fireBase裡朋友資料更新時，更新本地朋友資料

@@ -19,8 +19,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CheckInTasksView"
-            android:label="打卡記錄"
+            android:name=".activity.TaskInfoActivity"
+            android:label="任務"/>
+        <activity
+            android:name=".activity.CheckInTasksView"
+            android:label="任務列表"
             android:parentActivityName=".TeamTracker"
             android:screenOrientation="nosensor" />
         <activity
