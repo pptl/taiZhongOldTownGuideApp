@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -50,7 +51,10 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.usrProject.taizhongoldtownguideapp.activity.CheckInTasksView;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
+import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.PopWindowType;
+import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +99,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private String url = "http://140.134.48.76/USR/API/API/Default/APPGetData?name=point&token=2EV7tVz0Pv6bLgB/aXRURg==";
     private Button switchLayerBtn;
     private Button checkInRecordBtn;
-    private Button demoBtn;
+    private Button checkInProcessBotton;
     Set<String> checkedLayerSet = new HashSet<>();
     private String roomType;
     private Button locationInfoButton;
@@ -111,7 +115,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        pref = getSharedPreferences("userData", MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
 
         teamID = pref.getString("teamID", "000000");
         userID = pref.getString("userID", "null");
@@ -120,7 +124,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         locationInfoButton = findViewById(R.id.whereIsMyFriend_location_btn);
         switchLayerBtn = findViewById(R.id.layer_btn);
         checkInRecordBtn = findViewById(R.id.checkIn_record_btn);
-        demoBtn = findViewById(R.id.demo_btn);
+        checkInProcessBotton = findViewById(R.id.checkInBotton);
 
 
         //roomType 分"singleUser"和"multiUsers"用來區別是單人使用或者多人使用的地圖
@@ -137,22 +141,19 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), CheckInTasksView.class);
-
                 startActivity(intent);
-
-                /*
-                pref.edit().putString("nextStopTitle","FengChia").apply();
-                pref.edit().putString("nextStopContent","The FengChia univercity is a univercity in TaiChung").apply();
-                pref.edit().putInt("checkInCompleted",0).apply();
-                */
-
             }
         });
-
-        demoBtn.setOnClickListener(new View.OnClickListener() {
+//        TODO:打卡任務進度確認
+        checkInProcessBotton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popWindow(PopWindowType.CHECK_IN_COMPLETED);
+                if(pref.contains(MarkTask.CURRENT_TASK.key)){
+                    popWindow(PopWindowType.CHECK_IN_COMPLETED);
+                }else{
+                    Toast.makeText(getApplicationContext(),"你尚未接取打卡任務，請至任務列表選擇並接取打卡任務",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -600,7 +601,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         }else if (popWindowType==PopWindowType.CHECK_IN_COMPLETED){
-
             CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win, pref.getInt("checkInCompleted", 0), pref.getString("nextStopTitle",""));
             checkInPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();

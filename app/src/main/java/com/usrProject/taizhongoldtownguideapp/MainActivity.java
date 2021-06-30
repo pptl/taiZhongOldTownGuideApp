@@ -35,6 +35,8 @@ import android.view.GestureDetector;
 import android.widget.Toast;
 
 
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pref = getSharedPreferences("userData",MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
 
         seekBar = (SeekBar)findViewById(R.id.seekBar);
         seekBarTextView = (TextView)findViewById(R.id.yearTextView);

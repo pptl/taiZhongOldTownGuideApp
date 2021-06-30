@@ -14,6 +14,7 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class CreateNewMarker extends AppCompatActivity {
         longitude = intent.getDoubleExtra("longitude", 0);
         mDatabase = FirebaseDatabase.getInstance();
 
-        pref = getSharedPreferences("userData",MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.USER_DATA,MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
         markerPath = "location_icon";
 

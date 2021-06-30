@@ -57,7 +57,7 @@
         android:background="@drawable/check_in_record_icon" />
 
     <Button
-        android:id="@+id/demo_btn"
+        android:id="@+id/checkInBotton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"

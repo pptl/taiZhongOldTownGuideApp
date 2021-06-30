@@ -3,8 +3,11 @@ package com.usrProject.taizhongoldtownguideapp.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,20 +27,26 @@ import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckTasks;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CurrentTask;
 import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TaskInfoActivity extends AppCompatActivity {
     private CheckTasks tasksInfo;
+    private CurrentTask currentTask;
     private TextView taskTitleView;
     private TextView taskDescView;
+    private SharedPreferences pref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_info);
+        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
 //        init
         taskTitleView = findViewById(R.id.taskTitleView);
         taskDescView = findViewById(R.id.taskDescView);
@@ -56,12 +65,22 @@ public class TaskInfoActivity extends AppCompatActivity {
 
     public void onAccept(View view) {
         Gson gson = new Gson();
-        CurrentTask currentTask = gson.fromJson(gson.toJson(tasksInfo), CurrentTask.class);
+        currentTask = gson.fromJson(gson.toJson(tasksInfo), CurrentTask.class);
         currentTask.tasksContent = new ArrayList<CheckInMarkerObject>();
-        initMarkDatasById(tasksInfo.Id, currentTask.tasksContent);
+        initMarkDatasById(tasksInfo.Id);
     }
 
-    public void initMarkDatasById(String Id, final List<CheckInMarkerObject> tasksContent){
+    public void initMarkDatasById(String Id){
+        Intent intent = new Intent(getApplicationContext(),TeamTracker.class);
+        if(pref.contains(MarkTask.CURRENT_TASK.key)){
+            String json = pref.getString(MarkTask.CURRENT_TASK.key, "");
+            CurrentTask exsitTask = new Gson().fromJson(json, CurrentTask.class);
+            Toast.makeText(getApplicationContext(),String.format("無法接取"),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),String.format("因為你目前正在接取 %s 任務",exsitTask.taskTitle),Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Task<DocumentSnapshot> task = db.collection(TaskSchema.Database.COLLECTION_NAME).document(Id).get();
         task.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -69,37 +88,23 @@ public class TaskInfoActivity extends AppCompatActivity {
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot doc = task.getResult();
                 ArrayList<DocumentReference>tasksContentReference = (ArrayList<DocumentReference>) doc.get("tasksContent");
-//              防呆機制
                 if(tasksContentReference != null){
-                    for(DocumentReference documentReference: tasksContentReference){
-                        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    for(int i = 0; i < tasksContentReference.size(); i++){
+                        DocumentReference docr = tasksContentReference.get(i);
+                        docr.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
-                                if(task.isSuccessful()){
-                                    tasksContent.add(task.getResult().toObject(CheckInMarkerObject.class));
-                                }
+                                //TODO:一定要找到非同步存取資料的方法
+                                currentTask.tasksContent.add(task.getResult().toObject(CheckInMarkerObject.class));
+                                pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
                             }
                         });
                     }
                 }
-
-                Gson gson = new Gson();
-                CurrentTask currentTask = gson.fromJson(gson.toJson(tasksInfo),CurrentTask.class);
-                currentTask.tasksContent = tasksContent;
-                SharedPreferences userData = getPreferences(MODE_PRIVATE);
-                if(userData.contains(MarkTask.CURRENT_TASK.key)){
-                    String json = new String();
-                    json = userData.getString(MarkTask.CURRENT_TASK.key,"");
-                    CurrentTask temp = gson.fromJson(json, CurrentTask.class);
-                    Toast.makeText(getApplicationContext(),"你已經接取任務：" + temp.taskTitle,Toast.LENGTH_LONG).show();
-                }else{
-                    userData.edit().putString(MarkTask.CURRENT_TASK.key,gson.toJson(currentTask)).commit();
-                    Toast.makeText(getApplicationContext(),"確定接取任務",Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
-                    startActivity(intent);
-                }
-
             }
         });
+        pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
+        Toast.makeText(getApplicationContext(),String.format("成功接取 %s 任務",currentTask.taskTitle),Toast.LENGTH_SHORT).show();
+        startActivity(intent);
     }
 }

@@ -13,6 +13,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class PersonInfoPopUpWin extends CustomPopUpWin {
 
         mDatabase = FirebaseDatabase.getInstance();
 
-        pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
+        pref = mContext.getSharedPreferences(UserSchema.USER_DATA,mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
         teamName = pref.getString("teamName","error");
 

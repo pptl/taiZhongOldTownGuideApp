@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class JoinTeam extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_team);
         editText = (EditText)findViewById(R.id.joinTeam_editText);
-        pref = getSharedPreferences("userData",MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
 
         userName = pref.getString("userName","error");
         userIconPath = pref.getString("userIconPath","user_icon1");

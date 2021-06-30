@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.CheckBox;
 
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
+
 import java.util.Set;
 
 
@@ -23,7 +25,7 @@ public class SwitchLayerPopUpWin extends CustomPopUpWin {
     public SwitchLayerPopUpWin(Context mContext, int xmlLayout) {
         super(mContext, xmlLayout,true);
 
-        pref = mContext.getSharedPreferences("userData",mContext.MODE_PRIVATE);
+        pref = mContext.getSharedPreferences(UserSchema.USER_DATA,mContext.MODE_PRIVATE);
         checkedLayerSet = pref.getStringSet("checkedLayer",null);
 
         foodCheckBox = getView().findViewById(R.id.foodCheckBox);

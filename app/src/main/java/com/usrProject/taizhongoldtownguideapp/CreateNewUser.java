@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
+
 public class CreateNewUser extends AppCompatActivity {
     private EditText editText;
     private String newUserName;
@@ -23,7 +25,7 @@ public class CreateNewUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_user);
 
-        pref = getSharedPreferences("userData",MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.USER_DATA,MODE_PRIVATE);
 
         editText = findViewById(R.id.newUser_editText);
         userIcon = findViewById(R.id.userIcon);
