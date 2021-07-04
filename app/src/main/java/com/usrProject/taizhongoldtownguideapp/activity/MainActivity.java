@@ -594,10 +594,9 @@ public class MainActivity extends AppCompatActivity {
 
     private JsonReader getJsonReaderbyUrl(String urlPath, int timeout) throws IOException {
         JsonReader result = null;
-        URL url = null;
+        URL url = new URL(urlPath);
         HttpURLConnection connection = null;
         try {
-            url = new URL(urlPath);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setRequestProperty("Accept", "application/json");
