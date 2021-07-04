@@ -21,6 +21,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            res {
+                srcDirs 'src\\main\\res', 'src\\main\\res\\layouts\\activity', 'src\\main\\res\\layouts\\popupwin', 'src\\main\\res\\recycle_view', 'src\\main\\res\\layouts\\recycle_view'
+            }
+        }
+    }
 
 }
 
