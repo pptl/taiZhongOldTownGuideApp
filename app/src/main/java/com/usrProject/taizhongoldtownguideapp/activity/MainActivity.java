@@ -45,6 +45,7 @@ import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.SurroundingView;
 import com.usrProject.taizhongoldtownguideapp.component.NewsList;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
+import com.usrProject.taizhongoldtownguideapp.schema.type.MapType;
 import com.usrProject.taizhongoldtownguideapp.utils.URLBuilder;
 
 import java.io.IOException;
@@ -85,12 +86,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean clickFlag = true;
 
     //記錄照片中心
-    private int[][] mapSizeData = {
-            {540, 507},//map_51
-            {540, 415},//map_1911
-            {540, 433},//map_1937
-            {960, 768}//map_now
-    };
+    private MapType currentMapType;
+//    private int[][] mapSizeData = {
+//            {540, 507},//map_51
+//            {540, 415},//map_1911
+//            {540, 433},//map_1937
+//            {960, 768}//map_now
+//    };
 
     //設置地圖上有效點擊範圍
     private int[][] objList = {
@@ -406,12 +408,12 @@ public class MainActivity extends AppCompatActivity {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int goX = (int) distanceX;
             int goY = (int) distanceY;
-
-            if ((curPointX + goX) / phoneDensity >= 0 && (curPointX + goX) / phoneDensity <= (curPointX * 2 - phoneWidthPixels / phoneDensity)) {
+//          TODO : 原本要記錄圖的中心來計算是否可以捲動 (mapSizeData)
+            if ((curPointX + goX) / phoneDensity >= 0 && (currentMapType.x + goX) / phoneDensity <= (curPointX * 2 - phoneWidthPixels / phoneDensity)) {
                 mapImageView.scrollBy(goX, 0);
                 curPointX += goX;
             }
-            if ((curPointY + goY) / phoneDensity >= 0 && (curPointY + goY) / phoneDensity <= (curPointY * 2 - phoneHeightPixels / phoneDensity)) {
+            if ((curPointY + goY) / phoneDensity >= 0 && (currentMapType.y + goY) / phoneDensity <= (curPointY * 2 - phoneHeightPixels / phoneDensity)) {
                 mapImageView.scrollBy(0, goY);
                 curPointY += goY;
             }
@@ -551,25 +553,25 @@ public class MainActivity extends AppCompatActivity {
 //            {960, 768}//map_now
         switch (resId){
             case R.drawable.map_51:
-                curPointX = Math.round(540 * phoneDensity - phoneWidthPixels / 2);
-                curPointY = Math.round(507 * phoneDensity - phoneHeightPixels / 2);
-                mapImageView.scrollTo(curPointX, curPointY);
+                currentMapType = MapType.MAP_51;
                 break;
             case R.drawable.map_1911:
-                curPointX = Math.round(540 * phoneDensity - phoneWidthPixels / 2);
-                curPointY = Math.round(415 * phoneDensity - phoneHeightPixels / 2);
-                mapImageView.scrollTo(curPointX, curPointY);
+                currentMapType = MapType.MAP_1911;
                 break;
             case R.drawable.map_1937:
-                curPointX = Math.round(540 * phoneDensity - phoneWidthPixels / 2);
-                curPointY = Math.round(433 * phoneDensity - phoneHeightPixels / 2);
-                mapImageView.scrollTo(curPointX, curPointY);
+                currentMapType = MapType.MAP_1937;
                 break;
             case R.drawable.map_now:
-                curPointX = Math.round(960 * phoneDensity - phoneWidthPixels / 2);
-                curPointY = Math.round(768 * phoneDensity - phoneHeightPixels / 2);
-                mapImageView.scrollTo(curPointX, curPointY);
+                currentMapType = MapType.MAP_NOW;
                 break;
+            default:
+
+                break;
+        }
+        if(currentMapType != null){
+            curPointX = Math.round(currentMapType.x * phoneDensity - phoneWidthPixels / 2);
+            curPointY = Math.round(currentMapType.y * phoneDensity - phoneHeightPixels / 2);
+            mapImageView.scrollTo(curPointX, curPointY);
         }
     }
 
