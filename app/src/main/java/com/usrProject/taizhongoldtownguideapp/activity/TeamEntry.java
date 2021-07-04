@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class TeamEntry extends AppCompatActivity {
         setContentView(R.layout.activity_team_entry);
 
         pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
-        userName = pref.getString("userName","error");
+        userName = pref.getString("userName","None");
 
         mDatabase = FirebaseDatabase.getInstance();
 

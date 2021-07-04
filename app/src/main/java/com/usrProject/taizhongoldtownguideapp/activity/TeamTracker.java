@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -49,11 +49,16 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.usrProject.taizhongoldtownguideapp.activity.CheckInTasksView;
+import com.usrProject.taizhongoldtownguideapp.Loading;
+import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.CheckInPopUpWin;
+import com.usrProject.taizhongoldtownguideapp.component.CustomInfoWindowAdapter;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.LocationInfoPopUpWin;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.PersonInfoPopUpWin;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.SwitchLayerPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
 import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.PopWindowType;
-import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.json.JSONArray;
@@ -629,7 +634,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 usersRef.child(userID).removeValue();
                 alert.setView(null);
                 //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
-                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
             }

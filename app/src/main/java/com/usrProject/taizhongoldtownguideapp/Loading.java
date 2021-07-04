@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import com.usrProject.taizhongoldtownguideapp.activity.TeamTracker;
 
 public class Loading extends AppCompatActivity {
 
@@ -23,7 +22,7 @@ public class Loading extends AppCompatActivity {
 
             public void onFinish() {
                 finish();
-                Intent intent = new Intent(getApplicationContext(),TeamTracker.class);
+                Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
                 startActivity(intent);
             }
 

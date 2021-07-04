@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.activity.TeamTracker;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import java.util.HashMap;

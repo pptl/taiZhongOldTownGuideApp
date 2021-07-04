@@ -1,9 +1,11 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.component.popupwin;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.CheckBox;
 
+import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.CustomPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import java.util.Set;

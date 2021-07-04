@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.component.popupwin;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+
+import com.usrProject.taizhongoldtownguideapp.R;
 
 
 public class CustomPopUpWin extends PopupWindow {

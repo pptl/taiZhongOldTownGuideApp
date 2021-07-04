@@ -1,10 +1,12 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.usrProject.taizhongoldtownguideapp.R;
 
 public class ChangeMarkerIcon extends AppCompatActivity {
 

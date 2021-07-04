@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,12 +13,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,6 +35,10 @@ import android.view.GestureDetector;
 import android.widget.Toast;
 
 
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.IntroductionCustomPopUpWin;
+import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.SurroundingView;
+import com.usrProject.taizhongoldtownguideapp.component.NewsList;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.json.JSONArray;
@@ -58,12 +62,13 @@ public class MainActivity extends AppCompatActivity {
     private Button navBtn;
     private GestureDetector GD;
     private ImageView mapImageView;
-    private ImageView imView2;
-    private ImageView imView3;
-    private ImageView imView4;
-    private ImageView imView5;
-    private ImageView imView6;
-    private ImageView imView7;
+    private ArrayList<ImageView> cloudImageViews;
+//    private ImageView cloudImageView2;
+//    private ImageView cloudImageView3;
+//    private ImageView cloudImageView4;
+//    private ImageView cloudImageView5;
+//    private ImageView cloudImageView6;
+    private ImageView backgroundImageView;
     private SeekBar seekBar;
     private TextView seekBarTextView;
     private TextView meibianzhiyuan;
@@ -121,44 +126,55 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == 1){
-                    imView2 = (ImageView)findViewById(R.id.cloundView1);
-                    imView3 = (ImageView)findViewById(R.id.cloundView2);
-                    imView4 = (ImageView)findViewById(R.id.cloundView3);
-                    imView5 = (ImageView)findViewById(R.id.cloundView4);
-                    imView6 = (ImageView)findViewById(R.id.cloundView5);
-                    imView7 = (ImageView)findViewById(R.id.bgView);
+                    cloudImageViews = new ArrayList<>();
+                    cloudImageViews.add((ImageView)findViewById(R.id.cloundView1));
+//                    cloudImageView2 = (ImageView)findViewById(R.id.cloundView1);
+                    cloudImageViews.add((ImageView)findViewById(R.id.cloundView2));
+//                    cloudImageView3 = (ImageView)findViewById(R.id.cloundView2);
+                    cloudImageViews.add((ImageView)findViewById(R.id.cloundView3));
+//                    cloudImageView4 = (ImageView)findViewById(R.id.cloundView3);
+                    cloudImageViews.add((ImageView)findViewById(R.id.cloundView4));
+//                    cloudImageView5 = (ImageView)findViewById(R.id.cloundView4);
+                    cloudImageViews.add((ImageView)findViewById(R.id.cloundView5));
+//                    cloudImageView6 = (ImageView)findViewById(R.id.cloundView5);
+                    backgroundImageView = (ImageView)findViewById(R.id.bgView);
                     //weather = "雨";
                     if(weather.equals("陰")){
                         String uri = "@drawable/black_clound";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-                        imView2.setImageResource(imageResource);
-                        imView3.setImageResource(imageResource);
-                        imView4.setImageResource(imageResource);
-                        imView5.setImageResource(imageResource);
-                        imView6.setImageResource(imageResource);
-                        cloundController(imView2);
-                        cloundController(imView3);
-                        cloundController(imView4);
-                        cloundController(imView5);
-                        cloundController(imView6);
-                        imView7.setVisibility(View.VISIBLE);
+                        for(ImageView cloudImageView : cloudImageViews){
+                            cloudImageView.setImageResource(imageResource);
+                            cloundController(cloudImageView);
+                        }
+//                        cloudImageView2.setImageResource(imageResource);
+//                        cloudImageView3.setImageResource(imageResource);
+//                        cloudImageView4.setImageResource(imageResource);
+//                        cloudImageView5.setImageResource(imageResource);
+//                        cloudImageView6.setImageResource(imageResource);
+//                        cloundController(cloudImageView2);
+//                        cloundController(cloudImageView3);
+//                        cloundController(cloudImageView4);
+//                        cloundController(cloudImageView5);
+//                        cloundController(cloudImageView6);
+                        backgroundImageView.setVisibility(View.VISIBLE);
                     } else if(weather.equals(weather.equals("陰带雨")) || weather.equals("雨")){
                         String uri = "@drawable/rain_effect";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-                        imView2.setVisibility(View.INVISIBLE);
-                        imView3.setVisibility(View.INVISIBLE);
-                        imView4.setVisibility(View.INVISIBLE);
-                        imView5.setVisibility(View.INVISIBLE);
-                        imView6.setVisibility(View.INVISIBLE);
-                        imView7.setVisibility(View.VISIBLE);
-                        imView7.setImageResource(imageResource);
+                        for(ImageView cloudImageView : cloudImageViews){
+                            cloudImageView.setVisibility(View.INVISIBLE);
+                        }
+//                        cloudImageView2.setVisibility(View.INVISIBLE);
+//                        cloudImageView3.setVisibility(View.INVISIBLE);
+//                        cloudImageView4.setVisibility(View.INVISIBLE);
+//                        cloudImageView5.setVisibility(View.INVISIBLE);
+//                        cloudImageView6.setVisibility(View.INVISIBLE);
+                        backgroundImageView.setVisibility(View.VISIBLE);
+                        backgroundImageView.setImageResource(imageResource);
                     } else {
-                        cloundController(imView2);
-                        cloundController(imView3);
-                        cloundController(imView4);
-                        cloundController(imView5);
-                        cloundController(imView6);
-                        imView7.setVisibility(View.INVISIBLE);
+                        for(ImageView cloudImageView : cloudImageViews){
+                            cloundController(cloudImageView);
+                        }
+                        backgroundImageView.setVisibility(View.INVISIBLE);
                     }
                 }
             }

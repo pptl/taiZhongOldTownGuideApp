@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.utils;
 
 public class EscapeUnescape {
     public static String escape(String src) {

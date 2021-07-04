@@ -106,7 +106,7 @@ public class CheckInTasksView extends AppCompatActivity {
             holder.taskTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("onClick", dataset.get(position).taskTitle);
+//                    Log.d("onClick", dataset.get(position).taskTitle);
                     Intent intent = new Intent(getApplicationContext(), TaskInfoActivity.class);
                     intent.putExtra(TaskSchema.TASK_INFO, dataset.get(position));
                     startActivity(intent);

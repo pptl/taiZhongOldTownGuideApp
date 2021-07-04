@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.component.popupwin;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,27 +6,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CurrentTaskProcess;
 import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.internal.StringUtil;
 
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class CheckInPopUpWin extends CustomPopUpWin{
+public class CheckInPopUpWin extends CustomPopUpWin {
     CurrentTaskProcess currentTaskProcess;
     CheckInMarkerObject currentMarker;
 
     Button closeWinButton;
-    Button cancelButtton;
-    Button compeleteButton;
+    Button cancelButton;
+    Button compeletedButton;
     TextView completedCountTextView;
     TextView titleTextView;
     ProgressBar progressBar;
@@ -34,8 +33,8 @@ public class CheckInPopUpWin extends CustomPopUpWin{
     public CheckInPopUpWin(Context mContext, int xmlLayout, int completedNum, String title) {
         super(mContext, xmlLayout, false);
         closeWinButton = this.getView().findViewById(R.id.check_in_record_pop_up_win_completed_close_btn);
-        cancelButtton = this.getView().findViewById(R.id.check_in_record_pop_up_win_cancel_button);
-        compeleteButton = this.getView().findViewById(R.id.check_in_record_pop_up_win_completed_button);
+        cancelButton = this.getView().findViewById(R.id.check_in_record_pop_up_win_cancel_button);
+        compeletedButton = this.getView().findViewById(R.id.check_in_record_pop_up_win_completed_button);
         completedCountTextView = this.getView().findViewById(R.id.check_in_record_pop_up_win_completed_textView);
         titleTextView = this.getView().findViewById(R.id.check_in_record_pop_up_win_completed_title_textView);
         progressBar = this.getView().findViewById(R.id.check_in_record_pop_up_win_progressBar);
@@ -47,7 +46,7 @@ public class CheckInPopUpWin extends CustomPopUpWin{
             titleTextView.setText("此任務無打卡進度");
             completedCountTextView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
-            compeleteButton.setText("完成");
+            compeletedButton.setText("完成");
         }else{
             currentMarker = currentTaskProcess.tasksContent.get(currentTaskProcess.currentTask);
             titleTextView.setText(currentMarker.markTitle);
@@ -63,17 +62,17 @@ public class CheckInPopUpWin extends CustomPopUpWin{
                 dismiss();
             }
         });
-        cancelButtton.setOnClickListener(new View.OnClickListener() {
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
 
-        compeleteButton.setOnClickListener(new View.OnClickListener() {
+        compeletedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(StringUtils.equals(compeleteButton.getText().toString(), "完成")){
+                if(StringUtils.equals(compeletedButton.getText().toString(), "完成")){
                     dismiss();
                     pref.edit().remove(MarkTask.CURRENT_TASK.key).commit();
                     return;
@@ -92,7 +91,7 @@ public class CheckInPopUpWin extends CustomPopUpWin{
                     completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.tasksContent.size()));
                     Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.tasksContent.size());
                     progressBar.setProgress((int) (doneProcess * 100.0));
-                    compeleteButton.setText("完成");
+                    compeletedButton.setText("完成");
                 }
             }
         });

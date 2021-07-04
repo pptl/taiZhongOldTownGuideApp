@@ -1,8 +1,11 @@
-package com.usrProject.taizhongoldtownguideapp;
+package com.usrProject.taizhongoldtownguideapp.component.popupwin;
 
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.CustomPopUpWin;
 
 
 public class IntroductionCustomPopUpWin extends CustomPopUpWin {
