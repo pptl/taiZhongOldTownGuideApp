@@ -5,10 +5,10 @@ import android.content.Context;
 import com.usrProject.taizhongoldtownguideapp.R;
 
 public enum MapType {
-    MAP_51,
-    MAP_1911,
-    MAP_1937,
-    MAP_NOW;
+    MAP_51(R.drawable.map_51),
+    MAP_1911(R.drawable.map_1911),
+    MAP_1937(R.drawable.map_1937),
+    MAP_NOW(R.drawable.map_now);
 
 //            {540, 507},//map_51
 //            {540, 415},//map_1911
@@ -16,28 +16,26 @@ public enum MapType {
 //            {960, 768}//map_now
     public int resId;
     public int x,y;
-    MapType(){
-        switch (this){
-            case MAP_51:
-                resId = R.drawable.map_51;
+    MapType(int resId){
+        switch (resId){
+            case R.drawable.map_51:
                 x = 540;
                 y = 507;
                 break;
-            case MAP_1911:
-                resId = R.drawable.map_1911;
+            case R.drawable.map_1911:
                 x = 540;
                 y = 415;
                 break;
-            case MAP_1937:
-                resId = R.drawable.map_1937;
+            case R.drawable.map_1937:
                 x = 540;
                 y = 433;
                 break;
-            case MAP_NOW:
-                resId = R.drawable.map_now;
+            case R.drawable.map_now:
                 x = 960;
                 y = 768;
                 break;
         }
+        this.resId = resId;
     }
+
 }

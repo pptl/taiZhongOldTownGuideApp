@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
         mapImageView = (ImageView) this.findViewById(R.id.mapView);
         //預設是第四張照片
-        changeImage(R.drawable.map_now);
+        changeImage(MapType.MAP_NOW);
         meibianzhiyuan = (TextView) this.findViewById(R.id.meibianzhiyuan_textView);
 
         goTeamTrackerBtn = findViewById(R.id.team_tracker_btn);
@@ -408,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int goX = (int) distanceX;
             int goY = (int) distanceY;
-//          TODO : 原本要記錄圖的中心來計算是否可以捲動 (mapSizeData)
+//          TODO : 原本要記錄圖的中心來計算是否可以捲動 (mapSizeData)，目前已經完成但尚未進行測試
             if ((curPointX + goX) / phoneDensity >= 0 && (currentMapType.x + goX) / phoneDensity <= (curPointX * 2 - phoneWidthPixels / phoneDensity)) {
                 mapImageView.scrollBy(goX, 0);
                 curPointX += goX;
@@ -497,25 +497,25 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (progress <= 25) {
                     seekBarTextView.setText("乾隆40~51年");
-                    changeImage(R.drawable.map_51);
+                    changeImage(MapType.MAP_51);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 } else if (progress > 25 && progress <= 50) {
                     seekBarTextView.setText("1911年");
-                    changeImage(R.drawable.map_1911);
+                    changeImage(MapType.MAP_1911);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 } else if (progress > 50 && progress <= 75) {
                     seekBarTextView.setText("1937年");
-                    changeImage(R.drawable.map_1937);
+                    changeImage(MapType.MAP_1937);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 } else if (progress > 75) {
                     seekBarTextView.setText(new SimpleDateFormat("yyyy").format(new Date()) + "年");
-                    changeImage(R.drawable.map_now);
+                    changeImage(MapType.MAP_NOW);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
                     clickFlag = true;
                 }
@@ -544,30 +544,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //更換地圖用
-    private void changeImage(int resId) {
+    private void changeImage(MapType changeType) {
         mapImageView = (ImageView) findViewById(R.id.mapView);
-        mapImageView.setImageResource(resId);
+        mapImageView.setImageResource(changeType.resId);
 //            {540, 507},//map_51
 //            {540, 415},//map_1911
 //            {540, 433},//map_1937
 //            {960, 768}//map_now
-        switch (resId){
-            case R.drawable.map_51:
-                currentMapType = MapType.MAP_51;
-                break;
-            case R.drawable.map_1911:
-                currentMapType = MapType.MAP_1911;
-                break;
-            case R.drawable.map_1937:
-                currentMapType = MapType.MAP_1937;
-                break;
-            case R.drawable.map_now:
-                currentMapType = MapType.MAP_NOW;
-                break;
-            default:
-
-                break;
-        }
+        currentMapType = changeType;
         if(currentMapType != null){
             curPointX = Math.round(currentMapType.x * phoneDensity - phoneWidthPixels / 2);
             curPointY = Math.round(currentMapType.y * phoneDensity - phoneHeightPixels / 2);
