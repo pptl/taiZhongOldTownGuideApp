@@ -57,8 +57,8 @@ import com.usrProject.taizhongoldtownguideapp.component.popupwin.LocationInfoPop
 import com.usrProject.taizhongoldtownguideapp.component.popupwin.PersonInfoPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.component.popupwin.SwitchLayerPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
-import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
-import com.usrProject.taizhongoldtownguideapp.schema.PopWindowType;
+import com.usrProject.taizhongoldtownguideapp.schema.type.MarkTask;
+import com.usrProject.taizhongoldtownguideapp.schema.type.PopWindowType;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.json.JSONArray;

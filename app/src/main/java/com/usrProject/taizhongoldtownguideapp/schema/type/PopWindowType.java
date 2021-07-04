@@ -1,4 +1,4 @@
-package com.usrProject.taizhongoldtownguideapp.schema;
+package com.usrProject.taizhongoldtownguideapp.schema.type;
 
 public enum PopWindowType {
     LOCATION_INFO,

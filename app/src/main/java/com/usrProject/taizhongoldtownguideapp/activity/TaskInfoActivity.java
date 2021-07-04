@@ -20,7 +20,7 @@ import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckTasks;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CurrentTask;
-import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
+import com.usrProject.taizhongoldtownguideapp.schema.type.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 

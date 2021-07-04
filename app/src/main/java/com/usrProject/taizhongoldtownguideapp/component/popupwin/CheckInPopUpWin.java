@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CurrentTaskProcess;
-import com.usrProject.taizhongoldtownguideapp.schema.MarkTask;
+import com.usrProject.taizhongoldtownguideapp.schema.type.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 import org.apache.commons.lang3.StringUtils;
