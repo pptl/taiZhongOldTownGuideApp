@@ -26,7 +26,6 @@ import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView seekBarTextView;
     private TextView meibianzhiyuan;
-    private ArrayList<String> imgList = null;
 
     private WindowManager.LayoutParams params;
     private float phoneWidthPixels;
@@ -85,8 +83,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences pref;
     private Handler handler;
     public boolean clickFlag = true;
-
-    private int currentMapIndex = 3;//記錄底圖index
 
     //記錄照片中心
     private int[][] mapSizeData = {
@@ -138,18 +134,9 @@ public class MainActivity extends AppCompatActivity {
         //設置滑軌監聽
         seekBarController();
 
-        //用以存放各年份地圖名字
-        imgList = new ArrayList<String>();
-
-        //加入各年份地圖照片
-        imgList.add("map_51");
-        imgList.add("map_1911");
-        imgList.add("map_1937");
-        imgList.add("map_now");
-
         mapImageView = (ImageView) this.findViewById(R.id.mapView);
         //預設是第四張照片
-        changeImage(currentMapIndex);
+        changeImage(R.drawable.map_now);
         meibianzhiyuan = (TextView) this.findViewById(R.id.meibianzhiyuan_textView);
 
         goTeamTrackerBtn = findViewById(R.id.team_tracker_btn);
@@ -250,18 +237,18 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {
                     cloudImageViews = new ArrayList<>();
-                    cloudImageViews.add((ImageView) findViewById(R.id.cloundView1));
-                    cloudImageViews.add((ImageView) findViewById(R.id.cloundView2));
-                    cloudImageViews.add((ImageView) findViewById(R.id.cloundView3));
-                    cloudImageViews.add((ImageView) findViewById(R.id.cloundView4));
-                    cloudImageViews.add((ImageView) findViewById(R.id.cloundView5));
-                    backgroundImageView = (ImageView) findViewById(R.id.bgView);
+                    cloudImageViews.add((ImageView) findViewById(R.id.cloudView_1));
+                    cloudImageViews.add((ImageView) findViewById(R.id.cloudView_2));
+                    cloudImageViews.add((ImageView) findViewById(R.id.cloudView_3));
+                    cloudImageViews.add((ImageView) findViewById(R.id.cloudView_4));
+                    cloudImageViews.add((ImageView) findViewById(R.id.cloudView_5));
+                    backgroundImageView = (ImageView) findViewById(R.id.backGroundImageView);
                     if (weather.equals("陰")) {
                         String uri = "@drawable/black_clound";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
                         for (ImageView cloudImageView : cloudImageViews) {
                             cloudImageView.setImageResource(imageResource);
-                            cloundController(cloudImageView);
+                            cloudController(cloudImageView);
                         }
                         backgroundImageView.setVisibility(View.VISIBLE);
                     } else if (weather.equals(weather.equals("陰带雨")) || weather.equals("雨")) {
@@ -274,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         backgroundImageView.setImageResource(imageResource);
                     } else {
                         for (ImageView cloudImageView : cloudImageViews) {
-                            cloundController(cloudImageView);
+                            cloudController(cloudImageView);
                         }
                         backgroundImageView.setVisibility(View.INVISIBLE);
                     }
@@ -420,11 +407,11 @@ public class MainActivity extends AppCompatActivity {
             int goX = (int) distanceX;
             int goY = (int) distanceY;
 
-            if ((curPointX + goX) / phoneDensity >= 0 && (curPointX + goX) / phoneDensity <= (mapSizeData[currentMapIndex][0] * 2 - phoneWidthPixels / phoneDensity)) {
+            if ((curPointX + goX) / phoneDensity >= 0 && (curPointX + goX) / phoneDensity <= (curPointX * 2 - phoneWidthPixels / phoneDensity)) {
                 mapImageView.scrollBy(goX, 0);
                 curPointX += goX;
             }
-            if ((curPointY + goY) / phoneDensity >= 0 && (curPointY + goY) / phoneDensity <= (mapSizeData[currentMapIndex][1] * 2 - phoneHeightPixels / phoneDensity)) {
+            if ((curPointY + goY) / phoneDensity >= 0 && (curPointY + goY) / phoneDensity <= (curPointY * 2 - phoneHeightPixels / phoneDensity)) {
                 mapImageView.scrollBy(0, goY);
                 curPointY += goY;
             }
@@ -449,35 +436,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //對雲朵進行操控
-    private void cloundController(ImageView imageView) {
-        String idString = imageView.getResources().getResourceEntryName(imageView.getId());
-        switch (idString) {
-            case "cloundView1":
+    private void cloudController(ImageView imageView) {
+        switch (imageView.getId()) {
+            case R.id.cloudView_1:
                 Animation am1 = new TranslateAnimation(1000f, -800f, 0f, 0f);
                 am1.setDuration(55000);
                 am1.setRepeatCount(-1);
                 imageView.startAnimation(am1);
                 break;
-            case "cloundView2":
+            case R.id.cloudView_2:
                 Animation am2 = new TranslateAnimation(1800f, -800f, 900f, 900f);
                 am2.setDuration(55000);
                 am2.setRepeatCount(-1);
                 am2.setStartTime(100000);
                 imageView.startAnimation(am2);
                 break;
-            case "cloundView3":
+            case R.id.cloudView_3:
                 Animation am3 = new TranslateAnimation(1400f, -800f, 200f, 200f);
                 am3.setDuration(50000);
                 am3.setRepeatCount(-1);
                 imageView.startAnimation(am3);
                 break;
-            case "cloundView4":
+            case R.id.cloudView_4:
                 Animation am4 = new TranslateAnimation(1500f, -800f, 800f, 800f);
                 am4.setDuration(50000);
                 am4.setRepeatCount(-1);
                 imageView.startAnimation(am4);
                 break;
-            case "cloundView5":
+            case R.id.cloudView_5:
                 Animation am5 = new TranslateAnimation(1200f, -800f, 700f, 700f);
                 am5.setDuration(50000);
                 am5.setRepeatCount(-1);
@@ -509,25 +495,25 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (progress <= 25) {
                     seekBarTextView.setText("乾隆40~51年");
-                    changeImage(0);
+                    changeImage(R.drawable.map_51);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 } else if (progress > 25 && progress <= 50) {
                     seekBarTextView.setText("1911年");
-                    changeImage(1);
+                    changeImage(R.drawable.map_1911);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 } else if (progress > 50 && progress <= 75) {
                     seekBarTextView.setText("1937年");
-                    changeImage(2);
+                    changeImage(R.drawable.map_1937);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
                 } else if (progress > 75) {
                     seekBarTextView.setText(new SimpleDateFormat("yyyy").format(new Date()) + "年");
-                    changeImage(3);
+                    changeImage(R.drawable.map_now);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
                     clickFlag = true;
                 }
@@ -556,16 +542,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //更換地圖用
-    private void changeImage(int i) {
+    private void changeImage(int resId) {
         mapImageView = (ImageView) findViewById(R.id.mapView);
-        String uri = "@drawable/" + imgList.get(i);
-        int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-        mapImageView.setImageResource(imageResource);
-        currentMapIndex = i;
-        curPointX = Math.round(mapSizeData[i][0] * phoneDensity - phoneWidthPixels / 2);
-        curPointY = Math.round(mapSizeData[i][1] * phoneDensity - phoneHeightPixels / 2);
-        mapImageView.scrollTo(curPointX, curPointY);
-
+        mapImageView.setImageResource(resId);
+//            {540, 507},//map_51
+//            {540, 415},//map_1911
+//            {540, 433},//map_1937
+//            {960, 768}//map_now
+        switch (resId){
+            case R.drawable.map_51:
+                curPointX = Math.round(540 * phoneDensity - phoneWidthPixels / 2);
+                curPointY = Math.round(507 * phoneDensity - phoneHeightPixels / 2);
+                mapImageView.scrollTo(curPointX, curPointY);
+                break;
+            case R.drawable.map_1911:
+                curPointX = Math.round(540 * phoneDensity - phoneWidthPixels / 2);
+                curPointY = Math.round(415 * phoneDensity - phoneHeightPixels / 2);
+                mapImageView.scrollTo(curPointX, curPointY);
+                break;
+            case R.drawable.map_1937:
+                curPointX = Math.round(540 * phoneDensity - phoneWidthPixels / 2);
+                curPointY = Math.round(433 * phoneDensity - phoneHeightPixels / 2);
+                mapImageView.scrollTo(curPointX, curPointY);
+                break;
+            case R.drawable.map_now:
+                curPointX = Math.round(960 * phoneDensity - phoneWidthPixels / 2);
+                curPointY = Math.round(768 * phoneDensity - phoneHeightPixels / 2);
+                mapImageView.scrollTo(curPointX, curPointY);
+                break;
+        }
     }
 
     //到氣象資料開放平台拿取資料

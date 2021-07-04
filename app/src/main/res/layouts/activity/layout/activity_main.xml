@@ -50,7 +50,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/cloundView1"
+        android:id="@+id/cloudView_1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="matrix"
@@ -62,7 +62,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/clound" />
     <ImageView
-        android:id="@+id/cloundView2"
+        android:id="@+id/cloudView_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="matrix"
@@ -74,7 +74,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/clound" />
     <ImageView
-        android:id="@+id/cloundView3"
+        android:id="@+id/cloudView_3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="matrix"
@@ -86,7 +86,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/clound" />
     <ImageView
-        android:id="@+id/cloundView4"
+        android:id="@+id/cloudView_4"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="matrix"
@@ -98,7 +98,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/clound" />
     <ImageView
-        android:id="@+id/cloundView5"
+        android:id="@+id/cloudView_5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="matrix"
@@ -111,7 +111,7 @@
         app:srcCompat="@drawable/clound" />
 
     <ImageView
-        android:id="@+id/bgView"
+        android:id="@+id/backGroundImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.2"

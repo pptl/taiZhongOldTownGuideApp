@@ -8,9 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class URLBuilder {
     private static final String AUTHORIZATION = "Authorization";
-    private static final String ELEMENTNAME = "elementName";
-    private static final String PARAMETERNAME = "parameterName";
-    private static final String LOCATIONNAME = "locationName";
+    private static final String ELEMENT_NAME = "elementName";
+    private static final String PARAMETER_NAME = "parameterName";
+    private static final String LOCATION_NAME = "locationName";
 
     public String getOpenDataUrl(Context context, String Authorization, String elementName, String parameterName, String locationName){
         String base = context.getString(R.string.opendata_base_url);
@@ -20,15 +20,15 @@ public class URLBuilder {
             hasParameter = true;
         }
         if(StringUtils.isNotBlank(elementName)){
-            base = getPathParameterPrefix(base, hasParameter,ELEMENTNAME, elementName);
+            base = getPathParameterPrefix(base, hasParameter, ELEMENT_NAME, elementName);
             hasParameter = true;
         }
         if(StringUtils.isNotBlank(parameterName)){
-            base = getPathParameterPrefix(base, hasParameter,PARAMETERNAME, parameterName);
+            base = getPathParameterPrefix(base, hasParameter, PARAMETER_NAME, parameterName);
             hasParameter = true;
         }
         if(StringUtils.isNotBlank(locationName)){
-            base = getPathParameterPrefix(base, hasParameter,LOCATIONNAME, locationName);
+            base = getPathParameterPrefix(base, hasParameter, LOCATION_NAME, locationName);
             hasParameter = true;
         }
 
