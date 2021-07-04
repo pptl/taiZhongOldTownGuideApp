@@ -39,7 +39,7 @@ public class TaskInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_info);
-        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
 //        init
         taskTitleView = findViewById(R.id.taskTitleView);
         taskDescView = findViewById(R.id.taskDescView);

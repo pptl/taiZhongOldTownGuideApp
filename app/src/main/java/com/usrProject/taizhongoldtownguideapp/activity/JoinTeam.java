@@ -37,7 +37,7 @@ public class JoinTeam extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_team);
         editText = (EditText)findViewById(R.id.joinTeam_editText);
-        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
 
         userName = pref.getString("userName","error");
         userIconPath = pref.getString("userIconPath","user_icon1");

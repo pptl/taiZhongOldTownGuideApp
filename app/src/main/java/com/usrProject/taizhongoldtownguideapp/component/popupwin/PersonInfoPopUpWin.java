@@ -39,7 +39,7 @@ public class PersonInfoPopUpWin extends CustomPopUpWin {
 
         mDatabase = FirebaseDatabase.getInstance();
 
-        pref = mContext.getSharedPreferences(UserSchema.USER_DATA,mContext.MODE_PRIVATE);
+        pref = mContext.getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
         teamName = pref.getString("teamName","error");
 

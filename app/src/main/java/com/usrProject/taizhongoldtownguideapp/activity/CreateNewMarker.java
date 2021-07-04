@@ -47,7 +47,7 @@ public class CreateNewMarker extends AppCompatActivity {
         longitude = intent.getDoubleExtra("longitude", 0);
         mDatabase = FirebaseDatabase.getInstance();
 
-        pref = getSharedPreferences(UserSchema.USER_DATA,MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
         markerPath = "location_icon";
 

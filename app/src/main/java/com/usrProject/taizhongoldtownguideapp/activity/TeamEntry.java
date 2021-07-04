@@ -36,7 +36,7 @@ public class TeamEntry extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_entry);
 
-        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
         userName = pref.getString("userName","None");
 
         mDatabase = FirebaseDatabase.getInstance();

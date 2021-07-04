@@ -26,7 +26,7 @@ public class CreateNewUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_user);
 
-        pref = getSharedPreferences(UserSchema.USER_DATA,MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA ,MODE_PRIVATE);
 
         editText = findViewById(R.id.newUser_editText);
         userIcon = findViewById(R.id.userIcon);

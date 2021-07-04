@@ -50,7 +50,7 @@ public class LocationInfoPopUpWin extends CustomPopUpWin {
 
         mDatabase = FirebaseDatabase.getInstance();
 
-        pref = mContext.getSharedPreferences(UserSchema.USER_DATA,mContext.MODE_PRIVATE);
+        pref = mContext.getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, mContext.MODE_PRIVATE);
         teamID = pref.getString("teamID","error");
 
         mLatitude = Double.longBitsToDouble(pref.getLong("mLatitude",0));

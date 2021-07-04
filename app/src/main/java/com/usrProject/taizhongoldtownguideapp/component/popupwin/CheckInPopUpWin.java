@@ -39,7 +39,7 @@ public class CheckInPopUpWin extends CustomPopUpWin {
         titleTextView = this.getView().findViewById(R.id.check_in_record_pop_up_win_completed_title_textView);
         progressBar = this.getView().findViewById(R.id.check_in_record_pop_up_win_progressBar);
 
-        final SharedPreferences pref = mContext.getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
+        final SharedPreferences pref = mContext.getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
         Gson gson = new Gson();
         currentTaskProcess = gson.fromJson(pref.getString(MarkTask.CURRENT_TASK.key, null), CurrentTaskProcess.class);
         if(currentTaskProcess.tasksContent.isEmpty()){

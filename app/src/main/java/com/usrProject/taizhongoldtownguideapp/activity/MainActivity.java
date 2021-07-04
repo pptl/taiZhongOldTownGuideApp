@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
 
         initSeekBar();
         initWeather();
@@ -408,7 +408,6 @@ public class MainActivity extends AppCompatActivity {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int goX = (int) distanceX;
             int goY = (int) distanceY;
-//          TODO : 原本要記錄圖的中心來計算是否可以捲動 (mapSizeData)，目前已經完成但尚未進行測試
             if ((curPointX + goX) / phoneDensity >= 0 && (currentMapType.x + goX) / phoneDensity <= (curPointX * 2 - phoneWidthPixels / phoneDensity)) {
                 mapImageView.scrollBy(goX, 0);
                 curPointX += goX;

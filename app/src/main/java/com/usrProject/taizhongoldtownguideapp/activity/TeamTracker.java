@@ -120,7 +120,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
+        pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
 
         teamID = pref.getString("teamID", "000000");
         userID = pref.getString("userID", "null");

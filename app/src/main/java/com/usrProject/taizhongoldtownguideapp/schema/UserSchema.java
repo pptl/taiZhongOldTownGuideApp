@@ -1,5 +1,14 @@
 package com.usrProject.taizhongoldtownguideapp.schema;
 
 public class UserSchema {
-    public static String USER_DATA = "userData";
+    public enum SharedPreferences{
+        InTeam("inTeam");
+        public static String USER_DATA = "userData";
+        public String field;
+
+
+        SharedPreferences(String field){
+            this.field = field;
+        }
+    }
 }
