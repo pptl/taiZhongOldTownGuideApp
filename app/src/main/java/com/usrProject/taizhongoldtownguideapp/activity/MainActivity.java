@@ -26,6 +26,7 @@ import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -45,6 +46,7 @@ import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.SurroundingView;
 import com.usrProject.taizhongoldtownguideapp.component.NewsList;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
+import com.usrProject.taizhongoldtownguideapp.utils.URLBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +55,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             {1560, 1086, 1631, 1137},//台中車站後站
     };
 
-    @SuppressLint("HandlerLeak")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,13 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         pref = getSharedPreferences(UserSchema.USER_DATA, MODE_PRIVATE);
 
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        seekBarTextView = (TextView) findViewById(R.id.yearTextView);
-
-        Date d = new Date();
-        int currentYear = d.getYear() + 1900;
-        seekBarTextView.setText(currentYear + "年");
-
+        initSeekBar();
         initWeather();
 
 
@@ -244,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
+    @SuppressLint("HandlerLeak")
     private void initWeather() {
         getWeather();
         //      載入圖檔
@@ -285,6 +282,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
+
+    private void initSeekBar() {
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBarTextView = (TextView) findViewById(R.id.yearTextView);
+        seekBarTextView.setText(new SimpleDateFormat("yyyy").format(new Date()) + "年");
+    }
+
 
     //彈出介紹視窗
     public void popWindow(int i) {
@@ -499,8 +503,6 @@ public class MainActivity extends AppCompatActivity {
 
     //拖移bar控制
     private void seekBarController() {
-        Date d = new Date();
-        final int currentYear = d.getYear() + 1900;
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -524,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
                     clickFlag = false;
 
                 } else if (progress > 75) {
-                    seekBarTextView.setText(currentYear + "年");
+                    seekBarTextView.setText(new SimpleDateFormat("yyyy").format(new Date()) + "年");
                     changeImage(3);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
                     clickFlag = true;
@@ -568,11 +570,15 @@ public class MainActivity extends AppCompatActivity {
 
     //到氣象資料開放平台拿取資料
     private void getWeather() {
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    JsonReader jsonReader = getJsonReaderbyUrl("https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-55466E79-2D5C-4102-B476-5B001C263F2A&elementName=Weather&parameterName=CITY&locationName=%E8%87%BA%E4%B8%AD", 9000);
+
+                    URLBuilder builder = new URLBuilder();
+                    String URL = builder.getOpenDataUrl(getApplicationContext(),"CWB-55466E79-2D5C-4102-B476-5B001C263F2A","Weather","CITY","臺中");
+                    JsonReader jsonReader = getJsonReaderbyUrl(URL, 9000);
                     JsonObject jsonObject = JsonParser.parseReader(jsonReader).getAsJsonObject();
                     Log.d("Json", jsonObject.toString());
                     JsonArray jsonArray = jsonObject.getAsJsonObject("records").getAsJsonArray("location");
