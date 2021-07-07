@@ -48,12 +48,12 @@ import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 import com.usrProject.taizhongoldtownguideapp.schema.type.MapType;
 import com.usrProject.taizhongoldtownguideapp.utils.URLBuilder;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,18 +84,11 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences pref;
     private Handler handler;
     public boolean clickFlag = true;
-
     //記錄照片中心
     private MapType currentMapType;
-//    private int[][] mapSizeData = {
-//            {540, 507},//map_51
-//            {540, 415},//map_1911
-//            {540, 433},//map_1937
-//            {960, 768}//map_now
-//    };
 
     //設置地圖上有效點擊範圍
-    private int[][] objList = {
+    private final int[][] objList = {
             {303, 1045, 387, 1960},//四維街日式招待所
             {856, 1015, 916, 1062},//彰化銀行繼光街宿舍
             {906, 912, 976, 964},//合作金庫銀行
@@ -109,13 +102,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
 
         initSeekBar();
         initWeather();
-
-
 
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
@@ -136,107 +126,94 @@ public class MainActivity extends AppCompatActivity {
         //設置滑軌監聽
         seekBarController();
 
-        mapImageView = (ImageView) this.findViewById(R.id.mapView);
+        mapImageView = findViewById(R.id.mapView);
         //預設是第四張照片
         changeImage(MapType.MAP_NOW);
-        meibianzhiyuan = (TextView) this.findViewById(R.id.meibianzhiyuan_textView);
-
+        meibianzhiyuan = findViewById(R.id.meibianzhiyuan_textView);
         goTeamTrackerBtn = findViewById(R.id.team_tracker_btn);
         goNewsBtn = findViewById(R.id.news_btn);
         goSurroundingViewBtn = findViewById(R.id.surrounding_view_btn);
         navBtn = findViewById(R.id.nav_btn);
-
-
-        goTeamTrackerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //請求獲取位置permission
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION
-                    }, REQUEST_CODE);
-                } else {
-
-                    final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-                        alert.setTitle("使用此功能需要開啟GPS定位");
-                        alert.setMessage("是否前往開啟GPS定位？");
-                        alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //前往開啟GPS定位
-                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            }
-                        });
-                        alert.setNegativeButton("否", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(MainActivity.this, "請先開啟GPS定位", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        alert.create().show();
-                    } else {
-                        Boolean newUser = pref.getBoolean("inTeam", false);
-                        //這裡可以去firebase看現在自己的房間ID是否存在，存在的話就去TeamTracker，反之去createNewUser
-                        if (!newUser) {
-                            Intent intent = new Intent(getApplicationContext(), CreateNewUser.class);
-                            startActivity(intent);
-                        } else {
-                            Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
-                            startActivity(intent);
-                        }
-                    }
-                }
-            }
-        });
-
-        goNewsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), NewsList.class);
-                startActivity(intent);
-            }
-        });
-
-        goSurroundingViewBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SurroundingView.class);
-                startActivity(intent);
-            }
-        });
-
-        navBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (navBtn.isSelected()) {
-                    navBtn.setSelected(false);
-                    goTeamTrackerBtn.setEnabled(false);
-                    goTeamTrackerBtn.setVisibility(View.INVISIBLE);
-                    goNewsBtn.setEnabled(false);
-                    goNewsBtn.setVisibility(View.INVISIBLE);
-                    goSurroundingViewBtn.setEnabled(false);
-                    goSurroundingViewBtn.setVisibility(View.INVISIBLE);
-                } else {
-                    navBtn.setSelected(true);
-                    goTeamTrackerBtn.setEnabled(true);
-                    goTeamTrackerBtn.setVisibility(View.VISIBLE);
-                    goNewsBtn.setEnabled(true);
-                    goNewsBtn.setVisibility(View.VISIBLE);
-                    goSurroundingViewBtn.setEnabled(true);
-                    goSurroundingViewBtn.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
     }
+
+    public void goTeamTracker(View view) {
+        //請求獲取位置permission
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION
+            }, REQUEST_CODE);
+        } else {
+
+            final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                alert.setTitle("使用此功能需要開啟GPS定位");
+                alert.setMessage("是否前往開啟GPS定位？");
+                alert.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //前往開啟GPS定位
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                });
+                alert.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "請先開啟GPS定位", Toast.LENGTH_LONG).show();
+                    }
+                });
+                alert.create().show();
+            } else {
+                boolean newUser = pref.getBoolean("inTeam", false);
+                //這裡可以去firebase看現在自己的房間ID是否存在，存在的話就去TeamTracker，反之去createNewUser
+                if (newUser) {
+                    Intent intent = new Intent(getApplicationContext(), TeamTracker.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), CreateNewUser.class);
+                    startActivity(intent);
+                }
+            }
+        }
+    }
+
+    public void goNews(View view){
+        Intent intent = new Intent(getApplicationContext(), NewsList.class);
+        startActivity(intent);
+    }
+
+    public void setGoSurroundingView(View view){
+        Intent intent = new Intent(getApplicationContext(), SurroundingView.class);
+        startActivity(intent);
+    }
+
+    public void navButtonOnClick(View view){
+        if (navBtn.isSelected()) {
+            navBtn.setSelected(false);
+            goTeamTrackerBtn.setEnabled(false);
+            goTeamTrackerBtn.setVisibility(View.INVISIBLE);
+            goNewsBtn.setEnabled(false);
+            goNewsBtn.setVisibility(View.INVISIBLE);
+            goSurroundingViewBtn.setEnabled(false);
+            goSurroundingViewBtn.setVisibility(View.INVISIBLE);
+        } else {
+            navBtn.setSelected(true);
+            goTeamTrackerBtn.setEnabled(true);
+            goTeamTrackerBtn.setVisibility(View.VISIBLE);
+            goNewsBtn.setEnabled(true);
+            goNewsBtn.setVisibility(View.VISIBLE);
+            goSurroundingViewBtn.setEnabled(true);
+            goSurroundingViewBtn.setVisibility(View.VISIBLE);
+        }
+    }
+
+
     @SuppressLint("HandlerLeak")
     private void initWeather() {
         getWeather();
         //      載入圖檔
         handler = new Handler() {
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(@NotNull Message msg) {
                 if (msg.what == 1) {
                     cloudImageViews = new ArrayList<>();
                     cloudImageViews.add((ImageView) findViewById(R.id.cloudView_1));
@@ -244,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     cloudImageViews.add((ImageView) findViewById(R.id.cloudView_3));
                     cloudImageViews.add((ImageView) findViewById(R.id.cloudView_4));
                     cloudImageViews.add((ImageView) findViewById(R.id.cloudView_5));
-                    backgroundImageView = (ImageView) findViewById(R.id.backGroundImageView);
+                    backgroundImageView = findViewById(R.id.backGroundImageView);
                     if (weather.equals("陰")) {
                         String uri = "@drawable/black_clound";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
@@ -253,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
                             cloudController(cloudImageView);
                         }
                         backgroundImageView.setVisibility(View.VISIBLE);
-                    } else if (weather.equals(weather.equals("陰带雨")) || weather.equals("雨")) {
+                    } else if (weather.equals("陰带雨")|| weather.equals("雨")) {
                         String uri = "@drawable/rain_effect";
                         int imageResource = getResources().getIdentifier(uri, null, getPackageName());
                         for (ImageView cloudImageView : cloudImageViews) {
@@ -272,9 +249,10 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     private void initSeekBar() {
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        seekBarTextView = (TextView) findViewById(R.id.yearTextView);
+        seekBar = findViewById(R.id.seekBar);
+        seekBarTextView = findViewById(R.id.yearTextView);
         seekBarTextView.setText(new SimpleDateFormat("yyyy").format(new Date()) + "年");
     }
 
@@ -326,12 +304,12 @@ public class MainActivity extends AppCompatActivity {
                 alert.create().show();
             } else {
                 //查看使用者是否已經加入團隊
-                Boolean newUser = pref.getBoolean("inTeam", false);
-                if (!newUser) {
-                    Intent intent = new Intent(this, CreateNewUser.class);
+                boolean newUser = pref.getBoolean("inTeam", false);
+                if(newUser) {
+                    Intent intent = new Intent(this, TeamTracker.class);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(this, TeamTracker.class);
+                    Intent intent = new Intent(this, CreateNewUser.class);
                     startActivity(intent);
                 }
             }
@@ -437,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //對雲朵進行操控
+    @SuppressLint("NonConstantResourceId")
     private void cloudController(ImageView imageView) {
         switch (imageView.getId()) {
             case R.id.cloudView_1:
@@ -491,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
     //拖移bar控制
     private void seekBarController() {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @SuppressLint("SetTextI18n")
+            @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (progress <= 25) {
@@ -500,19 +479,19 @@ public class MainActivity extends AppCompatActivity {
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
-                } else if (progress > 25 && progress <= 50) {
+                } else if (progress <= 50) {
                     seekBarTextView.setText("1911年");
                     changeImage(MapType.MAP_1911);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
-                } else if (progress > 50 && progress <= 75) {
+                } else if (progress <= 75) {
                     seekBarTextView.setText("1937年");
                     changeImage(MapType.MAP_1937);
                     meibianzhiyuan.setText(R.string.meibianzhiyuan);
                     clickFlag = false;
 
-                } else if (progress > 75) {
+                } else {
                     seekBarTextView.setText(new SimpleDateFormat("yyyy").format(new Date()) + "年");
                     changeImage(MapType.MAP_NOW);
                     meibianzhiyuan.setText(R.string.laoshi_meibianzhiyuan);
@@ -530,11 +509,11 @@ public class MainActivity extends AppCompatActivity {
                 int progress = seekBar.getProgress();
                 if (progress <= 25) {
                     seekBar.setProgress(0);
-                } else if (progress > 25 && progress <= 50) {
+                } else if (progress <= 50) {
                     seekBar.setProgress(38);
-                } else if (progress > 50 && progress <= 75) {
+                } else if (progress <= 75) {
                     seekBar.setProgress(63);
-                } else if (progress > 75) {
+                } else {
                     seekBar.setProgress(100);
                 }
             }
@@ -544,18 +523,18 @@ public class MainActivity extends AppCompatActivity {
 
     //更換地圖用
     private void changeImage(MapType changeType) {
-        mapImageView = (ImageView) findViewById(R.id.mapView);
+        if(mapImageView == null){
+            mapImageView = findViewById(R.id.mapView);
+        }
         mapImageView.setImageResource(changeType.resId);
 //            {540, 507},//map_51
 //            {540, 415},//map_1911
 //            {540, 433},//map_1937
 //            {960, 768}//map_now
         currentMapType = changeType;
-        if(currentMapType != null){
-            curPointX = Math.round(currentMapType.x * phoneDensity - phoneWidthPixels / 2);
-            curPointY = Math.round(currentMapType.y * phoneDensity - phoneHeightPixels / 2);
-            mapImageView.scrollTo(curPointX, curPointY);
-        }
+        curPointX = Math.round(currentMapType.x * phoneDensity - phoneWidthPixels / 2);
+        curPointY = Math.round(currentMapType.y * phoneDensity - phoneHeightPixels / 2);
+        mapImageView.scrollTo(curPointX, curPointY);
     }
 
     //到氣象資料開放平台拿取資料
@@ -568,12 +547,12 @@ public class MainActivity extends AppCompatActivity {
 
                     URLBuilder builder = new URLBuilder();
                     String URL = builder.getOpenDataUrl(getApplicationContext(),"CWB-55466E79-2D5C-4102-B476-5B001C263F2A","Weather","CITY","臺中");
-                    JsonReader jsonReader = getJsonReaderbyUrl(URL, 9000);
+                    JsonReader jsonReader = getJsonReaderByUrl(URL, 9000);
                     JsonObject jsonObject = JsonParser.parseReader(jsonReader).getAsJsonObject();
                     Log.d("Json", jsonObject.toString());
                     JsonArray jsonArray = jsonObject.getAsJsonObject("records").getAsJsonArray("location");
-                    for (JsonElement menber : jsonArray) {
-                        JsonObject jsonLocation = menber.getAsJsonObject();
+                    for (JsonElement member : jsonArray) {
+                        JsonObject jsonLocation = member.getAsJsonObject();
                         JsonObject jsonWeather = jsonLocation.get("weatherElement").getAsJsonArray().get(0).getAsJsonObject();
                         weather = jsonWeather.get("elementValue").getAsString();
                     }
@@ -588,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private JsonReader getJsonReaderbyUrl(String urlPath, int timeout) throws IOException {
+    private JsonReader getJsonReaderByUrl(String urlPath, int timeout) throws IOException {
         JsonReader result = null;
         URL url = new URL(urlPath);
         HttpURLConnection connection = null;
@@ -600,10 +579,6 @@ public class MainActivity extends AppCompatActivity {
             connection.setConnectTimeout(timeout);
             connection.setReadTimeout(timeout);
             connection.connect();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
