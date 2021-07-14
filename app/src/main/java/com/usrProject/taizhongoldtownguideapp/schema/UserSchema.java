@@ -2,7 +2,7 @@ package com.usrProject.taizhongoldtownguideapp.schema;
 
 public class UserSchema {
     public enum SharedPreferences{
-        InTeam("inTeam");
+        USER_INFO("userInfo");
         public static String USER_DATA = "userData";
         public String field;
 

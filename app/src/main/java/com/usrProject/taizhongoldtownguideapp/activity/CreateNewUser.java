@@ -15,8 +15,7 @@ import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
 public class CreateNewUser extends AppCompatActivity {
     private EditText editText;
-    private String newUserName;
-    private String userIconPath;
+    private int userIconPath;
     private ImageView userIcon;
     private SharedPreferences pref;
     final int PICK_IMAGE_REQUEST = 1;
@@ -30,13 +29,14 @@ public class CreateNewUser extends AppCompatActivity {
 
         editText = findViewById(R.id.newUser_editText);
         userIcon = findViewById(R.id.userIcon);
-        userIconPath = "user_icon1";
-
+        userIconPath = R.drawable.user_icon1;
+        userIcon.setImageResource(userIconPath);
     }
 
     public void goSelect(View view) {
-        newUserName = editText.getText().toString();
-        pref.edit().putString("userName",newUserName).apply();
+        String newUserName = editText.getText().toString();
+        pref.edit().putString("userName", newUserName).apply();
+        pref.edit().putInt("userIconPath", userIconPath).apply();
 
         Intent intent = new Intent(this, TeamEntry.class);
         startActivity(intent);
@@ -55,10 +55,8 @@ public class CreateNewUser extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK){
-            userIconPath = data.getStringExtra("userPickedIcon");
-            pref.edit().putString("userIconPath",userIconPath).apply();
-            int imageResource = getResources().getIdentifier("@drawable/" + userIconPath, null, getPackageName());
-            userIcon.setImageResource(imageResource);
+            userIconPath = data.getIntExtra("userPickedIcon", 0);
+            userIcon.setImageResource(userIconPath);
         }
     }
 }

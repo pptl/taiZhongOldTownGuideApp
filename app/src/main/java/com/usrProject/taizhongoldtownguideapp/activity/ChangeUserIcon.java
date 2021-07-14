@@ -18,21 +18,21 @@ public class ChangeUserIcon extends AppCompatActivity {
 
     public void returnIcon1(View view) {
         Intent intent = new Intent();
-        intent.putExtra("userPickedIcon", "user_icon1");
+        intent.putExtra("userPickedIcon", R.drawable.user_icon1);
         setResult(RESULT_OK, intent);
         finish();
     }
 
     public void returnIcon2(View view) {
         Intent intent = new Intent();
-        intent.putExtra("userPickedIcon","user_icon2");
+        intent.putExtra("userPickedIcon",R.drawable.user_icon2);
         setResult(RESULT_OK, intent);
         finish();
     }
 
     public void returnIcon3(View view) {
         Intent intent = new Intent();
-        intent.putExtra("userPickedIcon", "user_icon3");
+        intent.putExtra("userPickedIcon", R.drawable.user_icon3);
         setResult(RESULT_OK, intent);
         finish();
     }

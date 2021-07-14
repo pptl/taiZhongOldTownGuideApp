@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
-
         initSeekBar();
         initWeather();
 
@@ -134,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         goNewsBtn = findViewById(R.id.news_btn);
         goSurroundingViewBtn = findViewById(R.id.surrounding_view_btn);
         navBtn = findViewById(R.id.nav_btn);
+
     }
 
     public void goTeamTracker(View view) {

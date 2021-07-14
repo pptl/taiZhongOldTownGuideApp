@@ -18,17 +18,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class TeamEntry extends AppCompatActivity {
-
-    private TextView welcomeSpeechTextView;
+    private TextView welcomeTitleTextView;
     private String userName;
     private String teamID;
     private String userID;
-    private String userIconPath;
-    private FirebaseDatabase mDatabase;
+    private int userIconPath;
     private SharedPreferences pref;
 
     @Override
@@ -38,21 +39,18 @@ public class TeamEntry extends AppCompatActivity {
 
         pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
         userName = pref.getString("userName","None");
-
-        mDatabase = FirebaseDatabase.getInstance();
-
-        welcomeSpeechTextView = findViewById(R.id.notInTeam_textView);
+        welcomeTitleTextView = findViewById(R.id.notInTeam_textView);
         String wellcomeText = "歡迎你，" + userName;
-        welcomeSpeechTextView.setText(wellcomeText);
+        welcomeTitleTextView.setText(wellcomeText);
     }
 
     //如果使用者選擇創建團隊
     public void goCreateTeam(View view) {
         Map<String, Object> user = new HashMap<>();
-        DatabaseReference teamRef = mDatabase.getReference("team");
+        DatabaseReference teamRef = FirebaseDatabase.getInstance().getReference("team");
 
         //這裡要check teamID有沒有相撞
-        userIconPath = pref.getString("userIconPath","user_icon1");
+        userIconPath = pref.getInt("userIconPath",R.drawable.user_icon1);
         user.put("userIconPath", userIconPath);
         user.put("userName",userName);
         user.put("isLeader",true);
@@ -99,10 +97,10 @@ public class TeamEntry extends AppCompatActivity {
 
     public void goSelf(View view) {
         Map<String, Object> user = new HashMap<>();
-        DatabaseReference teamRef = mDatabase.getReference("team");
+        DatabaseReference teamRef = FirebaseDatabase.getInstance().getReference("team");
 
         //這裡要check teamID有沒有相撞
-        userIconPath = pref.getString("userIconPath","user_icon1");
+        userIconPath = pref.getInt("userIconPath",R.drawable.user_icon1);
         user.put("userIconPath", userIconPath);
         user.put("userName",userName);
         user.put("isLeader",true);
@@ -132,7 +130,7 @@ public class TeamEntry extends AppCompatActivity {
         teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
         teamRef.removeEventListener(listner);
-        pref.edit().putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
+        pref.edit().putString("userID", userID).putString("teamID",teamID).putBoolean("inTeam",true).commit();
         pref.edit().putString("roomType","singleUser").commit();
 
         Intent intent = new Intent(this, TeamTracker.class);
@@ -141,12 +139,7 @@ public class TeamEntry extends AppCompatActivity {
     }
 
     public String teamIDGenerator(){
-
-        double rand = Math.random();
-        String teamID = Double.toString(rand);
-        teamID = teamID.substring(2,8);
-        //这里要到firebase检查有没有重複的房號
-
-        return teamID;
+        String uuid = StringUtils.substring(UUID.randomUUID().toString(),0,8);
+        return uuid;
     }
 }

@@ -25,6 +25,7 @@ import com.usrProject.taizhongoldtownguideapp.R;
 import com.usrProject.taizhongoldtownguideapp.activity.TaskInfoActivity;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckTasks;
 import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
+import com.usrProject.taizhongoldtownguideapp.schema.type.MarkTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +109,7 @@ public class CheckInTasksView extends AppCompatActivity {
                 public void onClick(View view) {
 //                    Log.d("onClick", dataset.get(position).taskTitle);
                     Intent intent = new Intent(getApplicationContext(), TaskInfoActivity.class);
-                    intent.putExtra(TaskSchema.TASK_INFO, dataset.get(position));
+                    intent.putExtra(MarkTask.TASK_INFO.key, dataset.get(position));
                     startActivity(intent);
                 }
             });

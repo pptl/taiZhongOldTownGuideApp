@@ -27,7 +27,7 @@ public class JoinTeam extends AppCompatActivity {
     private String teamID;
     private String userName;
     private String userID;
-    private String userIconPath;
+    private int userIconPath;
     private FirebaseDatabase mDatabase;
     private DatabaseReference teamRef;
     private SharedPreferences pref;
@@ -40,7 +40,7 @@ public class JoinTeam extends AppCompatActivity {
         pref = getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
 
         userName = pref.getString("userName","error");
-        userIconPath = pref.getString("userIconPath","user_icon1");
+        userIconPath = pref.getInt("userIconPath",R.drawable.user_icon1);
 
         mDatabase = FirebaseDatabase.getInstance();
         teamRef = mDatabase.getReference("team");
@@ -65,7 +65,16 @@ public class JoinTeam extends AppCompatActivity {
                     userID = teamRef.child("userData").push().getKey();
                     teamRef.child(teamID).child("userData").child(userID).setValue(user);
 
-                    pref.edit().putString("userName",userName).putString("userID",userID).putString("teamID",teamID).putBoolean("inTeam",true).putBoolean("isLeader",false).putFloat("userLatitude",0).putFloat("userLongitude",0).putString("userIconPath", userIconPath).commit();
+                    pref.edit()
+                            .putString("userName",userName)
+                            .putString("userID",userID)
+                            .putString("teamID",teamID)
+                            .putBoolean("inTeam",true)
+                            .putBoolean("isLeader",false)
+                            .putFloat("userLatitude",0)
+                            .putFloat("userLongitude",0)
+                            .putInt("userIconPath", userIconPath)
+                            .apply();
 
                     teamRef.removeEventListener(this);
                     Intent intent = new Intent(getApplicationContext(), TeamTracker.class);

@@ -11,5 +11,5 @@ public class CurrentTaskProcess {
 
     public int currentTask;
 
-    public List<CheckInMarkerObject> tasksContent;
+    public List<CheckInMarkerObject> contents;
 }

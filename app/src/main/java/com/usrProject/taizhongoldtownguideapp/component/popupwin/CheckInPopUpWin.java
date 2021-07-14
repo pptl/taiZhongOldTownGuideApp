@@ -20,15 +20,15 @@ import static android.content.Context.MODE_PRIVATE;
 
 
 public class CheckInPopUpWin extends CustomPopUpWin {
-    CurrentTaskProcess currentTaskProcess;
-    CheckInMarkerObject currentMarker;
+    private CurrentTaskProcess currentTaskProcess;
+    private CheckInMarkerObject currentMarker;
 
-    Button closeWinButton;
-    Button cancelButton;
-    Button compeletedButton;
-    TextView completedCountTextView;
-    TextView titleTextView;
-    ProgressBar progressBar;
+    private Button closeWinButton;
+    private Button cancelButton;
+    private Button compeletedButton;
+    private TextView completedCountTextView;
+    private TextView titleTextView;
+    private ProgressBar progressBar;
 
     public CheckInPopUpWin(Context mContext, int xmlLayout, int completedNum, String title) {
         super(mContext, xmlLayout, false);
@@ -42,16 +42,16 @@ public class CheckInPopUpWin extends CustomPopUpWin {
         final SharedPreferences pref = mContext.getSharedPreferences(UserSchema.SharedPreferences.USER_DATA, MODE_PRIVATE);
         Gson gson = new Gson();
         currentTaskProcess = gson.fromJson(pref.getString(MarkTask.CURRENT_TASK.key, null), CurrentTaskProcess.class);
-        if(currentTaskProcess.tasksContent.isEmpty()){
+        if(currentTaskProcess.contents.isEmpty()){
             titleTextView.setText("此任務無打卡進度");
             completedCountTextView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
             compeletedButton.setText("完成");
         }else{
-            currentMarker = currentTaskProcess.tasksContent.get(currentTaskProcess.currentTask);
+            currentMarker = currentTaskProcess.contents.get(currentTaskProcess.currentTask);
             titleTextView.setText(currentMarker.markTitle);
-            completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.tasksContent.size()));
-            Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.tasksContent.size());
+            completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.contents.size()));
+            Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.contents.size());
             progressBar.setProgress((int) (doneProcess * 100.0));
         }
 
@@ -79,17 +79,17 @@ public class CheckInPopUpWin extends CustomPopUpWin {
                 }currentMarker.setChecked(true);
                 currentTaskProcess.currentTask++;
 
-                if(currentTaskProcess.currentTask < currentTaskProcess.tasksContent.size()){
-                    currentMarker = currentTaskProcess.tasksContent.get(currentTaskProcess.currentTask);
+                if(currentTaskProcess.currentTask < currentTaskProcess.contents.size()){
+                    currentMarker = currentTaskProcess.contents.get(currentTaskProcess.currentTask);
                     titleTextView.setText(currentMarker.markTitle);
-                    completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.tasksContent.size()));
-                    Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.tasksContent.size());
+                    completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.contents.size()));
+                    Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.contents.size());
                     progressBar.setProgress((int) (doneProcess * 100.0));
                     pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTaskProcess)).commit();
                 }else{
                     titleTextView.setText("完成所有打卡任務");
-                    completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.tasksContent.size()));
-                    Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.tasksContent.size());
+                    completedCountTextView.setText(String.format("%d/%d",currentTaskProcess.currentTask,currentTaskProcess.contents.size()));
+                    Double doneProcess = Double.valueOf(currentTaskProcess.currentTask) / Double.valueOf(currentTaskProcess.contents.size());
                     progressBar.setProgress((int) (doneProcess * 100.0));
                     compeletedButton.setText("完成");
                 }

@@ -12,5 +12,5 @@ public class CurrentTask implements Serializable {
 
     public String taskImg;
 
-    public List<CheckInMarkerObject> tasksContent;
+    public List<CheckInMarkerObject> contents;
 }

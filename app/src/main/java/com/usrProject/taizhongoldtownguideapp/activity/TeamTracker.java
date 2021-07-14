@@ -44,6 +44,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -57,6 +58,8 @@ import com.usrProject.taizhongoldtownguideapp.component.popupwin.LocationInfoPop
 import com.usrProject.taizhongoldtownguideapp.component.popupwin.PersonInfoPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.component.popupwin.SwitchLayerPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CheckInMarkerObject;
+import com.usrProject.taizhongoldtownguideapp.model.CheckIn.CurrentTaskProcess;
+import com.usrProject.taizhongoldtownguideapp.schema.TaskSchema;
 import com.usrProject.taizhongoldtownguideapp.schema.type.MarkTask;
 import com.usrProject.taizhongoldtownguideapp.schema.type.PopWindowType;
 import com.usrProject.taizhongoldtownguideapp.schema.UserSchema;
@@ -66,7 +69,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -110,8 +112,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Button locationInfoButton;
     private Button personInfoButton;
     private Boolean isExiting = false;//判斷使用者是否正在退出團隊
-    private ArrayList<CheckInMarkerObject> checkInMarkers;
-
+    private CurrentTaskProcess currentTaskProcess;
+    private Marker currentTaskMarker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,6 +205,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+
     }
 
     @SuppressLint("HandlerLeak")
@@ -210,6 +213,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -334,6 +338,13 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         getPointJson(url);
 
         //firebase上預設可打卡的地標
+        if(pref.contains(MarkTask.CURRENT_TASK.key)){
+            Log.d(TaskSchema.TASK_SYSTEM, "觸發任務系統");
+            currentTaskProcess = new Gson().fromJson(pref.getString(MarkTask.CURRENT_TASK.key, null), CurrentTaskProcess.class);
+            if(currentTaskProcess.contents != null &&!currentTaskProcess.contents.isEmpty()){
+                setTaskMark(currentTaskProcess.contents.get(currentTaskProcess.currentTask));
+            }
+        }
 //        checkInMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -371,12 +382,11 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 Marker marker = null;
                 for (DataSnapshot data : snapshot.getChildren()) {
                     String userName = data.child("userName").getValue(String.class);
-                    String userIconPath = data.child("userIconPath").getValue(String.class);
+                    Integer userIconPath = data.child("userIconPath").getValue(Integer.class);
                     String userID = data.getKey();
 
                     if (userName != null && userIconPath != null && userID != null) {
-                        int iconPathID = getResources().getIdentifier(userIconPath, "drawable", getPackageName());
-                        Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(), iconPathID);
+                        Bitmap userBitmap = new BitmapFactory().decodeResource(getResources(), userIconPath);
                         Double userLatitude = data.child("userLatitude").getValue(Double.class);
                         Double userLongitude = data.child("userLongitude").getValue(Double.class);
 
@@ -422,6 +432,13 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+    }
+
+    private void setTaskMark(CheckInMarkerObject checkTask){
+        if(checkTask.markLatitude == null || checkTask.markLongitude == null){
+            return;
+        }
+        currentTaskMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(checkTask.markLatitude,checkTask.markLongitude)).title(checkTask.markTitle));
     }
 
     //等待使用者在createNewMarker頁面把增加marker的資訊返回
@@ -473,6 +490,9 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                         pref.edit().putLong("mLongitude", Double.doubleToLongBits(location.getLongitude())).apply();
 
                         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), 15f);
+
+
+
                     } else {
                         //如果用戶進入app後才開啟GPS定位的話，會需要重啟location的資料才會正常
                         finish();
@@ -484,6 +504,34 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    private void checkTaskDone(Location mCurrentLocation) {
+        if(currentTaskMarker == null){
+            return;
+        }
+        LatLng currentPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        Double distance = getDistanceMeterByLatLng(currentPosition, currentTaskMarker.getPosition());
+        if(distance < 25.0f){
+            Log.d(TaskSchema.TASK_SYSTEM, "觸發任務");
+        }
+    }
+
+    private Double getDistanceMeterByLatLng(LatLng p1, LatLng p2){
+        Double EARTH_RADIUS = 6378.137;
+        Double latr1 = p1.latitude * Math.PI / 180.0;
+        Double latr2 = p2.latitude * Math.PI / 180.0;
+        Double lngr1 = p1.longitude * Math.PI / 180.0;
+        Double lngr2 = p2.longitude * Math.PI / 180.0;
+        Double a = latr1 - latr2;
+        Double b = lngr1 - lngr2;
+        Double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
+                + Math.cos(latr1) * Math.cos(latr2)
+                * Math.pow(Math.sin(b / 2), 2)));
+        s = s * EARTH_RADIUS  * 1000;
+        Log.i("距離",s+"公尺");
+        return s;
+    }
+
+    //    TODO:打卡任務列表的東西
     private void checkLocationChange() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -506,7 +554,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             location.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    mCurrentLocation = (Location) location;
+                    mCurrentLocation = location;
                     if(mCurrentLocation != null){
                         //檢查位置
                         if(preLatitude != (float)mCurrentLocation.getLatitude() || preLongitude != (float)mCurrentLocation.getLongitude()){
@@ -518,6 +566,8 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
                             usersRef.child(userID).updateChildren(userLocations);
                         }
+
+                        checkTaskDone(mCurrentLocation);
                         //計算最靠近的checkPoint
 //                        if(pref.getInt("checkInCompleted",0) < 5){
 //                            double minDistance = 9999;

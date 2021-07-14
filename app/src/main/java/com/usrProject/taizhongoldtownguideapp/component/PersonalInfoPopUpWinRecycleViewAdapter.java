@@ -89,17 +89,15 @@ public class PersonalInfoPopUpWinRecycleViewAdapter extends RecyclerView.Adapter
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String currUserID = friendList.get(position);
                 String mCurrentName = snapshot.child(currUserID).child("userName").getValue(String.class);
-                String mCurrentUserIconPath = snapshot.child(currUserID).child("userIconPath").getValue(String.class);
+                Integer mCurrentUserIconPath = snapshot.child(currUserID).child("userIconPath").getValue(Integer.class);
                 Boolean mCurrentUserIsLeader = snapshot.child(currUserID).child("isLeader").getValue(Boolean.class);
                 holder.wordItemView.setText(mCurrentName);
-                int imageResource = context.getResources().getIdentifier("@drawable/" + mCurrentUserIconPath, null, context.getPackageName());
-                holder.userIcon.setImageResource(imageResource);
+                holder.userIcon.setImageResource(mCurrentUserIconPath);
                 if (mCurrentUserIsLeader == null || !mCurrentUserIsLeader){
                     holder.isLeaderIcon.setVisibility(View.GONE);
                 } else {
-                    int leaderIcon = context.getResources().getIdentifier("@drawable/crown", null, context.getPackageName());
                     holder.isLeaderIcon.setVisibility(View.VISIBLE);
-                    holder.isLeaderIcon.setImageResource(leaderIcon);
+                    holder.isLeaderIcon.setImageResource(R.drawable.crown);
                 }
             }
 
