@@ -338,6 +338,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         getPointJson(url);
 
         //firebase上預設可打卡的地標
+//        if(currentTaskMarker != null){
+//            currentTaskMarker.remove();
+//            currentTaskMarker = null;
+//        }
         if(pref.contains(MarkTask.CURRENT_TASK.key)){
             Log.d(TaskSchema.TASK_SYSTEM, "觸發任務系統");
             currentTaskProcess = new Gson().fromJson(pref.getString(MarkTask.CURRENT_TASK.key, null), CurrentTaskProcess.class);

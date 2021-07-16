@@ -98,17 +98,23 @@ public class TaskInfoActivity extends AppCompatActivity {
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot taskDoc = task.getResult();
                 DocumentReference contentsReference = taskDoc.getDocumentReference("contents");
-                contentsReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
-                        DocumentSnapshot contentDoc = task.getResult();
-                        ContentDTO contentDTO = contentDoc.toObject(ContentDTO.class);
-                        currentTask.contents = contentDTO.contents;
-                        pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
-                        Toast.makeText(getApplicationContext(),String.format("成功接取 %s 任務",currentTask.taskTitle),Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getApplicationContext(),TeamTracker.class));
-                    }
-                });
+                if(contentsReference != null){
+                    contentsReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                            DocumentSnapshot contentDoc = task.getResult();
+                            ContentDTO contentDTO = contentDoc.toObject(ContentDTO.class);
+                            currentTask.contents = contentDTO.contents;
+                            pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
+                            Toast.makeText(getApplicationContext(),String.format("成功接取 %s 任務",currentTask.taskTitle),Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(),TeamTracker.class));
+                        }
+                    });
+                }else{
+                    pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
+                    Toast.makeText(getApplicationContext(),String.format("成功接取 %s 任務",currentTask.taskTitle),Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(),TeamTracker.class));
+                }
 
             }
         });
