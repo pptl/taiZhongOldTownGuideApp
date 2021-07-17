@@ -105,20 +105,19 @@ public class TaskInfoActivity extends AppCompatActivity {
                             DocumentSnapshot contentDoc = task.getResult();
                             ContentDTO contentDTO = contentDoc.toObject(ContentDTO.class);
                             currentTask.contents = contentDTO.contents;
-                            pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
+                            pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).apply();
                             Toast.makeText(getApplicationContext(),String.format("成功接取 %s 任務",currentTask.taskTitle),Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(getApplicationContext(),TeamTracker.class));
                         }
                     });
                 }else{
-                    pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).commit();
+                    pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTask)).apply();
                     Toast.makeText(getApplicationContext(),String.format("成功接取 %s 任務",currentTask.taskTitle),Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(),TeamTracker.class));
                 }
 
             }
         });
-
     }
 
 }

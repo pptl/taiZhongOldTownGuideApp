@@ -11,5 +11,7 @@ public class CurrentTaskProcess {
 
     public int currentTask;
 
+    public boolean doneFlag;
+
     public List<CheckInMarkerObject> contents;
 }

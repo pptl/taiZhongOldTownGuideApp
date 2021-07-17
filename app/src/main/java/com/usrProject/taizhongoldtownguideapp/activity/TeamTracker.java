@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -115,11 +116,17 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Boolean isExiting = false;//判斷使用者是否正在退出團隊
     private CurrentTaskProcess currentTaskProcess;
     private Marker currentTaskMarker;
+    private boolean isCheckPopUp = false;
+
+    private TextView checkTestDisttance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_tracker);
 
+//      TODO:  for testing
+        checkTestDisttance = findViewById(R.id.checkDistanceTextView);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -138,7 +145,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         //roomType 分"singleUser"和"multiUsers"用來區別是單人使用或者多人使用的地圖
         roomType = pref.getString("roomType", "multiUsers");
         //如果是單人地圖的話，需要處理按鈕佈局
-
         if (roomType != null) {
             if (roomType.equals("singleUser")) {
                 personInfoButton.setBackgroundResource(R.drawable.exit_icon);
@@ -206,7 +212,6 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 popWindow(PopWindowType.SWITCH_LAYER);
             }
         });
-
 
     }
 
@@ -329,47 +334,15 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         //使用坐標資料api
         getPointJson(url);
 
-        //firebase上預設可打卡的地標
-//        if(currentTaskMarker != null){
-//            currentTaskMarker.remove();
-//            currentTaskMarker = null;
-//        }
         if(pref.contains(MarkTask.CURRENT_TASK.key)){
             Log.d(TaskSchema.TASK_SYSTEM, "觸發任務系統");
-            currentTaskProcess = new Gson().fromJson(pref.getString(MarkTask.CURRENT_TASK.key, null), CurrentTaskProcess.class);
-            if(currentTaskProcess.contents != null &&!currentTaskProcess.contents.isEmpty()){
+            if(currentTaskProcess == null){
+                currentTaskProcess = new Gson().fromJson(pref.getString(MarkTask.CURRENT_TASK.key, null), CurrentTaskProcess.class);
+            }
+            if(currentTaskProcess.contents != null &&!currentTaskProcess.contents.isEmpty() && !currentTaskProcess.doneFlag){
                 setTaskMark(currentTaskProcess.contents.get(currentTaskProcess.currentTask));
             }
         }
-//        checkInMarkerRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                Marker marker = null;
-////              將可打卡座標顯示在map上面，並使用物件儲存
-//                for (DataSnapshot data : snapshot.getChildren()) {
-//                    String markTitle = data.child("markTitle").getValue(String.class);
-//                    String markContext = data.child("markContent").getValue(String.class);
-//                    Double markLatitude = data.child("markLatitude").getValue(Double.class);
-//                    Double markLongitude = data.child("markLongitude").getValue(Double.class);
-//
-//                    if (markTitle != null && markContext != null && markLatitude != null && markLongitude != null) {
-//                        if (checkInMarkers == null) {
-//                            checkInMarkers = new ArrayList<>();
-//                        }
-//                        checkInMarkers.add(new CheckInMarkerObject(markTitle, markContext, markLatitude, markLongitude));
-//                        Bitmap markerBitmap = new BitmapFactory().decodeResource(getResources(), getResources().getIdentifier("marker_sm", "drawable", getPackageName()));
-//                        marker = mMap.addMarker(new MarkerOptions().position(new LatLng(markLatitude, markLongitude)).title(markTitle).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
-//                        marker.setTag("checkIn");
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-
 
         //每次fireBase裡朋友資料更新時，更新本地朋友資料
         usersRef.addValueEventListener(new ValueEventListener() {
@@ -496,14 +469,15 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
         }
     }
-//    TODO:打卡系統進入點
+//    TODO:打卡系統進入點 目前彈出視窗問題還沒解決
     private void checkTaskDone(Location mCurrentLocation) {
         if(currentTaskMarker == null){
             return;
         }
         LatLng currentPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         Double distance = getDistanceMeterByLatLng(currentPosition, currentTaskMarker.getPosition());
-        if(distance < 25.0f){
+        checkTestDisttance.setText(String.valueOf(distance));
+        if(distance < 15.0f && !isCheckPopUp && !currentTaskProcess.doneFlag){
             Log.d(TaskSchema.TASK_SYSTEM, "觸發任務");
             new AlertDialog.Builder(TeamTracker.this)
                     .setTitle("打卡提醒")
@@ -514,9 +488,16 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             popWindow(PopWindowType.CHECK_IN_ON_COMPLETE);
                         }
                     })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            isCheckPopUp = false;
+                        }
+                    })
                     .create()
                     .show();
         }
+        isCheckPopUp = true;
     }
 
     private Double getDistanceMeterByLatLng(LatLng p1, LatLng p2){
@@ -641,7 +622,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         }else if(popWindowType == PopWindowType.CHECK_IN_ON_COMPLETE){
-            CheckInOnCompletePopUpWin checkInOnCompletePopUpWin = new CheckInOnCompletePopUpWin(this,R.layout.check_in_oncomplete_win,false);
+            CheckInOnCompletePopUpWin checkInOnCompletePopUpWin = new CheckInOnCompletePopUpWin(this,R.layout.check_in_oncomplete_win,false, currentTaskProcess);
             checkInOnCompletePopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
             params.alpha = 0.7f;
@@ -652,6 +633,10 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     params = getWindow().getAttributes();
                     params.alpha = 1f;
                     getWindow().setAttributes(params);
+                    currentTaskMarker.remove();
+                    if(!currentTaskProcess.doneFlag){
+                        setTaskMark(currentTaskProcess.contents.get(currentTaskProcess.currentTask));
+                    }
                 }
             });
         }
