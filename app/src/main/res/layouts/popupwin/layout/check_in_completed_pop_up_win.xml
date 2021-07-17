@@ -11,7 +11,7 @@
 
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/check_in_oncomplete_background"
         android:layout_width="350dp"
         android:layout_height="586dp"
         android:background="@drawable/rectangle_solid"
@@ -25,11 +25,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="打卡進度"
+        android:text="@string/CheckProcessTitle"
         android:textSize="30dp"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
+        app:layout_constraintEnd_toEndOf="@+id/check_in_oncomplete_background"
         app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintStart_toStartOf="@+id/check_in_oncomplete_background"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
@@ -41,13 +41,12 @@
         android:indeterminateOnly="false"
         android:progress="50"
         android:progressDrawable="@drawable/progresser_ring"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintEnd_toEndOf="@+id/check_in_oncomplete_background"
+        app:layout_constraintStart_toStartOf="@+id/check_in_oncomplete_background"
         app:layout_constraintTop_toBottomOf="@+id/check_in_record_pop_up_win_title" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/flagImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/check_in_record_pop_up_win_progressBar"
@@ -62,11 +61,11 @@
         android:id="@+id/check_in_record_pop_up_win_completed_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2/4"
+        android:text="@string/ProcessDesc"
         android:textSize="35dp"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
+        app:layout_constraintEnd_toEndOf="@+id/check_in_oncomplete_background"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintStart_toStartOf="@+id/check_in_oncomplete_background"
         app:layout_constraintTop_toBottomOf="@+id/check_in_record_pop_up_win_progressBar" />
 
     <TextView
@@ -74,33 +73,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="西屯派出所"
+        android:text="@string/Title"
         android:textSize="35dp"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
+        app:layout_constraintEnd_toEndOf="@+id/check_in_oncomplete_background"
         app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintStart_toStartOf="@+id/check_in_oncomplete_background"
         app:layout_constraintTop_toBottomOf="@+id/check_in_record_pop_up_win_completed_textView" />
 
     <Button
         android:id="@+id/check_in_record_pop_up_win_cancel_button"
         android:layout_width="144dp"
         android:layout_height="50dp"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/btn_bg"
-        android:text="關閉"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/check_in_record_pop_up_win_completed_title_textView" />
-
-    <Button
-        android:id="@+id/check_in_record_pop_up_win_completed_button"
-        android:layout_width="144dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/btn_bg"
-        android:text="下一站"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
+        android:text="@string/Exit"
+        app:layout_constraintEnd_toEndOf="@+id/check_in_oncomplete_background"
+        app:layout_constraintStart_toStartOf="@+id/check_in_oncomplete_background"
         app:layout_constraintTop_toBottomOf="@+id/check_in_record_pop_up_win_completed_title_textView" />
 
     <Button

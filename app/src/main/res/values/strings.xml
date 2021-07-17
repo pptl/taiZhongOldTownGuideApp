@@ -19,6 +19,17 @@
     <string name="notInTeam_joinTeamButton_text">參加團隊</string>
     <string name="joinTeam_quickJoinButton_text">快速加入</string>
 
-    <string name="BottonCancel">取消</string>
-    <string name="BottonAccept">接受</string>
+    <string name="Title">標題</string>
+
+    <string name="Exit">關閉</string>
+    <string name="Cancel">取消</string>
+    <string name="Accept">接受</string>
+    <string name="Done">完成</string>
+    <string name="DoneDirectly">直接完成</string>
+
+    <string name="ProcessDesc">進度提示</string>
+    <string name="CheckProcessTitle">打卡進度</string>
+    <string name="CheckDesc">任務指定地點打卡提示</string>
+    <string name="CheckHint">打卡提示</string>
+    <string name="CheckProcess">打卡進度</string>
 </resources>

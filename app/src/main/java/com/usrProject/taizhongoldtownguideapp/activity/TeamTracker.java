@@ -52,6 +52,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.usrProject.taizhongoldtownguideapp.Loading;
 import com.usrProject.taizhongoldtownguideapp.R;
+import com.usrProject.taizhongoldtownguideapp.component.popupwin.CheckInOnCompletePopUpWin;
 import com.usrProject.taizhongoldtownguideapp.component.popupwin.CheckInPopUpWin;
 import com.usrProject.taizhongoldtownguideapp.component.CustomInfoWindowAdapter;
 import com.usrProject.taizhongoldtownguideapp.component.popupwin.LocationInfoPopUpWin;
@@ -156,6 +157,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 if(pref.contains(MarkTask.CURRENT_TASK.key)){
+//                    popWindow(PopWindowType.CHECK_IN_ON_COMPLETE);
                     popWindow(PopWindowType.CHECK_IN_COMPLETED);
                 }else{
                     Toast.makeText(getApplicationContext(),"你尚未接取打卡任務，請至任務列表選擇並接取打卡任務",Toast.LENGTH_SHORT).show();
@@ -494,7 +496,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
         }
     }
-
+//    TODO:打卡系統進入點
     private void checkTaskDone(Location mCurrentLocation) {
         if(currentTaskMarker == null){
             return;
@@ -503,6 +505,17 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         Double distance = getDistanceMeterByLatLng(currentPosition, currentTaskMarker.getPosition());
         if(distance < 25.0f){
             Log.d(TaskSchema.TASK_SYSTEM, "觸發任務");
+            new AlertDialog.Builder(TeamTracker.this)
+                    .setTitle("打卡提醒")
+                    .setMessage(String.format("正在接近任務地點 %s ", currentTaskProcess.contents.get(currentTaskProcess.currentTask).markTitle))
+                    .setPositiveButton("打卡", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            popWindow(PopWindowType.CHECK_IN_ON_COMPLETE);
+                        }
+                    })
+                    .create()
+                    .show();
         }
     }
 
@@ -548,33 +561,9 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                             pref.edit().putLong("mLongitude",Double.doubleToLongBits(location.getLongitude())).apply();
                             usersRef.child(userID).updateChildren(userLocations);
                         }
-
+//                      檢查下個任務點距離
                         checkTaskDone(mCurrentLocation);
-                        //計算最靠近的checkPoint
-//                        if(pref.getInt("checkInCompleted",0) < 5){
-//                            double minDistance = 9999;
-//                            int minIndex = 0;
-//                            double distance = 0;
-//
-//                            for(int j=0;j<5;j++){
-//                                //兩點公式
-//                                if(!checkInMarkerObjectList[j].isChecked()){
-//                                    distance = Math.abs(Math.sqrt(Math.pow(mCurrentLocation.getLongitude() - checkInMarkerObjectList[j].getMarkLongitude(),2) + Math.pow(mCurrentLocation.getLatitude() - checkInMarkerObjectList[j].getMarkLatitude(),2)));
-//                                    if(distance < minDistance){
-//                                        minDistance = distance;
-//                                        minIndex = j;
-//                                    }
-//                                }
-//                            }
-//                            if (minDistance < 2){
-//                                checkInMarkerObjectList[minIndex].setChecked(true);
-//                                pref.edit().putInt("checkInCompleted",pref.getInt("checkInCompleted", 0) + 1).apply();
-//                                popWindow("checkInCompleted");
-//                            }
-//
-//                            pref.edit().putString("nextStopTitle",checkInMarkerObjectList[minIndex].getMarkTitle()).apply();
-//                            pref.edit().putString("nextStopContent",checkInMarkerObjectList[minIndex].getMarkContent()).apply();
-//                        }
+
 
                     }
                 }
@@ -638,12 +627,26 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         }else if (popWindowType==PopWindowType.CHECK_IN_COMPLETED){
-            CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win, pref.getInt("checkInCompleted", 0), pref.getString("nextStopTitle",""));
+            CheckInPopUpWin checkInPopUpWin = new CheckInPopUpWin(this,R.layout.check_in_completed_pop_up_win);
             checkInPopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
             params = getWindow().getAttributes();
             params.alpha = 0.7f;
             getWindow().setAttributes(params);
             checkInPopUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    params = getWindow().getAttributes();
+                    params.alpha = 1f;
+                    getWindow().setAttributes(params);
+                }
+            });
+        }else if(popWindowType == PopWindowType.CHECK_IN_ON_COMPLETE){
+            CheckInOnCompletePopUpWin checkInOnCompletePopUpWin = new CheckInOnCompletePopUpWin(this,R.layout.check_in_oncomplete_win,false);
+            checkInOnCompletePopUpWin.showAtLocation(findViewById(R.id.map), Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+            params = getWindow().getAttributes();
+            params.alpha = 0.7f;
+            getWindow().setAttributes(params);
+            checkInOnCompletePopUpWin.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
                 public void onDismiss() {
                     params = getWindow().getAttributes();
@@ -665,7 +668,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                 pref.edit().putBoolean("inTeam",false).commit();
                 usersRef.child(userID).removeValue();
                 alert.setView(null);
-                //這裡要去firebase刪掉相關用戶的資料，現在還沒實作
+                //TODO:這裡要去firebase刪掉相關用戶的資料，現在還沒實作
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
