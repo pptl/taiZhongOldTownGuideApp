@@ -70,6 +70,6 @@
         android:id="@+id/checkDistanceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="initing..." />
+        android:text="距離初始化中..." />
 
 </RelativeLayout>

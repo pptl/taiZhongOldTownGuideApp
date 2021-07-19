@@ -118,7 +118,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
     private Marker currentTaskMarker;
     private boolean isCheckPopUp = false;
 
-    private TextView checkTestDisttance;
+    private TextView checkTestDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +126,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_team_tracker);
 
 //      TODO:  for testing
-        checkTestDisttance = findViewById(R.id.checkDistanceTextView);
+        checkTestDistance = findViewById(R.id.checkDistanceTextView);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -476,7 +476,7 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
         }
         LatLng currentPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         Double distance = getDistanceMeterByLatLng(currentPosition, currentTaskMarker.getPosition());
-        checkTestDisttance.setText(String.valueOf(distance));
+        checkTestDistance.setText(String.valueOf(distance));
         if(distance < 15.0f && !isCheckPopUp && !currentTaskProcess.doneFlag){
             Log.d(TaskSchema.TASK_SYSTEM, "觸發任務");
             new AlertDialog.Builder(TeamTracker.this)
@@ -633,9 +633,19 @@ public class TeamTracker extends AppCompatActivity implements OnMapReadyCallback
                     params = getWindow().getAttributes();
                     params.alpha = 1f;
                     getWindow().setAttributes(params);
+//                  初始化所有狀態
                     currentTaskMarker.remove();
+                    isCheckPopUp = false;
+
                     if(!currentTaskProcess.doneFlag){
+                        pref.edit().putString(MarkTask.CURRENT_TASK.key, new Gson().toJson(currentTaskProcess)).apply();
                         setTaskMark(currentTaskProcess.contents.get(currentTaskProcess.currentTask));
+                    }else{
+//                      TODO:打卡任務完成
+                        pref.edit().remove(MarkTask.CURRENT_TASK.key).apply();
+                        currentTaskProcess = null;
+                        currentTaskMarker = null;
+                        checkTestDistance.setText("距離初始化中...");
                     }
                 }
             });
